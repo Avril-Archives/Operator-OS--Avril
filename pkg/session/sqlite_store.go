@@ -328,6 +328,89 @@ func (s *SQLiteStore) Save(_ string) error {
 	return nil
 }
 
+// SessionCount returns the total number of sessions.
+func (s *SQLiteStore) SessionCount() (int64, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var count int64
+	err := s.db.QueryRow(`SELECT COUNT(*) FROM sessions`).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("count sessions: %w", err)
+	}
+	return count, nil
+}
+
+// DeleteSession removes a session and all its messages.
+func (s *SQLiteStore) DeleteSession(key string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Messages are deleted via ON DELETE CASCADE.
+	res, err := s.db.Exec(`DELETE FROM sessions WHERE key = ?`, key)
+	if err != nil {
+		return fmt.Errorf("delete session %q: %w", key, err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return fmt.Errorf("session %q not found", key)
+	}
+	return nil
+}
+
+// EvictExpired deletes sessions whose updated_at is older than ttl from now.
+// Returns the number of sessions evicted.
+func (s *SQLiteStore) EvictExpired(ttl time.Duration) (int64, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	cutoff := time.Now().Add(-ttl).Format(time.RFC3339Nano)
+
+	// Delete messages first (in case foreign keys aren't cascading in all modes),
+	// then sessions.
+	res, err := s.db.Exec(
+		`DELETE FROM sessions WHERE updated_at < ?`, cutoff,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("evict expired sessions: %w", err)
+	}
+	n, _ := res.RowsAffected()
+	return n, nil
+}
+
+// EvictLRU deletes the least-recently-updated sessions until the total count
+// is at or below maxSessions. Returns the number of sessions evicted.
+func (s *SQLiteStore) EvictLRU(maxSessions int) (int64, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if maxSessions <= 0 {
+		return 0, nil
+	}
+
+	// Count current sessions.
+	var count int64
+	if err := s.db.QueryRow(`SELECT COUNT(*) FROM sessions`).Scan(&count); err != nil {
+		return 0, fmt.Errorf("count sessions: %w", err)
+	}
+
+	if count <= int64(maxSessions) {
+		return 0, nil
+	}
+
+	// Delete oldest sessions beyond the limit.
+	excess := count - int64(maxSessions)
+	res, err := s.db.Exec(
+		`DELETE FROM sessions WHERE key IN (
+			SELECT key FROM sessions ORDER BY updated_at ASC LIMIT ?
+		)`, excess,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("evict LRU sessions: %w", err)
+	}
+	n, _ := res.RowsAffected()
+	return n, nil
+}
+
 // Close closes the underlying database connection.
 func (s *SQLiteStore) Close() error {
 	s.mu.Lock()
