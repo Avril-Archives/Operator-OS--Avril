@@ -10,7 +10,7 @@
 
 | # | Phase | Status | Target | Progress |
 |---|---|---|---|---|
-| 1 | Foundation (SQLite, logging, metrics, encryption) | 🟡 In Progress | Weeks 1–4 | 25% |
+| 1 | Foundation (SQLite, logging, metrics, encryption) | 🟡 In Progress | Weeks 1–4 | 37% |
 | 2 | User Management (accounts, tenancy, auth) | ⬜ Not Started | Weeks 5–8 | 0% |
 | 3 | Billing & Plans (Stripe, metering) | ⬜ Not Started | Weeks 9–12 | 0% |
 | 4 | Service Integrations (OAuth, vault, marketplace) | ⬜ Not Started | Weeks 13–16 | 0% |
@@ -27,7 +27,7 @@
 |---|---|---|---|---|---|
 | F1 | Replace JSON sessions with SQLite | P0 | ✅ Done | Cosmo | Implemented `SessionStore` interface + `SQLiteStore` backend. `SessionManager` delegates to store when present via `NewSessionManagerWithStore()`. 15 tests pass. WAL mode, write-through. |
 | F2 | Replace JSON state manager with SQLite | P0 | ✅ Done | Cosmo | Implemented `StateStore` interface + `SQLiteStateStore` backend. `Manager` delegates to store via `NewManagerWithStore()`. 9 new tests pass. WAL mode, write-through. Existing JSON tests unaffected. |
-| F3 | Replace auth store with encrypted SQLite | P0 | ⬜ TODO | — | `credential_vault` table with AES-256-GCM encrypted values. Key derived from env var or config passphrase. |
+| F3 | Replace auth store with encrypted SQLite | P0 | ✅ Done | Cosmo | Implemented `CredentialStore` interface + `SQLiteCredentialStore` backend. AES-256-GCM encryption with Argon2id key derivation from `OPERATOR_ENCRYPTION_KEY`. Base64 fallback when no key set (with warning). Package-level functions delegate via `SetGlobalCredentialStore()`. 22 new tests pass. |
 | F4 | Add structured logging (zerolog) | P0 | ⬜ TODO | — | Replace `pkg/logger` with `zerolog` (already transitive dep via `rs/zerolog`). Add correlation IDs to request lifecycle. Preserve existing log API signatures where possible. |
 | F5 | Add OpenTelemetry metrics | P1 | ⬜ TODO | — | Prometheus endpoint at `/metrics`. Key metrics: LLM request latency/tokens/errors, active sessions, message bus depth, tool execution duration. |
 | F6 | Add session TTL and eviction | P1 | ⬜ TODO | — | Configurable TTL (default 24h inactive). LRU eviction when session count exceeds threshold. |
@@ -37,7 +37,7 @@
 ### Definition of Done — Phase 1
 - [ ] All session data persists in SQLite (not JSON files)
 - [ ] All state data persists in SQLite
-- [ ] Credentials encrypted at rest
+- [x] Credentials encrypted at rest
 - [ ] Structured JSON logging with correlation IDs
 - [ ] Prometheus metrics endpoint functional
 - [ ] Session eviction prevents unbounded memory growth
@@ -131,6 +131,7 @@
 
 | Date | Change |
 |---|---|
+| 2026-03-06 | F3 complete: Encrypted SQLite credential store with CredentialStore interface, SQLiteCredentialStore implementation, AES-256-GCM + Argon2id encryption. 22 new tests (7 encrypt + 15 store). Package-level functions delegate via SetGlobalCredentialStore(). |
 | 2026-03-06 | F2 complete: SQLite state store with StateStore interface, SQLiteStateStore implementation, 9 new tests. Manager delegates to store via NewManagerWithStore(). |
 | 2026-03-06 | F1 complete: SQLite session store with SessionStore interface, SQLiteStore implementation, 15 new tests. Fixed pre-existing auth/oauth.go compile error. |
 | 2026-03-06 | Initial assessment completed. Branch `operatoros-production-readiness` created. STATUS.md and CLAUDE.md written. |
