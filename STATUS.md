@@ -10,7 +10,7 @@
 
 | # | Phase | Status | Target | Progress |
 |---|---|---|---|---|
-| 1 | Foundation (SQLite, logging, metrics, encryption) | 🟡 In Progress | Weeks 1–4 | 0% |
+| 1 | Foundation (SQLite, logging, metrics, encryption) | 🟡 In Progress | Weeks 1–4 | 12% |
 | 2 | User Management (accounts, tenancy, auth) | ⬜ Not Started | Weeks 5–8 | 0% |
 | 3 | Billing & Plans (Stripe, metering) | ⬜ Not Started | Weeks 9–12 | 0% |
 | 4 | Service Integrations (OAuth, vault, marketplace) | ⬜ Not Started | Weeks 13–16 | 0% |
@@ -25,7 +25,7 @@
 
 | ID | Task | Priority | Status | Assignee | Notes |
 |---|---|---|---|---|---|
-| F1 | Replace JSON sessions with SQLite | P0 | ⬜ TODO | — | Use existing `modernc.org/sqlite` dep. Schema: `sessions`, `messages`, `state` tables. Implement `SessionStore` interface backed by SQLite. Keep existing `SessionManager` API. |
+| F1 | Replace JSON sessions with SQLite | P0 | ✅ Done | Cosmo | Implemented `SessionStore` interface + `SQLiteStore` backend. `SessionManager` delegates to store when present via `NewSessionManagerWithStore()`. 15 tests pass. WAL mode, write-through. |
 | F2 | Replace JSON state manager with SQLite | P0 | ⬜ TODO | — | Migrate `state.Manager` to use SQLite. Atomic writes already handled by SQLite transactions. |
 | F3 | Replace auth store with encrypted SQLite | P0 | ⬜ TODO | — | `credential_vault` table with AES-256-GCM encrypted values. Key derived from env var or config passphrase. |
 | F4 | Add structured logging (zerolog) | P0 | ⬜ TODO | — | Replace `pkg/logger` with `zerolog` (already transitive dep via `rs/zerolog`). Add correlation IDs to request lifecycle. Preserve existing log API signatures where possible. |
@@ -131,4 +131,5 @@
 
 | Date | Change |
 |---|---|
+| 2026-03-06 | F1 complete: SQLite session store with SessionStore interface, SQLiteStore implementation, 15 new tests. Fixed pre-existing auth/oauth.go compile error. |
 | 2026-03-06 | Initial assessment completed. Branch `operatoros-production-readiness` created. STATUS.md and CLAUDE.md written. |

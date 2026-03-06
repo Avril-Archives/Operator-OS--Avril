@@ -23,8 +23,10 @@ type SessionManager struct {
 	sessions map[string]*Session
 	mu       sync.RWMutex
 	storage  string
+	store    SessionStore // optional pluggable backend
 }
 
+// NewSessionManager creates a SessionManager with JSON file-based persistence.
 func NewSessionManager(storage string) *SessionManager {
 	sm := &SessionManager{
 		sessions: make(map[string]*Session),
@@ -39,7 +41,26 @@ func NewSessionManager(storage string) *SessionManager {
 	return sm
 }
 
+// NewSessionManagerWithStore creates a SessionManager backed by a SessionStore.
+// When a store is provided, all persistence is delegated to it and the in-memory
+// map + JSON file logic is bypassed.
+func NewSessionManagerWithStore(store SessionStore) *SessionManager {
+	return &SessionManager{
+		sessions: make(map[string]*Session),
+		store:    store,
+	}
+}
+
 func (sm *SessionManager) GetOrCreate(key string) *Session {
+	if sm.store != nil {
+		sess, err := sm.store.GetOrCreate(key)
+		if err != nil {
+			// Fall back to an empty session on error to preserve API contract.
+			return &Session{Key: key, Messages: []providers.Message{}, Created: time.Now(), Updated: time.Now()}
+		}
+		return sess
+	}
+
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -69,6 +90,11 @@ func (sm *SessionManager) AddMessage(sessionKey, role, content string) {
 // AddFullMessage adds a complete message with tool calls and tool call ID to the session.
 // This is used to save the full conversation flow including tool calls and tool results.
 func (sm *SessionManager) AddFullMessage(sessionKey string, msg providers.Message) {
+	if sm.store != nil {
+		_ = sm.store.AddMessage(sessionKey, msg)
+		return
+	}
+
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -87,6 +113,14 @@ func (sm *SessionManager) AddFullMessage(sessionKey string, msg providers.Messag
 }
 
 func (sm *SessionManager) GetHistory(key string) []providers.Message {
+	if sm.store != nil {
+		msgs, err := sm.store.GetHistory(key)
+		if err != nil {
+			return []providers.Message{}
+		}
+		return msgs
+	}
+
 	sm.mu.RLock()
 	defer sm.mu.RUnlock()
 
@@ -101,6 +135,14 @@ func (sm *SessionManager) GetHistory(key string) []providers.Message {
 }
 
 func (sm *SessionManager) GetSummary(key string) string {
+	if sm.store != nil {
+		s, err := sm.store.GetSummary(key)
+		if err != nil {
+			return ""
+		}
+		return s
+	}
+
 	sm.mu.RLock()
 	defer sm.mu.RUnlock()
 
@@ -112,6 +154,11 @@ func (sm *SessionManager) GetSummary(key string) string {
 }
 
 func (sm *SessionManager) SetSummary(key string, summary string) {
+	if sm.store != nil {
+		_ = sm.store.SetSummary(key, summary)
+		return
+	}
+
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -123,6 +170,11 @@ func (sm *SessionManager) SetSummary(key string, summary string) {
 }
 
 func (sm *SessionManager) TruncateHistory(key string, keepLast int) {
+	if sm.store != nil {
+		_ = sm.store.TruncateHistory(key, keepLast)
+		return
+	}
+
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -155,6 +207,10 @@ func sanitizeFilename(key string) string {
 }
 
 func (sm *SessionManager) Save(key string) error {
+	if sm.store != nil {
+		return sm.store.Save(key)
+	}
+
 	if sm.storage == "" {
 		return nil
 	}
@@ -267,6 +323,11 @@ func (sm *SessionManager) loadSessions() error {
 
 // SetHistory updates the messages of a session.
 func (sm *SessionManager) SetHistory(key string, history []providers.Message) {
+	if sm.store != nil {
+		_ = sm.store.SetHistory(key, history)
+		return
+	}
+
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -279,4 +340,12 @@ func (sm *SessionManager) SetHistory(key string, history []providers.Message) {
 		session.Messages = msgs
 		session.Updated = time.Now()
 	}
+}
+
+// Close releases resources held by the session manager's store (if any).
+func (sm *SessionManager) Close() error {
+	if sm.store != nil {
+		return sm.store.Close()
+	}
+	return nil
 }
