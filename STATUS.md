@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-03-06
 **Current Phase:** 2 — User Management
-**Overall Progress:** 15%
+**Overall Progress:** 18%
 
 ---
 
@@ -11,7 +11,7 @@
 | # | Phase | Status | Target | Progress |
 |---|---|---|---|---|
 | 1 | Foundation (SQLite, logging, metrics, encryption) | ✅ Done | Weeks 1–4 | 100% |
-| 2 | User Management (accounts, tenancy, auth) | 🟡 In Progress | Weeks 5–8 | 12% |
+| 2 | User Management (accounts, tenancy, auth) | 🟡 In Progress | Weeks 5–8 | 25% |
 | 3 | Billing & Plans (Stripe, metering) | ⬜ Not Started | Weeks 9–12 | 0% |
 | 4 | Service Integrations (OAuth, vault, marketplace) | ⬜ Not Started | Weeks 13–16 | 0% |
 | 5 | Scaling & Reliability (PostgreSQL, NATS, K8s) | ⬜ Not Started | Weeks 17–20 | 0% |
@@ -56,7 +56,7 @@
 | ID | Task | Priority | Status | Notes |
 |---|---|---|---|---|
 | U1 | Users table + registration API | P0 | ✅ Done | New `pkg/users` package. `UserStore` interface + `SQLiteUserStore` backend. `POST /api/v1/auth/register` with email validation, bcrypt hashing (cost 12), case-insensitive email. Migration `004_create_users.sql`. 28 new tests (18 store + 10 API). |
-| U2 | Login + JWT issuance | P0 | ⬜ TODO | `POST /api/v1/auth/login`, access + refresh tokens |
+| U2 | Login + JWT issuance | P0 | ✅ Done | `POST /api/v1/auth/login` + `POST /api/v1/auth/refresh`. `TokenService` with HMAC-SHA256 (golang-jwt/jwt/v5). Access tokens (15min) + refresh tokens (7d). `AuthMiddleware` for protected routes. Context helpers (`UserIDFromContext`, `EmailFromContext`, `ClaimsFromContext`). Account status checks (suspended/deleted). Anti-enumeration error messages. 28 new tests (JWT: 18, Login API: 10). |
 | U3 | Email verification flow | P1 | ⬜ TODO | Verification token, confirmation endpoint |
 | U4 | Tenant-scoped sessions | P0 | ⬜ TODO | Add `tenant_id` to session store, propagate through request lifecycle |
 | U5 | Per-user agent configuration | P0 | ⬜ TODO | Users CRUD their own agents with persona, model, tools |
@@ -132,6 +132,7 @@
 
 | Date | Change |
 |---|---|
+| 2026-03-07 | U2 complete: Login + JWT issuance. New `jwt.go` with `TokenService` (HMAC-SHA256 via `golang-jwt/jwt/v5`), `TokenClaims` extending `jwt.RegisteredClaims` with `uid`/`email`/`type` claims, `IssueTokenPair()` for access (15min) + refresh (7d) tokens, `ValidateAccessToken()`/`ValidateRefreshToken()` type-checked validation. New `middleware.go` with `AuthMiddleware` (extracts Bearer token, validates, injects claims into context), `UserIDFromContext()`/`EmailFromContext()`/`ClaimsFromContext()` helpers. Updated `api.go`: `NewAPIWithAuth()` constructor, `POST /api/v1/auth/login` (email lookup, status checks for suspended/deleted, bcrypt verify, token issuance, anti-enumeration errors), `POST /api/v1/auth/refresh` (validates refresh token type, re-checks user existence/status, issues new pair). 28 new tests in `jwt_test.go` (service creation, empty/nil key, options, issuance, access/refresh validation, wrong key, expired, type rejection, unique JTI, middleware valid/missing/invalid/refresh-rejected/malformed, context helpers) and `login_test.go` (success, wrong password, nonexistent user, missing email/password, invalid JSON, case-insensitive, suspended, deleted, no token service, refresh success/invalid/access-rejected/missing/suspended/deleted/invalid-JSON/no-service, full auth flow). |
 | 2026-03-06 | U1 complete: Users table + registration API. New `pkg/users` package with `UserStore` interface, `SQLiteUserStore` implementation (CRUD, case-insensitive email, UUID generation), `API` HTTP handler for `POST /api/v1/auth/register` (email validation via net/mail, bcrypt cost-12 hashing, password strength check ≥8 chars). Migration `004_create_users.sql` adds users table with status, email_verified, indexes. 28 new tests (store: create, duplicate, case-insensitive, get by ID/email, update, delete, list, count, persistence, custom ID, shared DB; API: success, duplicate, missing email, invalid email, weak password, invalid JSON, case normalization, empty password, whitespace trimming; password: hash, match, mismatch, validation table-driven). |
 | 2026-03-06 | F8 complete: Database migration framework. New `pkg/dbmigrate` package with embedded SQL migrations, `schema_migrations` version tracking table, transactional per-migration execution, idempotent `Up()`, `AutoMigrate()` convenience. 3 built-in migrations consolidating existing schemas (sessions, state, credentials). `Migrator` supports both `embed.FS` and programmatic `NewFromList()`. 17 new tests covering: nil DB, bad dir, duplicates, full apply, idempotency, incremental, applied/pending/version queries, failed migration rollback, non-SQL file filtering, embedded migrations, FK-dependent ordering. **Phase 1 complete.** |
 | 2026-03-06 | F7 complete: Automated SQLite backup. New `pkg/backup` package with `VacuumInto()` for atomic snapshots using SQLite's VACUUM INTO. `Scheduler` struct runs periodic backups with configurable interval (default 6h), retention limit (default 7), and automatic pruning of oldest backups. `ListBackups()` lists existing backups sorted chronologically. `Config` struct with `DefaultConfig()`. 14 new tests covering: VacuumInto success/failure, scheduler validation, directory creation, RunOnce, Start/Stop lifecycle, prune logic (over/under limit, non-DB file filtering), list sorting, multiple backups with pruning, backup content verification. |
