@@ -372,6 +372,35 @@ func (s *SQLiteVaultStore) DeleteExpired() (int64, error) {
 	return result.RowsAffected()
 }
 
+// ListExpiring returns active credentials that expire before the given threshold.
+// Implements SweepableVault.
+func (s *SQLiteVaultStore) ListExpiring(before time.Time) ([]*VaultCredential, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	rows, err := s.db.Query(`
+		SELECT id, user_id, provider_id, encrypted_data, encrypted, label, status, scopes, expires_at, created_at, updated_at
+		FROM credential_vault
+		WHERE status = ? AND expires_at != '' AND expires_at < ?
+		ORDER BY expires_at ASC`,
+		CredentialStatusActive, before.Format(time.RFC3339Nano),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query expiring credentials: %w", err)
+	}
+	defer rows.Close()
+
+	var creds []*VaultCredential
+	for rows.Next() {
+		cred, err := s.scanRow(rows)
+		if err != nil {
+			return nil, err
+		}
+		creds = append(creds, cred)
+	}
+	return creds, rows.Err()
+}
+
 // Close is a no-op; the caller manages the DB lifecycle.
 func (s *SQLiteVaultStore) Close() error {
 	return nil
