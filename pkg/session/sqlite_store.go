@@ -42,10 +42,14 @@ func initSchema(db *sql.DB) error {
 	const schema = `
 CREATE TABLE IF NOT EXISTS sessions (
     key         TEXT PRIMARY KEY,
+    tenant_id   TEXT NOT NULL DEFAULT '',
     summary     TEXT NOT NULL DEFAULT '',
     created_at  TEXT NOT NULL DEFAULT (strftime('%%Y-%%m-%%dT%%H:%%M:%%fZ','now')),
     updated_at  TEXT NOT NULL DEFAULT (strftime('%%Y-%%m-%%dT%%H:%%M:%%fZ','now'))
 );
+
+CREATE INDEX IF NOT EXISTS idx_sessions_tenant ON sessions(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_tenant_updated ON sessions(tenant_id, updated_at);
 
 CREATE TABLE IF NOT EXISTS messages (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,

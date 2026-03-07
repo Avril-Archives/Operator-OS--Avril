@@ -273,7 +273,7 @@ func TestAutoMigrate_WithEmbeddedMigrations(t *testing.T) {
 
 	n, err := AutoMigrate(db)
 	require.NoError(t, err)
-	assert.Equal(t, 4, n) // 001, 002, 003, 004
+	assert.Equal(t, 5, n) // 001, 002, 003, 004, 005
 
 	// Verify all tables created.
 	_, err = db.Exec(`INSERT INTO sessions (key) VALUES ('test')`)
@@ -281,6 +281,10 @@ func TestAutoMigrate_WithEmbeddedMigrations(t *testing.T) {
 	_, err = db.Exec(`INSERT INTO state (key, value) VALUES ('k', 'v')`)
 	assert.NoError(t, err)
 	_, err = db.Exec(`INSERT INTO credentials (provider, encrypted_data) VALUES ('test', x'00')`)
+	assert.NoError(t, err)
+
+	// Verify tenant_id column exists (migration 005).
+	_, err = db.Exec(`UPDATE sessions SET tenant_id = 'test-tenant' WHERE key = 'test'`)
 	assert.NoError(t, err)
 
 	// Idempotent.
