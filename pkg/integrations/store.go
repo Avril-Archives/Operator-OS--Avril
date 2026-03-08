@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 // UserIntegration tracks the status of an integration for a specific user.

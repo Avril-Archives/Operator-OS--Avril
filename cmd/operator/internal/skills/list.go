@@ -3,7 +3,7 @@ package skills
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/standardws/operator/pkg/skills"
+	"github.com/operatoronline/Operator-OS/pkg/skills"
 )
 
 func newListCommand(loaderFn func() (*skills.SkillsLoader, error)) *cobra.Command {

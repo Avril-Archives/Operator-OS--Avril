@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 // EvictableStore extends SessionStore with methods needed for TTL and LRU eviction.

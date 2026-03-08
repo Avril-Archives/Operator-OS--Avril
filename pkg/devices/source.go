@@ -1,5 +1,5 @@
 package devices
 
-import "github.com/standardws/operator/pkg/devices/events"
+import "github.com/operatoronline/Operator-OS/pkg/devices/events"
 
 type EventSource = events.EventSource

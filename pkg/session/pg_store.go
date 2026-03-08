@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 // PGStore implements SessionStore (and EvictableStore) backed by PostgreSQL.

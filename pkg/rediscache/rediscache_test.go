@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/standardws/operator/pkg/providers"
-	"github.com/standardws/operator/pkg/session"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/session"
 )
 
 // --- fake Redis client (in-memory, no real Redis needed) ---

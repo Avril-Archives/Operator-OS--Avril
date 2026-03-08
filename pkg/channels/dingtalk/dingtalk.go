@@ -11,12 +11,12 @@ import (
 	"github.com/open-dingtalk/dingtalk-stream-sdk-go/chatbot"
 	"github.com/open-dingtalk/dingtalk-stream-sdk-go/client"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/channels"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/identity"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/channels"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/identity"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 // DingTalkChannel implements the Channel interface for DingTalk (钉钉)

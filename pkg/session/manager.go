@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 type Session struct {

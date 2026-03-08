@@ -16,8 +16,8 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/standardws/operator/pkg/providers"
-	"github.com/standardws/operator/pkg/session"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/session"
 )
 
 // RedisClient is the minimal Redis interface required by RedisCache.

@@ -162,19 +162,19 @@ Using Telegram as an example, the main changes are:
 package channels
 
 import (
-    "github.com/standardws/operator/pkg/bus"
-    "github.com/standardws/operator/pkg/config"
+    "github.com/operatoronline/Operator-OS/pkg/bus"
+    "github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // New code (refactored branch)
 package telegram
 
 import (
-    "github.com/standardws/operator/pkg/bus"
-    "github.com/standardws/operator/pkg/channels"     // Reference parent package
-    "github.com/standardws/operator/pkg/config"
-    "github.com/standardws/operator/pkg/identity"      // New
-    "github.com/standardws/operator/pkg/media"          // New (if media support needed)
+    "github.com/operatoronline/Operator-OS/pkg/bus"
+    "github.com/operatoronline/Operator-OS/pkg/channels"     // Reference parent package
+    "github.com/operatoronline/Operator-OS/pkg/config"
+    "github.com/operatoronline/Operator-OS/pkg/identity"      // New
+    "github.com/operatoronline/Operator-OS/pkg/media"          // New (if media support needed)
 )
 ```
 
@@ -321,9 +321,9 @@ Create `init.go` for your channel:
 package telegram
 
 import (
-    "github.com/standardws/operator/pkg/bus"
-    "github.com/standardws/operator/pkg/channels"
-    "github.com/standardws/operator/pkg/config"
+    "github.com/operatoronline/Operator-OS/pkg/bus"
+    "github.com/operatoronline/Operator-OS/pkg/channels"
+    "github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func init() {
@@ -338,9 +338,9 @@ func init() {
 ```go
 // cmd/operator/internal/gateway/helpers.go
 import (
-    _ "github.com/standardws/operator/pkg/channels/telegram"   // Triggers init() registration
-    _ "github.com/standardws/operator/pkg/channels/discord"
-    _ "github.com/standardws/operator/pkg/channels/your_new_channel"  // New addition
+    _ "github.com/operatoronline/Operator-OS/pkg/channels/telegram"   // Triggers init() registration
+    _ "github.com/operatoronline/Operator-OS/pkg/channels/discord"
+    _ "github.com/operatoronline/Operator-OS/pkg/channels/your_new_channel"  // New addition
 )
 ```
 
@@ -421,9 +421,9 @@ To add a new chat platform (e.g., `matrix`), you need to:
 package matrix
 
 import (
-    "github.com/standardws/operator/pkg/bus"
-    "github.com/standardws/operator/pkg/channels"
-    "github.com/standardws/operator/pkg/config"
+    "github.com/operatoronline/Operator-OS/pkg/bus"
+    "github.com/operatoronline/Operator-OS/pkg/channels"
+    "github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func init() {
@@ -442,11 +442,11 @@ import (
     "context"
     "fmt"
 
-    "github.com/standardws/operator/pkg/bus"
-    "github.com/standardws/operator/pkg/channels"
-    "github.com/standardws/operator/pkg/config"
-    "github.com/standardws/operator/pkg/identity"
-    "github.com/standardws/operator/pkg/logger"
+    "github.com/operatoronline/Operator-OS/pkg/bus"
+    "github.com/operatoronline/Operator-OS/pkg/channels"
+    "github.com/operatoronline/Operator-OS/pkg/config"
+    "github.com/operatoronline/Operator-OS/pkg/identity"
+    "github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 // MatrixChannel implements channels.Channel for the Matrix protocol.
@@ -812,7 +812,7 @@ if m.config.Channels.Matrix.Enabled && m.config.Channels.Matrix.Token != "" {
 ```go
 // cmd/operator/internal/gateway/helpers.go
 import (
-    _ "github.com/standardws/operator/pkg/channels/matrix"
+    _ "github.com/operatoronline/Operator-OS/pkg/channels/matrix"
 )
 ```
 

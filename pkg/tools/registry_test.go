@@ -6,7 +6,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 // --- mock types ---

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 const testFetchLimit = int64(10 * 1024 * 1024)

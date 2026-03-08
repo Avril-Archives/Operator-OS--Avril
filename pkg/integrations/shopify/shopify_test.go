@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/standardws/operator/pkg/integrations"
+	"github.com/operatoronline/Operator-OS/pkg/integrations"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

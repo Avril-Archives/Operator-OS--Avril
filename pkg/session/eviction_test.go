@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 func newTestEvictableStore(t *testing.T) *SQLiteStore {

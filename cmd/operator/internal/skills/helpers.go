@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/skills"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/skills"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 const skillsSearchMaxResults = 20

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/fileutil"
+	"github.com/operatoronline/Operator-OS/pkg/fileutil"
 )
 
 // validatePath ensures the given path is within the workspace if restrict is true.

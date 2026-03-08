@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/standardws/operator/pkg/devices/events"
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/devices/events"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 var usbClassToCapability = map[string]string{

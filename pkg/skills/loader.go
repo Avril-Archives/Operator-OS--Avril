@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 var (

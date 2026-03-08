@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/providers/protocoltypes"
+	"github.com/operatoronline/Operator-OS/pkg/providers/protocoltypes"
 )
 
 type (

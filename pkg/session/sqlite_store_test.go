@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 func newTestStore(t *testing.T) *SQLiteStore {

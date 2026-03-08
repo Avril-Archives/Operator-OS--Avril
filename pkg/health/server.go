@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/metrics"
+	"github.com/operatoronline/Operator-OS/pkg/metrics"
 )
 
 type Server struct {

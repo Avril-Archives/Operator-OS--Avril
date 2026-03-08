@@ -6,7 +6,7 @@ package identity
 import (
 	"strings"
 
-	"github.com/standardws/operator/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
 )
 
 // BuildCanonicalID constructs a canonical "platform:id" identifier.

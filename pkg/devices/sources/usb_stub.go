@@ -5,7 +5,7 @@ package sources
 import (
 	"context"
 
-	"github.com/standardws/operator/pkg/devices/events"
+	"github.com/operatoronline/Operator-OS/pkg/devices/events"
 )
 
 type USBMonitor struct{}

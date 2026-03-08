@@ -15,12 +15,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/constants"
-	"github.com/standardws/operator/pkg/fileutil"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/state"
-	"github.com/standardws/operator/pkg/tools"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/constants"
+	"github.com/operatoronline/Operator-OS/pkg/fileutil"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/state"
+	"github.com/operatoronline/Operator-OS/pkg/tools"
 )
 
 const (

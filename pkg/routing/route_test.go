@@ -3,7 +3,7 @@ package routing
 import (
 	"testing"
 
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func testConfig(agents []config.AgentConfig, bindings []config.AgentBinding) *config.Config {

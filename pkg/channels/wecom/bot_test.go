@@ -17,8 +17,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // generateTestAESKey generates a valid test AES key

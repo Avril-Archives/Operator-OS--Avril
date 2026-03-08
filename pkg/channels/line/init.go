@@ -1,9 +1,9 @@
 package line
 
 import (
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/channels"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/channels"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func init() {

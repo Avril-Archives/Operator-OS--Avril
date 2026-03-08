@@ -8,11 +8,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/providers"
-	"github.com/standardws/operator/pkg/routing"
-	"github.com/standardws/operator/pkg/session"
-	"github.com/standardws/operator/pkg/tools"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/routing"
+	"github.com/operatoronline/Operator-OS/pkg/session"
+	"github.com/operatoronline/Operator-OS/pkg/tools"
 )
 
 // AgentInstance represents a fully configured agent with its own workspace,

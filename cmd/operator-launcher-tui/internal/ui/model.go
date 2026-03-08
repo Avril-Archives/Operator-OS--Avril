@@ -10,7 +10,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
-	operatorconfig "github.com/standardws/operator/pkg/config"
+	operatorconfig "github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func (s *appState) modelMenu() tview.Primitive {

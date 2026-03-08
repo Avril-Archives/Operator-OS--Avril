@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/oauth"
+	"github.com/operatoronline/Operator-OS/pkg/oauth"
 )
 
 // ManagementAPI provides full integration lifecycle management endpoints.

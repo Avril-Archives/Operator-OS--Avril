@@ -15,9 +15,9 @@ import (
 
 	"github.com/h2non/filetype"
 
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/media"
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/media"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 // resolveMediaRefs replaces media:// refs in message Media fields with base64 data URLs.

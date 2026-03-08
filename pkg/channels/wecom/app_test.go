@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // generateTestAESKeyApp generates a valid test AES key for WeCom App

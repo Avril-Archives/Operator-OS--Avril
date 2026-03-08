@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
 )
 
 // Service manages OAuth 2.0 authorization flows with PKCE support.

@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/pkg/skills"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/pkg/skills"
 )
 
 type deps struct {

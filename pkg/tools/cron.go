@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/cron"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/cron"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 // JobExecutor is the interface for executing cron jobs through the agent

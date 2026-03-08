@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 const defaultAnthropicAPIBase = "https://api.anthropic.com/v1"

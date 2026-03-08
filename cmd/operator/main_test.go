@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/standardws/operator/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
 )
 
 func TestNewPicoclawCommand(t *testing.T) {

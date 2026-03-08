@@ -5,8 +5,8 @@ import (
 	"errors"
 	"sync/atomic"
 
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/metrics"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/metrics"
 )
 
 // ErrBusClosed is returned when publishing to a closed MessageBus.

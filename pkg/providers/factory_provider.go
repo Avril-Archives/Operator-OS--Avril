@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // createClaudeAuthProvider creates a Claude provider using OAuth credentials from auth store.

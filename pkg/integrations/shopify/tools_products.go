@@ -1,6 +1,6 @@
 package shopify
 
-import "github.com/standardws/operator/pkg/integrations"
+import "github.com/operatoronline/Operator-OS/pkg/integrations"
 
 // Product tool names.
 const (

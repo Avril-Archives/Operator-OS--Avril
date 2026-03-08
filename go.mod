@@ -1,4 +1,4 @@
-module github.com/standardws/operator
+module github.com/operatoronline/Operator-OS
 
 go 1.25.7
 

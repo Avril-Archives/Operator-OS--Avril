@@ -19,13 +19,13 @@ import (
 	larkim "github.com/larksuite/oapi-sdk-go/v3/service/im/v1"
 	larkws "github.com/larksuite/oapi-sdk-go/v3/ws"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/channels"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/identity"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/media"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/channels"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/identity"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/media"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 type FeishuChannel struct {

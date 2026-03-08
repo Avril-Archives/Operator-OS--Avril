@@ -10,13 +10,13 @@ import (
 	"github.com/slack-go/slack/slackevents"
 	"github.com/slack-go/slack/socketmode"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/channels"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/identity"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/media"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/channels"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/identity"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/media"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 type SlackChannel struct {

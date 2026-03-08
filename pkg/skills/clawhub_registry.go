@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 const (

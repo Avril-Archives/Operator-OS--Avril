@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/standardws/operator/pkg/skills"
+	"github.com/operatoronline/Operator-OS/pkg/skills"
 )
 
 // FindSkillsTool allows the LLM agent to search for installable skills from registries.

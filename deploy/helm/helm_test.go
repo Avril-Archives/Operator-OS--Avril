@@ -402,7 +402,7 @@ func TestChartImageConfiguration(t *testing.T) {
 	img, ok := values["image"].(map[string]interface{})
 	require.True(t, ok)
 
-	assert.Equal(t, "docker.io/standardws/operator", img["repository"])
+	assert.Equal(t, "docker.io/operatoronline/operator-os", img["repository"])
 	assert.Equal(t, "latest", img["tag"])
 	assert.Equal(t, "IfNotPresent", img["pullPolicy"])
 }

@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/constants"
-	"github.com/standardws/operator/pkg/devices/events"
-	"github.com/standardws/operator/pkg/devices/sources"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/state"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/constants"
+	"github.com/operatoronline/Operator-OS/pkg/devices/events"
+	"github.com/operatoronline/Operator-OS/pkg/devices/sources"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/state"
 )
 
 type Service struct {

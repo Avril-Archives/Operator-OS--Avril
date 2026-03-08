@@ -12,16 +12,16 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/cmd/operator/internal/agent"
-	"github.com/standardws/operator/cmd/operator/internal/auth"
-	"github.com/standardws/operator/cmd/operator/internal/cron"
-	"github.com/standardws/operator/cmd/operator/internal/gateway"
-	"github.com/standardws/operator/cmd/operator/internal/migrate"
-	"github.com/standardws/operator/cmd/operator/internal/onboard"
-	"github.com/standardws/operator/cmd/operator/internal/skills"
-	"github.com/standardws/operator/cmd/operator/internal/status"
-	"github.com/standardws/operator/cmd/operator/internal/version"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/agent"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/auth"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/cron"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/gateway"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/migrate"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/onboard"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/skills"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/status"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal/version"
 )
 
 func NewPicoclawCommand() *cobra.Command {

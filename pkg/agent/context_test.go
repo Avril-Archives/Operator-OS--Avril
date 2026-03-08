@@ -3,7 +3,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 func msg(role, content string) providers.Message {

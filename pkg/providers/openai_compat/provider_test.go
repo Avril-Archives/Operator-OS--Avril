@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/providers/protocoltypes"
+	"github.com/operatoronline/Operator-OS/pkg/providers/protocoltypes"
 )
 
 func TestProviderChat_UsesMaxCompletionTokensForGLM(t *testing.T) {

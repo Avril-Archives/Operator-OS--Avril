@@ -9,8 +9,8 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
-	configstore "github.com/standardws/operator/cmd/operator-launcher-tui/internal/config"
-	operatorconfig "github.com/standardws/operator/pkg/config"
+	configstore "github.com/operatoronline/Operator-OS/cmd/operator-launcher-tui/internal/config"
+	operatorconfig "github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 type appState struct {

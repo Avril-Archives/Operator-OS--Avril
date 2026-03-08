@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/migrate/internal"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/migrate/internal"
 )
 
 var providerMapping = map[string]string{

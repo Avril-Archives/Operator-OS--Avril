@@ -80,7 +80,7 @@ func NewTokenService(signingKey []byte, opts ...TokenServiceOption) (*TokenServi
 		signingKey:      signingKey,
 		accessTokenTTL:  DefaultAccessTokenTTL,
 		refreshTokenTTL: DefaultRefreshTokenTTL,
-		issuer:          "operator-os",
+		issuer:          "operator-os.standardcompute",
 	}
 	for _, opt := range opts {
 		opt(ts)

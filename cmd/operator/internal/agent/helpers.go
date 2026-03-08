@@ -11,11 +11,11 @@ import (
 
 	"github.com/chzyer/readline"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/pkg/agent"
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/pkg/agent"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 func agentCmd(message, sessionKey, model string, debug bool) error {

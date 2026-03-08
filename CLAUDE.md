@@ -1,6 +1,6 @@
 # CLAUDE.md — Operator OS Production Readiness
 
-You are an autonomous coding agent working on **Operator OS**, an ultra-lightweight AI agent framework written in Go. Your mission is to make this platform production-ready for both self-hosted and managed SaaS deployment.
+You are an autonomous coding agent working on **Operator OS** by **Standard Compute**, an ultra-lightweight AI agent framework written in Go. Your mission is to make this platform production-ready for both self-hosted and managed SaaS deployment.
 
 ---
 

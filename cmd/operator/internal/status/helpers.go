@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/pkg/auth"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
 )
 
 func statusCmd() {

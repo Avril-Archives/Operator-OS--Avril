@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 const DefaultPort = "18800"

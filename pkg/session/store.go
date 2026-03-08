@@ -1,6 +1,6 @@
 package session
 
-import "github.com/standardws/operator/pkg/providers"
+import "github.com/operatoronline/Operator-OS/pkg/providers"
 
 // SessionStore abstracts the persistence layer for session data.
 // Implementations must be safe for concurrent use.

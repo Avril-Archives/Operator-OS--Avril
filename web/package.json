@@ -1,5 +1,5 @@
 {
-  "name": "operator-os-chat",
+  "name": "operator-os",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -36,5 +36,6 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
-  }
+  },
+  "description": "Operator OS \u2014 by Standard Compute"
 }

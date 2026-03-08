@@ -17,10 +17,10 @@ builds:
       - stdjson
     ldflags:
       - -s -w
-      - -X github.com/standardws/operator/cmd/operator/internal.version={{ .Version }}
-      - -X github.com/standardws/operator/cmd/operator/internal.gitCommit={{ .ShortCommit }}
-      - -X github.com/standardws/operator/cmd/operator/internal.buildTime={{ .Date }}
-      - -X github.com/standardws/operator/cmd/operator/internal.goVersion={{ .Env.GOVERSION }}
+      - -X github.com/operatoronline/Operator-OS/cmd/operator/internal.version={{ .Version }}
+      - -X github.com/operatoronline/Operator-OS/cmd/operator/internal.gitCommit={{ .ShortCommit }}
+      - -X github.com/operatoronline/Operator-OS/cmd/operator/internal.buildTime={{ .Date }}
+      - -X github.com/operatoronline/Operator-OS/cmd/operator/internal.goVersion={{ .Env.GOVERSION }}
     goos:
       - linux
       - windows

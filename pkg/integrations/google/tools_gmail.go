@@ -1,6 +1,6 @@
 package google
 
-import "github.com/standardws/operator/pkg/integrations"
+import "github.com/operatoronline/Operator-OS/pkg/integrations"
 
 // Gmail tool names.
 const (

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func TestResolveProviderSelection(t *testing.T) {

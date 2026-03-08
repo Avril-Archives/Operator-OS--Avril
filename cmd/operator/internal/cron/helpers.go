@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/standardws/operator/pkg/cron"
+	"github.com/operatoronline/Operator-OS/pkg/cron"
 )
 
 func cronListCmd(storePath string) {

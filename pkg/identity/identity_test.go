@@ -3,7 +3,7 @@ package identity
 import (
 	"testing"
 
-	"github.com/standardws/operator/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
 )
 
 func TestBuildCanonicalID(t *testing.T) {

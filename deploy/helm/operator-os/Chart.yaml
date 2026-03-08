@@ -9,8 +9,8 @@ keywords:
   - agent
   - llm
   - operator
-home: https://github.com/standardws/operator
+home: https://github.com/operatoronline/Operator-OS
 sources:
-  - https://github.com/standardws/operator
+  - https://github.com/operatoronline/Operator-OS
 maintainers:
   - name: Operator OS Contributors

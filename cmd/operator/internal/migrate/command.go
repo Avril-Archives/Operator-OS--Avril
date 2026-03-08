@@ -3,7 +3,7 @@ package migrate
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/standardws/operator/pkg/migrate"
+	"github.com/operatoronline/Operator-OS/pkg/migrate"
 )
 
 func NewMigrateCommand() *cobra.Command {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	anthropicprovider "github.com/standardws/operator/pkg/providers/anthropic"
+	anthropicprovider "github.com/operatoronline/Operator-OS/pkg/providers/anthropic"
 )
 
 type ClaudeProvider struct {

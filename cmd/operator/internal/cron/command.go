@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/standardws/operator/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
 )
 
 func NewCronCommand() *cobra.Command {

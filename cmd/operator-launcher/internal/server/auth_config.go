@@ -4,8 +4,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // updateConfigAfterLogin updates config.json after a successful provider login.

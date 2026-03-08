@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/fileutil"
+	"github.com/operatoronline/Operator-OS/pkg/fileutil"
 )
 
 // State represents the persistent state for a workspace.

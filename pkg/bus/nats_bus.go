@@ -12,8 +12,8 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/metrics"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/metrics"
 )
 
 // NATS JetStream subjects.

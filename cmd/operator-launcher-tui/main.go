@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/standardws/operator/cmd/operator-launcher-tui/internal/ui"
+	"github.com/operatoronline/Operator-OS/cmd/operator-launcher-tui/internal/ui"
 )
 
 func main() {

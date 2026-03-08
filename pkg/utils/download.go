@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 // DownloadToFile streams an HTTP response body to a temporary file in small

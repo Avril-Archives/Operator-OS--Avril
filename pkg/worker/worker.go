@@ -18,10 +18,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/metrics"
-	"github.com/standardws/operator/pkg/session"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/metrics"
+	"github.com/operatoronline/Operator-OS/pkg/session"
 )
 
 // ErrWorkerStopped is returned when operations are attempted on a stopped worker.

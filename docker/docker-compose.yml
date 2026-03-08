@@ -4,7 +4,7 @@ services:
   #   docker compose -f docker/docker-compose.yml run --rm operator-agent -m "Hello"
   # ─────────────────────────────────────────────
   operator-agent:
-    image: docker.io/standardws/operator:latest
+    image: docker.io/operatoronline/operator-os:latest
     container_name: operator-agent
     profiles:
       - agent
@@ -22,7 +22,7 @@ services:
   #   docker compose -f docker/docker-compose.yml up operator-gateway
   # ─────────────────────────────────────────────
   operator-gateway:
-    image: docker.io/standardws/operator:latest
+    image: docker.io/operatoronline/operator-os:latest
     container_name: operator-gateway
     restart: on-failure
     profiles:

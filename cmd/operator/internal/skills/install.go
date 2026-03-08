@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/pkg/skills"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/pkg/skills"
 )
 
 func newInstallCommand(installerFn func() (*skills.SkillInstaller, error)) *cobra.Command {
@@ -16,7 +16,7 @@ func newInstallCommand(installerFn func() (*skills.SkillInstaller, error)) *cobr
 		Use:   "install",
 		Short: "Install skill from GitHub",
 		Example: `
-operator skills install standardws/operator-skills/weather
+operator skills install operatoronline/operator-skills/weather
 operator skills install --registry clawhub github
 `,
 		Args: func(cmd *cobra.Command, args []string) error {

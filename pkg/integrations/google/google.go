@@ -3,8 +3,8 @@
 package google
 
 import (
-	"github.com/standardws/operator/pkg/integrations"
-	"github.com/standardws/operator/pkg/oauth"
+	"github.com/operatoronline/Operator-OS/pkg/integrations"
+	"github.com/operatoronline/Operator-OS/pkg/oauth"
 )
 
 // Provider IDs.

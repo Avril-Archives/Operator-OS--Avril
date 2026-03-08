@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/standardws/operator/pkg/fileutil"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/fileutil"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 type SkillInstaller struct {

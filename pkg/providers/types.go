@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/standardws/operator/pkg/providers/protocoltypes"
+	"github.com/operatoronline/Operator-OS/pkg/providers/protocoltypes"
 )
 
 type (

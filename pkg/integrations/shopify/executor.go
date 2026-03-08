@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/standardws/operator/pkg/integrations"
+	"github.com/operatoronline/Operator-OS/pkg/integrations"
 )
 
 // EndpointSpec describes an HTTP endpoint for a tool.

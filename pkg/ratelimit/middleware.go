@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/users"
+	"github.com/operatoronline/Operator-OS/pkg/users"
 )
 
 // Middleware returns an HTTP middleware that enforces per-user rate limits.

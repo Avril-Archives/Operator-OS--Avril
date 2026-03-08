@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 type ExecTool struct {

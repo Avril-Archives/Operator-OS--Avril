@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/fileutil"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/skills"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/fileutil"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/skills"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 // InstallSkillTool allows the LLM agent to install skills from registries.

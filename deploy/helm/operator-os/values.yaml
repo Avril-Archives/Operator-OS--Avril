@@ -7,7 +7,7 @@ fullnameOverride: ""
 
 # -- Container image
 image:
-  repository: docker.io/standardws/operator
+  repository: docker.io/operatoronline/operator-os
   tag: "latest"
   pullPolicy: IfNotPresent
 

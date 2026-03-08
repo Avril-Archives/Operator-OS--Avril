@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func TestExtractProtocol(t *testing.T) {

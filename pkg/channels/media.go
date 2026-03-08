@@ -3,7 +3,7 @@ package channels
 import (
 	"context"
 
-	"github.com/standardws/operator/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
 )
 
 // MediaSender is an optional interface for channels that can send

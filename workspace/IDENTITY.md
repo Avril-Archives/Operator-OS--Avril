@@ -44,11 +44,11 @@ Ultra-lightweight personal AI assistant written in Go, inspired by nanobot.
 MIT License - Free and open source
 
 ## Repository
-https://github.com/standardws/operator
+https://github.com/operatoronline/Operator-OS
 
 ## Contact
-Issues: https://github.com/standardws/operator/issues
-Discussions: https://github.com/standardws/operator/discussions
+Issues: https://github.com/operatoronline/Operator-OS/issues
+Discussions: https://github.com/operatoronline/Operator-OS/discussions
 
 ---
 

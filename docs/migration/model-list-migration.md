@@ -216,5 +216,5 @@ api_key or api_base is required for HTTP-based protocol "xxx"
 
 ## Need Help?
 
-- [GitHub Issues](https://github.com/standardws/operator/issues)
-- [Discussion #122](https://github.com/standardws/operator/discussions/122): Original proposal
+- [GitHub Issues](https://github.com/operatoronline/Operator-OS/issues)
+- [Discussion #122](https://github.com/operatoronline/Operator-OS/discussions/122): Original proposal

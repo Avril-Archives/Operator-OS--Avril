@@ -3,6 +3,8 @@
 
   <h1>Operator OS</h1>
 
+  <p>by <strong>Standard Compute</strong></p>
+
   <p><strong>The Ultra-Lightweight AI Agent Framework for Constrained Environments</strong></p>
 
   <p>
@@ -40,13 +42,13 @@ Built from the ground up to support autonomous agents, persistent memory, and mu
 ## 🚀 Installation & Quick Start
 
 ### Precompiled Binaries
-Download the appropriate binary for your system from our [Releases](https://github.com/avrilonline/Operator-OS/releases) page.
+Download the appropriate binary for your system from our [Releases](https://github.com/operatoronline/Operator-OS/releases) page.
 
 ### Build from Source
 Requires Go 1.21+.
 
 ```bash
-git clone https://github.com/avrilonline/Operator-OS.git
+git clone https://github.com/operatoronline/Operator-OS.git
 cd Operator-OS
 make deps
 make build
@@ -143,7 +145,7 @@ To grant the agent full access to your host system (e.g., for system administrat
 To run the Gateway completely containerized without installing Go locally:
 
 ```bash
-git clone https://github.com/avrilonline/Operator-OS.git
+git clone https://github.com/operatoronline/Operator-OS.git
 cd Operator-OS
 
 # Generate the default configuration structure

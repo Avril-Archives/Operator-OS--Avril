@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 func TestNewWeComAIBotChannel(t *testing.T) {

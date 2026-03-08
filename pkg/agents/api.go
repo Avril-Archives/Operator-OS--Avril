@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/standardws/operator/pkg/users"
+	"github.com/operatoronline/Operator-OS/pkg/users"
 )
 
 // API provides HTTP handlers for per-user agent configuration.

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/session"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/session"
 )
 
 // Pool manages a group of workers for horizontal scaling.

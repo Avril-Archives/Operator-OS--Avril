@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/standardws/operator/pkg/tools"
+	"github.com/operatoronline/Operator-OS/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/cmd/operator/internal"
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/cmd/operator/internal"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 const supportedProvidersMsg = "supported providers: openai, anthropic, google-antigravity"

@@ -3,7 +3,7 @@ package routing
 import (
 	"strings"
 
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // RouteInput contains the routing context from an inbound message.

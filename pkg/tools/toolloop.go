@@ -11,9 +11,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/providers"
-	"github.com/standardws/operator/pkg/utils"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/utils"
 )
 
 // ToolLoopConfig configures the tool execution loop.

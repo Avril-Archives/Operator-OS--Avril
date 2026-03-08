@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
 const (

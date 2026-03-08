@@ -3,10 +3,10 @@ package agent
 import (
 	"sync"
 
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/providers"
-	"github.com/standardws/operator/pkg/routing"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/routing"
 )
 
 // AgentRegistry manages multiple agent instances and routes messages to them.

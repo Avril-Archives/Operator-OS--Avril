@@ -3,8 +3,8 @@ package channels
 import (
 	"sync"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // ChannelFactory is a constructor function that creates a Channel from config and message bus.

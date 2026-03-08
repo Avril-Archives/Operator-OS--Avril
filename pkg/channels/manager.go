@@ -17,12 +17,12 @@ import (
 
 	"golang.org/x/time/rate"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/constants"
-	"github.com/standardws/operator/pkg/health"
-	"github.com/standardws/operator/pkg/logger"
-	"github.com/standardws/operator/pkg/media"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/constants"
+	"github.com/operatoronline/Operator-OS/pkg/health"
+	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/media"
 )
 
 const (

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/standardws/operator/pkg/config"
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 type mockRegistryProvider struct{}

@@ -1,6 +1,6 @@
 package google
 
-import "github.com/standardws/operator/pkg/integrations"
+import "github.com/operatoronline/Operator-OS/pkg/integrations"
 
 // Calendar tool names.
 const (

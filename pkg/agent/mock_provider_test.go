@@ -3,7 +3,7 @@ package agent
 import (
 	"context"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 type mockProvider struct{}

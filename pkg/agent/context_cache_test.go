@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 // setupWorkspace creates a temporary workspace with standard directories and optional files.

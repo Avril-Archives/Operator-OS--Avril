@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/auth"
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/auth"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 // oauthSession stores in-flight OAuth state for browser-based flows.

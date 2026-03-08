@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/tools"
+	"github.com/operatoronline/Operator-OS/pkg/tools"
 )
 
 func TestExecuteHeartbeat_Async(t *testing.T) {

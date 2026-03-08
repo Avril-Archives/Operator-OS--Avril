@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/standardws/operator/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
 )
 
 // mockBus implements bus.Bus for testing.

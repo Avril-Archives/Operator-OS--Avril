@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/standardws/operator/pkg/config"
+	"github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 // gatewayLogs stores captured stdout/stderr from the gateway process launched by the launcher.

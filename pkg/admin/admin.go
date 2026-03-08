@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/standardws/operator/pkg/audit"
-	"github.com/standardws/operator/pkg/users"
+	"github.com/operatoronline/Operator-OS/pkg/audit"
+	"github.com/operatoronline/Operator-OS/pkg/users"
 )
 
 // API provides HTTP handlers for admin management endpoints.

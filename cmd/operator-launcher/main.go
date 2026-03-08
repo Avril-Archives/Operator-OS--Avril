@@ -24,7 +24,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/standardws/operator/cmd/operator-launcher/internal/server"
+	"github.com/operatoronline/Operator-OS/cmd/operator-launcher/internal/server"
 )
 
 //go:embed internal/ui/index.html

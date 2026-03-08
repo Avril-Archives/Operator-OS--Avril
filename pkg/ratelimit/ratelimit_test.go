@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/standardws/operator/pkg/users"
+	"github.com/operatoronline/Operator-OS/pkg/users"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

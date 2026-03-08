@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/standardws/operator/pkg/migrate/internal"
-	"github.com/standardws/operator/pkg/migrate/sources/openclaw"
+	"github.com/operatoronline/Operator-OS/pkg/migrate/internal"
+	"github.com/operatoronline/Operator-OS/pkg/migrate/sources/openclaw"
 )
 
 type (

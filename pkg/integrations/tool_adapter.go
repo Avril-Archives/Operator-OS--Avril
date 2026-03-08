@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/standardws/operator/pkg/tools"
+	"github.com/operatoronline/Operator-OS/pkg/tools"
 )
 
 // IntegrationToolExecutor is the function signature for executing an integration tool.

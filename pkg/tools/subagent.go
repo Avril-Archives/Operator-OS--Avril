@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/standardws/operator/pkg/bus"
-	"github.com/standardws/operator/pkg/providers"
+	"github.com/operatoronline/Operator-OS/pkg/bus"
+	"github.com/operatoronline/Operator-OS/pkg/providers"
 )
 
 type SubagentTask struct {

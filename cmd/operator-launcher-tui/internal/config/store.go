@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	operatorconfig "github.com/standardws/operator/pkg/config"
+	operatorconfig "github.com/operatoronline/Operator-OS/pkg/config"
 )
 
 const (
