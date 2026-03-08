@@ -311,6 +311,12 @@ func (m *Manager) SetupHTTPServer(addr string, healthServer *health.Server) {
 	}
 }
 
+// Mux returns the shared HTTP mux so external packages can register routes.
+// Must be called after SetupHTTPServer.
+func (m *Manager) Mux() *http.ServeMux {
+	return m.mux
+}
+
 func (m *Manager) StartAll(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

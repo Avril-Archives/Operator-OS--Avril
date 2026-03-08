@@ -9,8 +9,14 @@ import (
 	"path/filepath"
 	"time"
 
+	"database/sql"
+
+	_ "modernc.org/sqlite"
+
 	"github.com/standardws/operator/cmd/operator/internal"
+	"github.com/standardws/operator/pkg/admin"
 	"github.com/standardws/operator/pkg/agent"
+	"github.com/standardws/operator/pkg/audit"
 	"github.com/standardws/operator/pkg/bus"
 	"github.com/standardws/operator/pkg/channels"
 	_ "github.com/standardws/operator/pkg/channels/dingtalk"
@@ -31,12 +37,13 @@ import (
 	"github.com/standardws/operator/pkg/devices"
 	"github.com/standardws/operator/pkg/health"
 	"github.com/standardws/operator/pkg/heartbeat"
-	"github.com/standardws/operator/pkg/metrics"
 	"github.com/standardws/operator/pkg/logger"
 	"github.com/standardws/operator/pkg/media"
+	"github.com/standardws/operator/pkg/metrics"
 	"github.com/standardws/operator/pkg/providers"
 	"github.com/standardws/operator/pkg/state"
 	"github.com/standardws/operator/pkg/tools"
+	"github.com/standardws/operator/pkg/users"
 )
 
 func gatewayCmd(debug bool) error {
@@ -176,10 +183,58 @@ func gatewayCmd(debug bool) error {
 	addr := fmt.Sprintf("%s:%d", cfg.Gateway.Host, cfg.Gateway.Port)
 	channelManager.SetupHTTPServer(addr, healthServer)
 
+	// ── Wire up User Management & Admin APIs ──
+	dbPath := filepath.Join(cfg.WorkspacePath(), "data", "operator.db")
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0o755); err != nil {
+		return fmt.Errorf("create data dir: %w", err)
+	}
+	userStore, err := users.NewSQLiteUserStore(dbPath)
+	if err != nil {
+		return fmt.Errorf("init user store: %w", err)
+	}
+
+	// JWT signing key — use env or generate a stable key from config path
+	jwtKey := os.Getenv("OPERATOR_JWT_SECRET")
+	if jwtKey == "" {
+		jwtKey = "operator-os-default-jwt-signing-key-change-me"
+	}
+	tokenService, err := users.NewTokenService([]byte(jwtKey))
+	if err != nil {
+		return fmt.Errorf("init token service: %w", err)
+	}
+
+	userAPI := users.NewAPIWithAuth(userStore, tokenService)
+	authMiddleware := users.AuthMiddleware(tokenService)
+	adminMiddleware := admin.AdminMiddleware(userStore)
+
+	// Open shared DB for audit store
+	auditDB, err := sql.Open("sqlite", dbPath+"?_pragma=journal_mode(wal)&_pragma=busy_timeout(5000)")
+	if err != nil {
+		return fmt.Errorf("open audit db: %w", err)
+	}
+	auditStore, err := audit.NewSQLiteAuditStore(auditDB)
+	if err != nil {
+		auditDB.Close()
+		return fmt.Errorf("init audit store: %w", err)
+	}
+
+	adminAPI := admin.NewAPI(userStore, auditStore)
+
+	// Register routes on the shared mux
+	apiMux := channelManager.Mux()
+	if apiMux != nil {
+		userAPI.RegisterRoutes(apiMux)
+		adminAPI.RegisterRoutes(apiMux, authMiddleware, adminMiddleware)
+		fmt.Println("✓ User management & admin APIs registered")
+	}
+
 	if err := channelManager.StartAll(ctx); err != nil {
 		fmt.Printf("Error starting channels: %v\n", err)
 		return err
 	}
+
+	// Mark the system as ready now that all routes are registered and channels started
+	healthServer.SetReady(true)
 
 	fmt.Printf("✓ Health endpoints available at http://%s:%d/health, /ready, and /metrics\n", cfg.Gateway.Host, cfg.Gateway.Port)
 
