@@ -33,11 +33,12 @@ Evolve the existing chat interface into a full production platform client. The c
 - ❌ No platform features → billing, integrations, admin panels
 - ❌ No error handling → proper error states, reconnect UI, empty states
 
-**Stack decision:** Start by refactoring the existing vanilla JS into modules. Migrate to React + TypeScript + Vite only if complexity demands it (likely at Phase 3–4).
-**Styling:** Keep existing OKLCH system — it's already well-designed.
-**Real-time:** Migrate WebSocket from Pico protocol to production API.
+**Stack:** React 19 + TypeScript + Vite. The existing vanilla JS is a reference for styling/UX, not a codebase to extend — platform features (browser, integrations, billing, admin) demand component architecture and shared state from day one.
+**Styling:** Tailwind CSS v4 with the existing OKLCH token system ported as CSS custom properties.
+**State:** Zustand (lightweight, no boilerplate) for auth, sessions, agents, WebSocket.
+**Real-time:** WebSocket migrated from Pico protocol to production `/api/v1/ws` with JWT.
 **Auth:** JWT (login/register/verify flows already built in backend).
-**Deployment:** Caddy at `os-go.operator.onl` (existing)
+**Deployment:** Vite build → `web/dist/` → Caddy at `os-go.operator.onl`
 
 ---
 
@@ -89,11 +90,11 @@ Evolve the existing chat interface into a full production platform client. The c
 
 | ID | Task | Priority | Status | Description |
 |---|---|---|---|---|
-| C1 | Modularize existing UI | P0 | ⬜ TODO | Extract `web/index.html` into modular structure: `web/{index.html, css/theme.css, js/api.js, js/chat.js, js/auth.js, js/ws.js, js/ui.js}`. Keep vanilla JS for now. Preserve all existing styling and functionality. No regressions. |
-| C2 | API client layer | P0 | ⬜ TODO | `web/js/api.js` — fetch wrapper for all backend endpoints. Auto-attach JWT from localStorage. Token refresh interceptor (`POST /auth/refresh`). Error normalization. Base URL detection from `location.origin`. |
-| C3 | Auth flows | P0 | ⬜ TODO | Login and register screens (replace the current direct-connect). JWT storage in localStorage. Auth state management. Redirect to login when 401. Email verification flow. Calls: `POST /auth/register`, `POST /auth/login`, `POST /auth/verify-email`, `POST /auth/resend-verification`, `POST /auth/refresh`. |
-| C4 | App shell & navigation | P0 | ⬜ TODO | Extend the existing pill nav (Chat/Monitor) with new panels: Agents, Settings. Add top bar with user info + logout. Maintain the current responsive layout. Hash-based routing (`#chat`, `#agents`, `#settings`, `#admin`). |
-| C5 | Theme system | P1 | ✅ EXISTS | Already implemented — full OKLCH dark/light tokens, system preference detection, localStorage persistence. Only needs: theme toggle button in the new top bar. |
+| C1 | React scaffold | P0 | ⬜ TODO | `web/` → Vite + React 19 + TypeScript. Tailwind v4 with OKLCH tokens ported from existing `index.html`. Directory: `src/{components,pages,hooks,services,stores,types}`. DM Sans + JetBrains Mono + Phosphor Icons carried over. Archive `index.html` → `web/legacy/index.html` as reference. |
+| C2 | API client + types | P0 | ⬜ TODO | `src/services/api.ts` — typed fetch client for all 60+ backend endpoints. Auto-attach JWT. Refresh token interceptor. Error normalization with typed error responses. Generate request/response types from OpenAPI spec (`/api/v1/docs/openapi.json`). |
+| C3 | Auth flows | P0 | ⬜ TODO | `src/pages/{Login,Register,Verify}.tsx`. Zustand auth store (user, tokens, isAuthenticated). `<ProtectedRoute>` wrapper. Redirect to `/login` on 401. Calls: `POST /auth/register`, `POST /auth/login`, `POST /auth/verify-email`, `POST /auth/resend-verification`, `POST /auth/refresh`. |
+| C4 | App shell & routing | P0 | ⬜ TODO | `<AppShell>` with collapsible sidebar, top bar (user menu, theme toggle, logout). React Router v7. Routes: `/chat`, `/agents`, `/integrations`, `/billing`, `/settings`, `/admin`. Mobile: bottom tab nav mirroring the existing pill pattern. |
+| C5 | Theme system | P1 | ⬜ TODO | Port existing OKLCH tokens to Tailwind config + CSS custom properties. Dark/light toggle with system preference detection. Persist to localStorage. Same visual identity as current UI — just in React/Tailwind. |
 
 ---
 
@@ -101,11 +102,11 @@ Evolve the existing chat interface into a full production platform client. The c
 
 | ID | Task | Priority | Status | Description |
 |---|---|---|---|---|
-| C6 | WebSocket migration | P0 | ⬜ TODO | Backend: add `/api/v1/ws` endpoint with JWT auth on handshake (token as query param or first message). Frontend: migrate from `/pico/ws?token=HARDCODED` to `/api/v1/ws?token=JWT`. Keep existing reconnect logic, update protocol to match production message format. |
-| C7 | Message thread UI | P1 | ✅ EXISTS | Already implemented — user/agent/system bubbles, auto-scroll, animations. Needs: scroll-to-bottom button, timestamps on messages, loading skeleton for history fetch. |
-| C8 | Markdown & code rendering | P1 | ✅ EXISTS | Already implemented — marked.js + DOMPurify, code blocks, blockquotes, lists. Needs: copy button on code blocks, language label, syntax highlighting (Prism.js or Highlight.js). |
-| C9 | Streaming responses | P0 | ⬜ TODO | Adapt existing WebSocket message handler for token-by-token streaming from the new API. Typing indicator animation. Cancel generation button. Partial markdown rendering during stream (re-render on each chunk). |
-| C10 | Input composer upgrades | P1 | ⬜ TODO | Existing send button works. Add: multi-line with auto-resize, file/image upload (drag-and-drop + paste), Shift+Enter for newline, model selector dropdown (fetched from agent config). |
+| C6 | WebSocket transport | P0 | ⬜ TODO | Backend: add `/api/v1/ws` endpoint with JWT auth on handshake. Frontend: `src/services/ws.ts` + `useWebSocket` hook. Auto-reconnect with exponential backoff. Connection state in Zustand store. Message send/receive typed. Reference existing `/pico/ws` protocol for UX patterns. |
+| C7 | Message thread UI | P0 | ⬜ TODO | `<MessageList>`, `<MessageBubble>` (user/agent/system variants), `<ScrollToBottom>`. Port existing bubble styles + animations from legacy CSS. Add timestamps, loading skeleton for history. Virtualized rendering (`react-window`) for long threads. |
+| C8 | Markdown & code rendering | P0 | ⬜ TODO | `<MarkdownRenderer>` using `react-markdown` + `rehype-highlight` + `DOMPurify`. Code blocks with copy button + language label. Tables, blockquotes, inline code — matching existing visual treatment. |
+| C9 | Streaming responses | P0 | ⬜ TODO | WebSocket streaming handler for token-by-token display. `<TypingIndicator>` animation. Cancel generation button. Incremental markdown rendering during stream. |
+| C10 | Input composer | P1 | ⬜ TODO | `<Composer>` — auto-resizing textarea, file/image upload (drag-and-drop + clipboard paste), preview thumbnails. Send on Enter, newline on Shift+Enter. Model selector dropdown. Agent selector. |
 
 ---
 
@@ -147,11 +148,11 @@ Evolve the existing chat interface into a full production platform client. The c
 
 | ID | Task | Priority | Status | Description |
 |---|---|---|---|---|
-| C24 | Mobile responsive | P1 | ✅ PARTIAL | Existing layout is already mobile-friendly with pill nav. Needs: slide-over panels for settings/agents, touch-friendly composer, iOS Safari safe area handling, test on real devices. |
+| C24 | Mobile responsive | P0 | ⬜ TODO | Bottom tab navigation (porting existing pill nav pattern). Slide-over panels for settings/agents. Touch-friendly composer. iOS Safari safe area (`env(safe-area-inset-*)`). Responsive breakpoints: 640/768/1024/1280. Test on iOS Safari + Android Chrome. |
 | C25 | Accessibility | P1 | ⬜ TODO | WCAG 2.1 AA compliance. Keyboard navigation throughout. Screen reader landmarks and ARIA labels. Focus management on route changes. Reduced motion support. Color contrast validation against OKLCH palette. |
 | C26 | Performance | P1 | ⬜ TODO | Code splitting per route. Lazy load heavy components (markdown renderer, charts). Service worker for offline shell. Bundle analysis < 200KB initial JS. Lighthouse score > 90. Virtual scrolling for long message lists. |
 | C27 | Error handling & empty states | P1 | ⬜ TODO | Global error boundary with recovery. Toast notifications for API errors. Offline detection banner. Empty states for all list views (no agents, no sessions, no integrations). Loading skeletons. |
-| C28 | Production deployment | P0 | ⬜ TODO | Already served from `/var/www/prototypes/os-go/web` via `os-go.operator.onl`. Caddy proxy to gateway port already configured. Needs: Gzip/Brotli headers, asset cache headers, CSP headers. If migrated to Vite: add build step + CI. |
+| C28 | Production deployment | P0 | ⬜ TODO | Vite build → `web/dist/`. Caddy serves `web/dist/` (update root path). Gzip/Brotli compression. Hashed asset filenames with cache-forever headers. CSP headers. GitHub Actions CI: lint + type-check + build on push to `feat/chat-ui`. |
 
 ---
 
@@ -168,6 +169,29 @@ The chat UI requires a few backend additions not yet in the platform:
 | B-STREAM | `GET /api/v1/sessions/{id}/stream` | SSE fallback for streaming responses if WebSocket isn't available. |
 | B-PROFILE | `GET/PUT /api/v1/user/profile` | Get/update current user profile. |
 | B-PASSWORD | `POST /api/v1/user/password` | Change password (requires current password). |
+
+---
+
+## Key Components (React)
+
+```
+src/
+├── components/
+│   ├── chat/          MessageBubble, MessageList, Composer, TypingIndicator, ScrollToBottom
+│   ├── browser/       BrowserPanel, BrowserFrame (iframe wrapper for go-browser/neko)
+│   ├── agents/        AgentCard, AgentEditor, AgentList, ScopeSelector
+│   ├── billing/       PlanCard, PlanComparison, UsageChart, OverageBar
+│   ├── integrations/  IntegrationCard, OAuthFlow, StatusBadge, MarketplaceGrid
+│   ├── admin/         UserTable, AuditLog, SecurityDashboard, StatsCards
+│   ├── settings/      ProfileForm, ThemeToggle, GDPRPanel
+│   ├── layout/        AppShell, Sidebar, TopBar, BottomTabs, Panel
+│   └── shared/        Button, Input, Modal, Toast, Badge, Skeleton, EmptyState
+├── pages/             Login, Register, Verify, Chat, Agents, Billing, Integrations, Settings, Admin
+├── hooks/             useWebSocket, useAuth, useAgent, useSession, useTheme, useBilling
+├── services/          api.ts, ws.ts, auth.ts
+├── stores/            authStore, chatStore, agentStore, sessionStore, uiStore
+└── types/             Generated from OpenAPI spec
+```
 
 ---
 
@@ -195,4 +219,5 @@ The chat UI requires a few backend additions not yet in the platform:
 | Date | Change |
 |---|---|
 | 2026-03-08 | Initial plan created. 28 tasks across 6 phases + 7 backend requirements. |
-| 2026-03-08 | Updated: plan now builds on existing `web/index.html` (1568-line chat UI). Marked C5/C7/C8/C24 as existing. C1 changed from scaffold to modularize. Branch: `feat/chat-ui`. Deployment: `os-go.operator.onl`. |
+| 2026-03-08 | Updated: plan now builds on existing `web/index.html` (1568-line chat UI). Branch: `feat/chat-ui`. Deployment: `os-go.operator.onl`. |
+| 2026-03-08 | Migrated to React 19 + TypeScript + Vite + Tailwind v4 + Zustand. Existing `index.html` becomes reference (archived to `web/legacy/`). All tasks updated for component architecture. Added component inventory. |
