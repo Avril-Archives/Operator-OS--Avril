@@ -215,7 +215,7 @@ type ChannelsConfig struct {
 	WeCom      WeComConfig      `json:"wecom"`
 	WeComApp   WeComAppConfig   `json:"wecom_app"`
 	WeComAIBot WeComAIBotConfig `json:"wecom_aibot"`
-	Pico       PicoConfig       `json:"pico"`
+	Operator   OperatorConfig   `json:"operator"`
 }
 
 // GroupTriggerConfig controls when the bot responds in group chats.
@@ -386,7 +386,7 @@ type WeComAIBotConfig struct {
 	ReasoningChannelID string              `json:"reasoning_channel_id" env:"OPERATOR_CHANNELS_WECOM_AIBOT_REASONING_CHANNEL_ID"`
 }
 
-type PicoConfig struct {
+type OperatorConfig struct {
 	Enabled         bool                `json:"enabled"                     env:"OPERATOR_CHANNELS_PICO_ENABLED"`
 	Token           string              `json:"token"                       env:"OPERATOR_CHANNELS_PICO_TOKEN"`
 	AllowTokenQuery bool                `json:"allow_token_query,omitempty"`

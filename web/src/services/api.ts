@@ -324,7 +324,7 @@ export const api = {
   // Agents
   // -------------------------------------------------------------------------
   agents: {
-    list: () => get<Agent[]>('/agents'),
+    list: () => get<{ agents: Agent[]; count: number }>('/agents').then((r) => r.agents ?? []),
 
     get: (id: string) => get<Agent>(`/agents/${id}`),
 

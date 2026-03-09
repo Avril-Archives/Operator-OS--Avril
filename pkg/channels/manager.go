@@ -263,8 +263,8 @@ func (m *Manager) initChannels() error {
 		m.initChannel("wecom_app", "WeCom App")
 	}
 
-	if m.config.Channels.Pico.Enabled && m.config.Channels.Pico.Token != "" {
-		m.initChannel("pico", "Pico")
+	if m.config.Channels.Operator.Enabled && m.config.Channels.Operator.Token != "" {
+		m.initChannel("operator", "Operator")
 	}
 
 	logger.InfoCF("channels", "Channel initialization completed", map[string]any{

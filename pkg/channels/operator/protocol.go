@@ -1,4 +1,4 @@
-package pico
+package operator
 
 import "time"
 
@@ -19,8 +19,8 @@ const (
 	TypePong          = "pong"
 )
 
-// PicoMessage is the wire format for all Pico Protocol messages.
-type PicoMessage struct {
+// OperatorMessage is the wire format for all Operator Protocol messages.
+type OperatorMessage struct {
 	Type      string         `json:"type"`
 	ID        string         `json:"id,omitempty"`
 	SessionID string         `json:"session_id,omitempty"`
@@ -28,17 +28,17 @@ type PicoMessage struct {
 	Payload   map[string]any `json:"payload,omitempty"`
 }
 
-// newMessage creates a PicoMessage with the given type and payload.
-func newMessage(msgType string, payload map[string]any) PicoMessage {
-	return PicoMessage{
+// newMessage creates a OperatorMessage with the given type and payload.
+func newMessage(msgType string, payload map[string]any) OperatorMessage {
+	return OperatorMessage{
 		Type:      msgType,
 		Timestamp: time.Now().UnixMilli(),
 		Payload:   payload,
 	}
 }
 
-// newError creates an error PicoMessage.
-func newError(code, message string) PicoMessage {
+// newError creates an error OperatorMessage.
+func newError(code, message string) OperatorMessage {
 	return newMessage(TypeError, map[string]any{
 		"code":    code,
 		"message": message,

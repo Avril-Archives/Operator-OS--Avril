@@ -147,7 +147,7 @@ func DefaultConfig() *Config {
 				MaxSteps:       10,
 				WelcomeMessage: "Hello! I'm your AI assistant. How can I help you today?",
 			},
-			Pico: PicoConfig{
+			Operator: OperatorConfig{
 				Enabled:        false,
 				Token:          "",
 				PingInterval:   30,

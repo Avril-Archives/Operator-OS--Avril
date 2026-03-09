@@ -29,7 +29,7 @@ import (
 	_ "github.com/operatoronline/Operator-OS/pkg/channels/line"
 	_ "github.com/operatoronline/Operator-OS/pkg/channels/maixcam"
 	_ "github.com/operatoronline/Operator-OS/pkg/channels/onebot"
-	_ "github.com/operatoronline/Operator-OS/pkg/channels/pico"
+	_ "github.com/operatoronline/Operator-OS/pkg/channels/operator"
 	_ "github.com/operatoronline/Operator-OS/pkg/channels/qq"
 	_ "github.com/operatoronline/Operator-OS/pkg/channels/slack"
 	_ "github.com/operatoronline/Operator-OS/pkg/channels/telegram"
@@ -269,7 +269,28 @@ func gatewayCmd(debug bool) error {
 		// Sessions stub
 		registerSessionStubs(apiMux, authMiddleware)
 
-		fmt.Println("✓ All API routes registered (auth, profile, agents, billing, audit, sessions)")
+		// WebSocket bridge — wire /api/v1/ws to the Operator channel with JWT auth
+		if opCh, ok := channelManager.GetChannel("operator"); ok {
+			type jwtValidator interface {
+				SetTokenValidator(func(string) (string, bool))
+			}
+			if operatorCh, ok := opCh.(jwtValidator); ok {
+				operatorCh.SetTokenValidator(func(tok string) (string, bool) {
+					claims, err := tokenService.ValidateAccessToken(tok)
+					if err != nil {
+						return "", false
+					}
+					return claims.UserID, true
+				})
+			}
+			apiMux.Handle("/api/v1/ws", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// Rewrite path so the Operator channel's ServeHTTP sees /ws
+				r.URL.Path = "/operator/ws"
+				opCh.(http.Handler).ServeHTTP(w, r)
+			}))
+		}
+
+		fmt.Println("✓ All API routes registered (auth, profile, agents, billing, audit, sessions, ws)")
 	}
 
 	if err := channelManager.StartAll(ctx); err != nil {

@@ -1,4 +1,4 @@
-package pico
+package operator
 
 import (
 	"context"
@@ -20,8 +20,8 @@ import (
 	"github.com/operatoronline/Operator-OS/pkg/logger"
 )
 
-// picoConn represents a single WebSocket connection.
-type picoConn struct {
+// operatorConn represents a single WebSocket connection.
+type operatorConn struct {
 	id        string
 	conn      *websocket.Conn
 	sessionID string
@@ -30,7 +30,7 @@ type picoConn struct {
 }
 
 // writeJSON sends a JSON message to the connection with write locking.
-func (pc *picoConn) writeJSON(v any) error {
+func (pc *operatorConn) writeJSON(v any) error {
 	if pc.closed.Load() {
 		return fmt.Errorf("connection closed")
 	}
@@ -40,31 +40,40 @@ func (pc *picoConn) writeJSON(v any) error {
 }
 
 // close closes the connection.
-func (pc *picoConn) close() {
+func (pc *operatorConn) close() {
 	if pc.closed.CompareAndSwap(false, true) {
 		pc.conn.Close()
 	}
 }
 
-// PicoChannel implements the native Pico Protocol WebSocket channel.
+// TokenValidator validates a JWT token and returns the user ID if valid.
+type TokenValidator func(token string) (userID string, ok bool)
+
+// OperatorChannel implements the native Operator Protocol WebSocket channel.
 // It serves as the reference implementation for all optional capability interfaces.
-type PicoChannel struct {
+type OperatorChannel struct {
 	*channels.BaseChannel
-	config      config.PicoConfig
-	upgrader    websocket.Upgrader
-	connections sync.Map // connID → *picoConn
-	connCount   atomic.Int32
-	ctx         context.Context
-	cancel      context.CancelFunc
+	config         config.OperatorConfig
+	upgrader       websocket.Upgrader
+	connections    sync.Map // connID → *operatorConn
+	connCount      atomic.Int32
+	ctx            context.Context
+	cancel         context.CancelFunc
+	tokenValidator TokenValidator
 }
 
-// NewPicoChannel creates a new Pico Protocol channel.
-func NewPicoChannel(cfg config.PicoConfig, messageBus *bus.MessageBus) (*PicoChannel, error) {
+// SetTokenValidator sets an optional JWT token validator for web UI authentication.
+func (c *OperatorChannel) SetTokenValidator(v TokenValidator) {
+	c.tokenValidator = v
+}
+
+// NewOperatorChannel creates a new Operator Protocol channel.
+func NewOperatorChannel(cfg config.OperatorConfig, messageBus *bus.MessageBus) (*OperatorChannel, error) {
 	if cfg.Token == "" {
-		return nil, fmt.Errorf("pico token is required")
+		return nil, fmt.Errorf("operator token is required")
 	}
 
-	base := channels.NewBaseChannel("pico", cfg, messageBus, cfg.AllowFrom)
+	base := channels.NewBaseChannel("operator", cfg, messageBus, cfg.AllowFrom)
 
 	allowOrigins := cfg.AllowOrigins
 	checkOrigin := func(r *http.Request) bool {
@@ -80,7 +89,7 @@ func NewPicoChannel(cfg config.PicoConfig, messageBus *bus.MessageBus) (*PicoCha
 		return false
 	}
 
-	return &PicoChannel{
+	return &OperatorChannel{
 		BaseChannel: base,
 		config:      cfg,
 		upgrader: websocket.Upgrader{
@@ -92,22 +101,22 @@ func NewPicoChannel(cfg config.PicoConfig, messageBus *bus.MessageBus) (*PicoCha
 }
 
 // Start implements Channel.
-func (c *PicoChannel) Start(ctx context.Context) error {
-	logger.InfoC("pico", "Starting Pico Protocol channel")
+func (c *OperatorChannel) Start(ctx context.Context) error {
+	logger.InfoC("operator", "Starting Operator Protocol channel")
 	c.ctx, c.cancel = context.WithCancel(ctx)
 	c.SetRunning(true)
-	logger.InfoC("pico", "Pico Protocol channel started")
+	logger.InfoC("operator", "Operator Protocol channel started")
 	return nil
 }
 
 // Stop implements Channel.
-func (c *PicoChannel) Stop(ctx context.Context) error {
-	logger.InfoC("pico", "Stopping Pico Protocol channel")
+func (c *OperatorChannel) Stop(ctx context.Context) error {
+	logger.InfoC("operator", "Stopping Operator Protocol channel")
 	c.SetRunning(false)
 
 	// Close all connections
 	c.connections.Range(func(key, value any) bool {
-		if pc, ok := value.(*picoConn); ok {
+		if pc, ok := value.(*operatorConn); ok {
 			pc.close()
 		}
 		c.connections.Delete(key)
@@ -118,16 +127,16 @@ func (c *PicoChannel) Stop(ctx context.Context) error {
 		c.cancel()
 	}
 
-	logger.InfoC("pico", "Pico Protocol channel stopped")
+	logger.InfoC("operator", "Operator Protocol channel stopped")
 	return nil
 }
 
 // WebhookPath implements channels.WebhookHandler.
-func (c *PicoChannel) WebhookPath() string { return "/pico/" }
+func (c *OperatorChannel) WebhookPath() string { return "/operator/" }
 
 // ServeHTTP implements http.Handler for the shared HTTP server.
-func (c *PicoChannel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/pico")
+func (c *OperatorChannel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/operator")
 
 	switch {
 	case path == "/ws" || path == "/ws/":
@@ -138,7 +147,7 @@ func (c *PicoChannel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // Send implements Channel — sends a message to the appropriate WebSocket connection.
-func (c *PicoChannel) Send(ctx context.Context, msg bus.OutboundMessage) error {
+func (c *OperatorChannel) Send(ctx context.Context, msg bus.OutboundMessage) error {
 	if !c.IsRunning() {
 		return channels.ErrNotRunning
 	}
@@ -151,7 +160,7 @@ func (c *PicoChannel) Send(ctx context.Context, msg bus.OutboundMessage) error {
 }
 
 // EditMessage implements channels.MessageEditor.
-func (c *PicoChannel) EditMessage(ctx context.Context, chatID string, messageID string, content string) error {
+func (c *OperatorChannel) EditMessage(ctx context.Context, chatID string, messageID string, content string) error {
 	outMsg := newMessage(TypeMessageUpdate, map[string]any{
 		"message_id": messageID,
 		"content":    content,
@@ -160,7 +169,7 @@ func (c *PicoChannel) EditMessage(ctx context.Context, chatID string, messageID 
 }
 
 // StartTyping implements channels.TypingCapable.
-func (c *PicoChannel) StartTyping(ctx context.Context, chatID string) (func(), error) {
+func (c *OperatorChannel) StartTyping(ctx context.Context, chatID string) (func(), error) {
 	startMsg := newMessage(TypeTypingStart, nil)
 	if err := c.broadcastToSession(chatID, startMsg); err != nil {
 		return func() {}, err
@@ -172,9 +181,9 @@ func (c *PicoChannel) StartTyping(ctx context.Context, chatID string) (func(), e
 }
 
 // SendPlaceholder implements channels.PlaceholderCapable.
-// It sends a placeholder message via the Pico Protocol that will later be
+// It sends a placeholder message via the Operator Protocol that will later be
 // edited to the actual response via EditMessage (channels.MessageEditor).
-func (c *PicoChannel) SendPlaceholder(ctx context.Context, chatID string) (string, error) {
+func (c *OperatorChannel) SendPlaceholder(ctx context.Context, chatID string) (string, error) {
 	if !c.config.Placeholder.Enabled {
 		return "", nil
 	}
@@ -198,20 +207,20 @@ func (c *PicoChannel) SendPlaceholder(ctx context.Context, chatID string) (strin
 }
 
 // broadcastToSession sends a message to all connections with a matching session.
-func (c *PicoChannel) broadcastToSession(chatID string, msg PicoMessage) error {
-	// chatID format: "pico:<sessionID>"
-	sessionID := strings.TrimPrefix(chatID, "pico:")
+func (c *OperatorChannel) broadcastToSession(chatID string, msg OperatorMessage) error {
+	// chatID format: "operator:<sessionID>"
+	sessionID := strings.TrimPrefix(chatID, "operator:")
 	msg.SessionID = sessionID
 
 	var sent bool
 	c.connections.Range(func(key, value any) bool {
-		pc, ok := value.(*picoConn)
+		pc, ok := value.(*operatorConn)
 		if !ok {
 			return true
 		}
 		if pc.sessionID == sessionID {
 			if err := pc.writeJSON(msg); err != nil {
-				logger.DebugCF("pico", "Write to connection failed", map[string]any{
+				logger.DebugCF("operator", "Write to connection failed", map[string]any{
 					"conn_id": pc.id,
 					"error":   err.Error(),
 				})
@@ -229,7 +238,7 @@ func (c *PicoChannel) broadcastToSession(chatID string, msg PicoMessage) error {
 }
 
 // handleWebSocket upgrades the HTTP connection and manages the WebSocket lifecycle.
-func (c *PicoChannel) handleWebSocket(w http.ResponseWriter, r *http.Request) {
+func (c *OperatorChannel) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	if !c.IsRunning() {
 		http.Error(w, "channel not running", http.StatusServiceUnavailable)
 		return
@@ -253,7 +262,7 @@ func (c *PicoChannel) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := c.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		logger.ErrorCF("pico", "WebSocket upgrade failed", map[string]any{
+		logger.ErrorCF("operator", "WebSocket upgrade failed", map[string]any{
 			"error": err.Error(),
 		})
 		return
@@ -265,7 +274,7 @@ func (c *PicoChannel) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		sessionID = uuid.New().String()
 	}
 
-	pc := &picoConn{
+	pc := &operatorConn{
 		id:        uuid.New().String(),
 		conn:      conn,
 		sessionID: sessionID,
@@ -274,7 +283,7 @@ func (c *PicoChannel) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	c.connections.Store(pc.id, pc)
 	c.connCount.Add(1)
 
-	logger.InfoCF("pico", "WebSocket client connected", map[string]any{
+	logger.InfoCF("operator", "WebSocket client connected", map[string]any{
 		"conn_id":    pc.id,
 		"session_id": sessionID,
 	})
@@ -284,24 +293,40 @@ func (c *PicoChannel) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 // authenticate checks the Bearer token from the Authorization header.
 // Query parameter authentication is only allowed when AllowTokenQuery is explicitly enabled.
-func (c *PicoChannel) authenticate(r *http.Request) bool {
+func (c *OperatorChannel) authenticate(r *http.Request) bool {
 	token := c.config.Token
-	if token == "" {
-		return false
-	}
 
-	// Check Authorization header
-	auth := r.Header.Get("Authorization")
-	if after, ok := strings.CutPrefix(auth, "Bearer "); ok {
-		if after == token {
-			return true
+	// Check static token via Authorization header
+	if token != "" {
+		auth := r.Header.Get("Authorization")
+		if after, ok := strings.CutPrefix(auth, "Bearer "); ok {
+			if after == token {
+				return true
+			}
+		}
+
+		// Check static token via query parameter
+		if c.config.AllowTokenQuery {
+			if r.URL.Query().Get("token") == token {
+				return true
+			}
 		}
 	}
 
-	// Check query parameter only when explicitly allowed
-	if c.config.AllowTokenQuery {
-		if r.URL.Query().Get("token") == token {
-			return true
+	// Check JWT token via query parameter (for web UI WebSocket connections)
+	if c.tokenValidator != nil {
+		qToken := r.URL.Query().Get("token")
+		if qToken != "" {
+			if _, ok := c.tokenValidator(qToken); ok {
+				return true
+			}
+		}
+		// Also check Authorization header for JWT
+		auth := r.Header.Get("Authorization")
+		if after, ok := strings.CutPrefix(auth, "Bearer "); ok {
+			if _, ok := c.tokenValidator(after); ok {
+				return true
+			}
 		}
 	}
 
@@ -309,12 +334,12 @@ func (c *PicoChannel) authenticate(r *http.Request) bool {
 }
 
 // readLoop reads messages from a WebSocket connection.
-func (c *PicoChannel) readLoop(pc *picoConn) {
+func (c *OperatorChannel) readLoop(pc *operatorConn) {
 	defer func() {
 		pc.close()
 		c.connections.Delete(pc.id)
 		c.connCount.Add(-1)
-		logger.InfoCF("pico", "WebSocket client disconnected", map[string]any{
+		logger.InfoCF("operator", "WebSocket client disconnected", map[string]any{
 			"conn_id":    pc.id,
 			"session_id": pc.sessionID,
 		})
@@ -348,7 +373,7 @@ func (c *PicoChannel) readLoop(pc *picoConn) {
 		_, rawMsg, err := pc.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
-				logger.DebugCF("pico", "WebSocket read error", map[string]any{
+				logger.DebugCF("operator", "WebSocket read error", map[string]any{
 					"conn_id": pc.id,
 					"error":   err.Error(),
 				})
@@ -358,7 +383,7 @@ func (c *PicoChannel) readLoop(pc *picoConn) {
 
 		_ = pc.conn.SetReadDeadline(time.Now().Add(readTimeout))
 
-		var msg PicoMessage
+		var msg OperatorMessage
 		if err := json.Unmarshal(rawMsg, &msg); err != nil {
 			errMsg := newError("invalid_message", "failed to parse message")
 			pc.writeJSON(errMsg)
@@ -370,7 +395,7 @@ func (c *PicoChannel) readLoop(pc *picoConn) {
 }
 
 // pingLoop sends periodic ping frames to keep the connection alive.
-func (c *PicoChannel) pingLoop(pc *picoConn, interval time.Duration) {
+func (c *OperatorChannel) pingLoop(pc *operatorConn, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
@@ -392,8 +417,8 @@ func (c *PicoChannel) pingLoop(pc *picoConn, interval time.Duration) {
 	}
 }
 
-// handleMessage processes an inbound Pico Protocol message.
-func (c *PicoChannel) handleMessage(pc *picoConn, msg PicoMessage) {
+// handleMessage processes an inbound Operator Protocol message.
+func (c *OperatorChannel) handleMessage(pc *operatorConn, msg OperatorMessage) {
 	switch msg.Type {
 	case TypePing:
 		pong := newMessage(TypePong, nil)
@@ -410,7 +435,7 @@ func (c *PicoChannel) handleMessage(pc *picoConn, msg PicoMessage) {
 }
 
 // handleMessageSend processes an inbound message.send from a client.
-func (c *PicoChannel) handleMessageSend(pc *picoConn, msg PicoMessage) {
+func (c *OperatorChannel) handleMessageSend(pc *operatorConn, msg OperatorMessage) {
 	content, _ := msg.Payload["content"].(string)
 	if strings.TrimSpace(content) == "" {
 		errMsg := newError("empty_content", "message content is empty")
@@ -423,26 +448,26 @@ func (c *PicoChannel) handleMessageSend(pc *picoConn, msg PicoMessage) {
 		sessionID = pc.sessionID
 	}
 
-	chatID := "pico:" + sessionID
-	senderID := "pico-user"
+	chatID := "operator:" + sessionID
+	senderID := "operator-user"
 
-	peer := bus.Peer{Kind: "direct", ID: "pico:" + sessionID}
+	peer := bus.Peer{Kind: "direct", ID: "operator:" + sessionID}
 
 	metadata := map[string]string{
-		"platform":   "pico",
+		"platform":   "operator",
 		"session_id": sessionID,
 		"conn_id":    pc.id,
 	}
 
-	logger.DebugCF("pico", "Received message", map[string]any{
+	logger.DebugCF("operator", "Received message", map[string]any{
 		"session_id": sessionID,
 		"preview":    truncate(content, 50),
 	})
 
 	sender := bus.SenderInfo{
-		Platform:    "pico",
+		Platform:    "operator",
 		PlatformID:  senderID,
-		CanonicalID: identity.BuildCanonicalID("pico", senderID),
+		CanonicalID: identity.BuildCanonicalID("operator", senderID),
 	}
 
 	if !c.IsAllowedSender(sender) {

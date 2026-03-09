@@ -1,4 +1,4 @@
-package pico
+package operator
 
 import (
 	"github.com/operatoronline/Operator-OS/pkg/bus"
@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	channels.RegisterFactory("pico", func(cfg *config.Config, b *bus.MessageBus) (channels.Channel, error) {
-		return NewPicoChannel(cfg.Channels.Pico, b)
+	channels.RegisterFactory("operator", func(cfg *config.Config, b *bus.MessageBus) (channels.Channel, error) {
+		return NewOperatorChannel(cfg.Channels.Operator, b)
 	})
 }
