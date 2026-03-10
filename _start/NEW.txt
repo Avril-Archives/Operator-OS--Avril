@@ -1,0 +1,69 @@
+NEW.txt
+Claude Code – Repository Initialization Protocol
+
+Objective:
+Before writing any new code, properly initialize the repository using the provided starter kit.
+
+Steps:
+
+1. Locate Starter Kit
+   - Navigate to the `_ /start` directory.
+   - Confirm the presence of: `claude-code-starter-kit.zip`.
+
+2. Unzip
+   - Extract `claude-code-starter-kit.zip` inside the project root.
+   - Do NOT nest folders incorrectly.
+   - Ensure extracted structure matches intended root layout.
+
+3. Validate Structure
+   Confirm required core files exist (if included in starter kit):
+   - README.md
+   - STATUS.md
+   - CLAUDE.md
+   - package.json (if JS project)
+   - tsconfig.json (if TypeScript)
+   - .gitignore
+   - /src or /app directory
+   - /docs or /notes (if applicable)
+
+4. Align With Request
+   Before development:
+   - Read the original project request carefully.
+   - Update README.md to reflect:
+     • Project name
+     • Purpose
+     • Stack
+     • High-level architecture
+   - Update CLAUDE.md with:
+     • Project rules
+     • Design principles
+     • Non-negotiables
+   - Initialize STATUS.md with:
+     • Phase 0 – Setup
+     • Pending tasks
+     • Completed steps
+
+5. Configure Core Files
+   - Verify dependencies in package.json align with requested stack.
+   - Remove unused starter boilerplate.
+   - Rename placeholders.
+   - Configure environment variables (.env.example if needed).
+   - Ensure folder naming matches project conventions.
+
+6. Clean Initialization Check
+   Before writing feature code:
+   - Project installs without errors.
+   - Dev server runs (if applicable).
+   - Lint/type checks pass.
+   - No placeholder branding remains.
+   - Starter template artifacts removed.
+
+7. Commit Baseline
+   Create initial commit:
+   "chore: initialize repository from starter kit and align core configuration"
+
+Rule:
+Do NOT begin feature implementation until the repository structure,
+core configuration, and documentation are fully aligned with the request.
+
+Initialization must be complete before development begins.
