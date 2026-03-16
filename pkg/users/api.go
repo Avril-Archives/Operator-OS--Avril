@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/mail"
 	"strings"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // API provides HTTP handlers for user management endpoints.
@@ -117,41 +119,35 @@ type ResendVerificationResponse struct {
 	Message string `json:"message"`
 }
 
-// ErrorResponse is a standard error JSON response.
-type ErrorResponse struct {
-	Error   string `json:"error"`
-	Code    string `json:"code,omitempty"`
-	Details string `json:"details,omitempty"`
-}
 
 func (a *API) handleRegister(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	// Validate email.
 	req.Email = strings.TrimSpace(req.Email)
 	if req.Email == "" {
-		writeError(w, http.StatusBadRequest, "missing_email", "Email is required")
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_email", "Email is required")
 		return
 	}
 	if err := validateEmail(req.Email); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_email", err.Error())
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_email", err.Error())
 		return
 	}
 
 	// Validate password.
 	if err := ValidatePassword(req.Password); err != nil {
-		writeError(w, http.StatusBadRequest, "weak_password", err.Error())
+		apiutil.WriteError(w, http.StatusBadRequest, "weak_password", err.Error())
 		return
 	}
 
 	// Hash password.
 	hash, err := HashPassword(req.Password)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to process password")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to process password")
 		return
 	}
 
@@ -164,10 +160,10 @@ func (a *API) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	if err := a.store.Create(user); err != nil {
 		if errors.Is(err, ErrEmailExists) {
-			writeError(w, http.StatusConflict, "email_exists", "An account with this email already exists")
+			apiutil.WriteError(w, http.StatusConflict, "email_exists", "An account with this email already exists")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to create account")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to create account")
 		return
 	}
 
@@ -179,31 +175,29 @@ func (a *API) handleRegister(w http.ResponseWriter, r *http.Request) {
 		EmailVerified: user.EmailVerified,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resp)
+	apiutil.WriteJSON(w, http.StatusCreated, resp)
 }
 
 func (a *API) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if a.tokenService == nil {
-		writeError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
+		apiutil.WriteError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
 		return
 	}
 
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	// Validate input.
 	req.Email = strings.TrimSpace(req.Email)
 	if req.Email == "" {
-		writeError(w, http.StatusBadRequest, "missing_email", "Email is required")
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_email", "Email is required")
 		return
 	}
 	if req.Password == "" {
-		writeError(w, http.StatusBadRequest, "missing_password", "Password is required")
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_password", "Password is required")
 		return
 	}
 
@@ -212,33 +206,33 @@ func (a *API) handleLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
 			// Deliberately vague error to prevent email enumeration.
-			writeError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password")
+			apiutil.WriteError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Authentication failed")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Authentication failed")
 		return
 	}
 
 	// Check account status.
 	if user.Status == StatusSuspended {
-		writeError(w, http.StatusForbidden, "account_suspended", "Account has been suspended")
+		apiutil.WriteError(w, http.StatusForbidden, "account_suspended", "Account has been suspended")
 		return
 	}
 	if user.Status == StatusDeleted {
-		writeError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password")
+		apiutil.WriteError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password")
 		return
 	}
 
 	// Verify password.
 	if err := CheckPassword(user.PasswordHash, req.Password); err != nil {
-		writeError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password")
+		apiutil.WriteError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid email or password")
 		return
 	}
 
 	// Issue tokens.
 	pair, err := a.tokenService.IssueTokenPair(user)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to generate tokens")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to generate tokens")
 		return
 	}
 
@@ -256,50 +250,48 @@ func (a *API) handleLogin(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleRefresh(w http.ResponseWriter, r *http.Request) {
 	if a.tokenService == nil {
-		writeError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
+		apiutil.WriteError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
 		return
 	}
 
 	var req RefreshRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	if req.RefreshToken == "" {
-		writeError(w, http.StatusBadRequest, "missing_token", "Refresh token is required")
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_token", "Refresh token is required")
 		return
 	}
 
 	// Validate the refresh token.
 	claims, err := a.tokenService.ValidateRefreshToken(req.RefreshToken)
 	if err != nil {
-		writeError(w, http.StatusUnauthorized, "invalid_token", "Invalid or expired refresh token")
+		apiutil.WriteError(w, http.StatusUnauthorized, "invalid_token", "Invalid or expired refresh token")
 		return
 	}
 
 	// Look up the user to ensure they still exist and are active.
 	user, err := a.store.GetByID(claims.UserID)
 	if err != nil {
-		writeError(w, http.StatusUnauthorized, "invalid_token", "User no longer exists")
+		apiutil.WriteError(w, http.StatusUnauthorized, "invalid_token", "User no longer exists")
 		return
 	}
 	if user.Status == StatusSuspended || user.Status == StatusDeleted {
-		writeError(w, http.StatusForbidden, "account_suspended", "Account is no longer active")
+		apiutil.WriteError(w, http.StatusForbidden, "account_suspended", "Account is no longer active")
 		return
 	}
 
 	// Issue new token pair.
 	pair, err := a.tokenService.IssueTokenPair(user)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to generate tokens")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to generate tokens")
 		return
 	}
 
@@ -310,41 +302,39 @@ func (a *API) handleRefresh(w http.ResponseWriter, r *http.Request) {
 		ExpiresIn:    pair.ExpiresIn,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleVerifyEmail(w http.ResponseWriter, r *http.Request) {
 	if a.verificationStore == nil {
-		writeError(w, http.StatusInternalServerError, "verification_not_configured", "Email verification is not configured")
+		apiutil.WriteError(w, http.StatusInternalServerError, "verification_not_configured", "Email verification is not configured")
 		return
 	}
 
 	var req VerifyEmailRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	req.Token = sanitizeToken(req.Token)
 	if req.Token == "" {
-		writeError(w, http.StatusBadRequest, "missing_token", "Verification token is required")
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_token", "Verification token is required")
 		return
 	}
 
 	if err := VerifyEmail(req.Token, a.verificationStore, a.store); err != nil {
 		switch {
 		case errors.Is(err, ErrTokenNotFound):
-			writeError(w, http.StatusNotFound, "token_not_found", "Verification token not found")
+			apiutil.WriteError(w, http.StatusNotFound, "token_not_found", "Verification token not found")
 		case errors.Is(err, ErrTokenExpired):
-			writeError(w, http.StatusGone, "token_expired", "Verification token has expired")
+			apiutil.WriteError(w, http.StatusGone, "token_expired", "Verification token has expired")
 		case errors.Is(err, ErrTokenUsed):
-			writeError(w, http.StatusConflict, "token_used", "Verification token has already been used")
+			apiutil.WriteError(w, http.StatusConflict, "token_used", "Verification token has already been used")
 		case errors.Is(err, ErrAlreadyVerified):
-			writeError(w, http.StatusConflict, "already_verified", "Email is already verified")
+			apiutil.WriteError(w, http.StatusConflict, "already_verified", "Email is already verified")
 		default:
-			writeError(w, http.StatusInternalServerError, "internal", "Verification failed")
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Verification failed")
 		}
 		return
 	}
@@ -355,26 +345,24 @@ func (a *API) handleVerifyEmail(w http.ResponseWriter, r *http.Request) {
 		Status:        StatusActive,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleResendVerification(w http.ResponseWriter, r *http.Request) {
 	if a.verificationStore == nil {
-		writeError(w, http.StatusInternalServerError, "verification_not_configured", "Email verification is not configured")
+		apiutil.WriteError(w, http.StatusInternalServerError, "verification_not_configured", "Email verification is not configured")
 		return
 	}
 
 	var req ResendVerificationRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	req.Email = strings.TrimSpace(req.Email)
 	if req.Email == "" {
-		writeError(w, http.StatusBadRequest, "missing_email", "Email is required")
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_email", "Email is required")
 		return
 	}
 
@@ -384,12 +372,10 @@ func (a *API) handleResendVerification(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, ErrNotFound) {
 			// Return success even if user doesn't exist (anti-enumeration).
 			resp := ResendVerificationResponse{Message: "If an account with that email exists, a verification email has been sent"}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(resp)
+			apiutil.WriteJSON(w, http.StatusOK, resp)
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to process request")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to process request")
 		return
 	}
 
@@ -397,11 +383,11 @@ func (a *API) handleResendVerification(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch {
 		case errors.Is(err, ErrAlreadyVerified):
-			writeError(w, http.StatusConflict, "already_verified", "Email is already verified")
+			apiutil.WriteError(w, http.StatusConflict, "already_verified", "Email is already verified")
 		case errors.Is(err, ErrTooManyTokens):
-			writeError(w, http.StatusTooManyRequests, "too_many_requests", "Please wait before requesting another verification email")
+			apiutil.WriteError(w, http.StatusTooManyRequests, "too_many_requests", "Please wait before requesting another verification email")
 		default:
-			writeError(w, http.StatusInternalServerError, "internal", "Failed to send verification")
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to send verification")
 		}
 		return
 	}
@@ -412,14 +398,12 @@ func (a *API) handleResendVerification(w http.ResponseWriter, r *http.Request) {
 		Message: "If an account with that email exists, a verification email has been sent",
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleLogout(w http.ResponseWriter, r *http.Request) {
 	if a.tokenService == nil {
-		writeError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
+		apiutil.WriteError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
 		return
 	}
 
@@ -432,7 +416,7 @@ func (a *API) handleLogout(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	jsonResponse(w, http.StatusOK, map[string]any{"message": "Logged out successfully"})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"message": "Logged out successfully"})
 }
 
 // validateEmail checks basic email format using net/mail.
@@ -444,20 +428,6 @@ func validateEmail(email string) error {
 	return nil
 }
 
-func writeError(w http.ResponseWriter, status int, code, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(ErrorResponse{
-		Error: message,
-		Code:  code,
-	})
-}
-
-func jsonResponse(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
-}
 
 // ── User Profile Endpoints ──
 
@@ -477,15 +447,15 @@ func (a *API) RegisterProfileRoutes(mux *http.ServeMux, authMiddleware func(http
 func (a *API) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 	claims := ClaimsFromContext(r.Context())
 	if claims == nil {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Missing auth")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Missing auth")
 		return
 	}
 	user, err := a.store.GetByID(claims.UserID)
 	if err != nil {
-		writeError(w, http.StatusNotFound, "not_found", "User not found")
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 		return
 	}
-	jsonResponse(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"id":             user.ID,
 		"email":          user.Email,
 		"display_name":   user.DisplayName,
@@ -498,33 +468,33 @@ func (a *API) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleUpdateProfile(w http.ResponseWriter, r *http.Request) {
 	claims := ClaimsFromContext(r.Context())
 	if claims == nil {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Missing auth")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Missing auth")
 		return
 	}
 	var req struct {
 		DisplayName string `json:"display_name"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "bad_request", "Invalid JSON")
+		apiutil.WriteError(w, http.StatusBadRequest, "bad_request", "Invalid JSON")
 		return
 	}
 	user, err := a.store.GetByID(claims.UserID)
 	if err != nil {
-		writeError(w, http.StatusNotFound, "not_found", "User not found")
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 		return
 	}
 	user.DisplayName = req.DisplayName
 	if err := a.store.Update(user); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to update profile")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update profile")
 		return
 	}
-	jsonResponse(w, http.StatusOK, map[string]any{"status": "ok"})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"status": "ok"})
 }
 
 func (a *API) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 	claims := ClaimsFromContext(r.Context())
 	if claims == nil {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Missing auth")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Missing auth")
 		return
 	}
 	var req struct {
@@ -532,38 +502,38 @@ func (a *API) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 		NewPassword     string `json:"new_password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "bad_request", "Invalid JSON")
+		apiutil.WriteError(w, http.StatusBadRequest, "bad_request", "Invalid JSON")
 		return
 	}
 	user, err := a.store.GetByID(claims.UserID)
 	if err != nil {
-		writeError(w, http.StatusNotFound, "not_found", "User not found")
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 		return
 	}
 	if CheckPassword(user.PasswordHash, req.CurrentPassword) != nil {
-		writeError(w, http.StatusUnauthorized, "invalid_password", "Current password is incorrect")
+		apiutil.WriteError(w, http.StatusUnauthorized, "invalid_password", "Current password is incorrect")
 		return
 	}
 	if err := ValidatePassword(req.NewPassword); err != nil {
-		writeError(w, http.StatusBadRequest, "weak_password", err.Error())
+		apiutil.WriteError(w, http.StatusBadRequest, "weak_password", err.Error())
 		return
 	}
 	hash, err := HashPassword(req.NewPassword)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to hash password")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to hash password")
 		return
 	}
 	user.PasswordHash = hash
 	if err := a.store.Update(user); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to update password")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update password")
 		return
 	}
-	jsonResponse(w, http.StatusOK, map[string]any{"status": "ok"})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"status": "ok"})
 }
 
 // Stub endpoints — notifications and API keys
 func (a *API) handleGetNotifications(w http.ResponseWriter, _ *http.Request) {
-	jsonResponse(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"email_notifications": true,
 		"push_notifications":  false,
 		"weekly_digest":       false,
@@ -571,17 +541,17 @@ func (a *API) handleGetNotifications(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (a *API) handleUpdateNotifications(w http.ResponseWriter, _ *http.Request) {
-	jsonResponse(w, http.StatusOK, map[string]any{"status": "ok"})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"status": "ok"})
 }
 
 func (a *API) handleListAPIKeys(w http.ResponseWriter, _ *http.Request) {
-	jsonResponse(w, http.StatusOK, []any{})
+	apiutil.WriteJSON(w, http.StatusOK, []any{})
 }
 
 func (a *API) handleCreateAPIKey(w http.ResponseWriter, _ *http.Request) {
-	jsonResponse(w, http.StatusOK, map[string]any{"id": "stub", "key": "op-stub-not-implemented"})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"id": "stub", "key": "op-stub-not-implemented"})
 }
 
 func (a *API) handleDeleteAPIKey(w http.ResponseWriter, _ *http.Request) {
-	jsonResponse(w, http.StatusOK, map[string]any{"status": "ok"})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"status": "ok"})
 }

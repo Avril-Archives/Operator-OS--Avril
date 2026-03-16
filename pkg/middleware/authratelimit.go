@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"encoding/json"
 	"net"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // AuthRateLimitConfig configures IP-based rate limiting for auth endpoints.
@@ -62,13 +63,8 @@ func (rl *AuthRateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := clientIP(r)
 		if !rl.allow(ip) {
-			w.Header().Set("Content-Type", "application/json")
 			w.Header().Set("Retry-After", "60")
-			w.WriteHeader(http.StatusTooManyRequests)
-			json.NewEncoder(w).Encode(map[string]string{
-				"error": "Too many requests. Please try again later.",
-				"code":  "rate_limited",
-			})
+			apiutil.WriteError(w, http.StatusTooManyRequests, "rate_limited", "Too many requests. Please try again later.")
 			return
 		}
 		next.ServeHTTP(w, r)

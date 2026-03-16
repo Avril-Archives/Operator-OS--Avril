@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/operatoronline/Operator-OS/pkg/audit"
 	"github.com/operatoronline/Operator-OS/pkg/users"
 )
@@ -39,18 +40,18 @@ func AdminMiddleware(userStore users.UserStore) func(http.Handler) http.Handler 
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userID := users.UserIDFromContext(r.Context())
 			if userID == "" {
-				writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+				apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 				return
 			}
 
 			user, err := userStore.GetByID(userID)
 			if err != nil {
-				writeError(w, http.StatusUnauthorized, "unauthorized", "User not found")
+				apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "User not found")
 				return
 			}
 
 			if user.Role != users.RoleAdmin {
-				writeError(w, http.StatusForbidden, "forbidden", "Admin access required")
+				apiutil.WriteError(w, http.StatusForbidden, "forbidden", "Admin access required")
 				return
 			}
 
@@ -131,12 +132,6 @@ type UserStats struct {
 	Suspended         int64 `json:"suspended"`
 }
 
-// ErrorResponse is a standard error JSON response.
-type ErrorResponse struct {
-	Error string `json:"error"`
-	Code  string `json:"code,omitempty"`
-}
-
 // --- Handlers ---
 
 func (a *API) handleListUsers(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +139,7 @@ func (a *API) handleListUsers(w http.ResponseWriter, r *http.Request) {
 
 	allUsers, err := a.userStore.List()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to list users")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to list users")
 		return
 	}
 
@@ -189,7 +184,7 @@ func (a *API) handleListUsers(w http.ResponseWriter, r *http.Request) {
 		resp.Users[i] = userToAdminResponse(u)
 	}
 
-	writeJSON(w, http.StatusOK, resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleGetUser(w http.ResponseWriter, r *http.Request) {
@@ -198,14 +193,14 @@ func (a *API) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	user, err := a.userStore.GetByID(userID)
 	if err != nil {
 		if errors.Is(err, users.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "User not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, userToAdminResponse(user))
+	apiutil.WriteJSON(w, http.StatusOK, userToAdminResponse(user))
 }
 
 func (a *API) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -215,16 +210,16 @@ func (a *API) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	user, err := a.userStore.GetByID(targetID)
 	if err != nil {
 		if errors.Is(err, users.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "User not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
 		return
 	}
 
 	var req UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
@@ -234,12 +229,12 @@ func (a *API) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	if req.Role != nil {
 		role := *req.Role
 		if role != users.RoleUser && role != users.RoleAdmin {
-			writeError(w, http.StatusBadRequest, "invalid_role", "Role must be 'user' or 'admin'")
+			apiutil.WriteError(w, http.StatusBadRequest, "invalid_role", "Role must be 'user' or 'admin'")
 			return
 		}
 		// Prevent admin from removing their own admin role.
 		if targetID == adminID && role != users.RoleAdmin {
-			writeError(w, http.StatusConflict, "self_demotion", "Cannot remove your own admin role")
+			apiutil.WriteError(w, http.StatusConflict, "self_demotion", "Cannot remove your own admin role")
 			return
 		}
 		user.Role = role
@@ -247,25 +242,25 @@ func (a *API) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	if req.Status != nil {
 		status := *req.Status
 		if !isValidStatus(status) {
-			writeError(w, http.StatusBadRequest, "invalid_status", "Invalid user status")
+			apiutil.WriteError(w, http.StatusBadRequest, "invalid_status", "Invalid user status")
 			return
 		}
 		// Prevent admin from suspending/deleting themselves.
 		if targetID == adminID && (status == users.StatusSuspended || status == users.StatusDeleted) {
-			writeError(w, http.StatusConflict, "self_action", "Cannot suspend or delete your own account via admin API")
+			apiutil.WriteError(w, http.StatusConflict, "self_action", "Cannot suspend or delete your own account via admin API")
 			return
 		}
 		user.Status = status
 	}
 
 	if err := a.userStore.Update(user); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to update user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update user")
 		return
 	}
 
 	a.logAuditEvent(r.Context(), adminID, audit.ActionConfigUpdated, audit.ResourceUser, targetID, nil)
 
-	writeJSON(w, http.StatusOK, userToAdminResponse(user))
+	apiutil.WriteJSON(w, http.StatusOK, userToAdminResponse(user))
 }
 
 func (a *API) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -274,16 +269,16 @@ func (a *API) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	// Prevent self-deletion.
 	if targetID == adminID {
-		writeError(w, http.StatusConflict, "self_deletion", "Cannot delete your own account via admin API")
+		apiutil.WriteError(w, http.StatusConflict, "self_deletion", "Cannot delete your own account via admin API")
 		return
 	}
 
 	if err := a.userStore.Delete(targetID); err != nil {
 		if errors.Is(err, users.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "User not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to delete user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to delete user")
 		return
 	}
 
@@ -297,29 +292,29 @@ func (a *API) handleSuspendUser(w http.ResponseWriter, r *http.Request) {
 	adminID := users.UserIDFromContext(r.Context())
 
 	if targetID == adminID {
-		writeError(w, http.StatusConflict, "self_action", "Cannot suspend your own account")
+		apiutil.WriteError(w, http.StatusConflict, "self_action", "Cannot suspend your own account")
 		return
 	}
 
 	user, err := a.userStore.GetByID(targetID)
 	if err != nil {
 		if errors.Is(err, users.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "User not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
 		return
 	}
 
 	user.Status = users.StatusSuspended
 	if err := a.userStore.Update(user); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to suspend user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to suspend user")
 		return
 	}
 
 	a.logAuditEvent(r.Context(), adminID, audit.ActionUserSuspended, audit.ResourceUser, targetID, nil)
 
-	writeJSON(w, http.StatusOK, userToAdminResponse(user))
+	apiutil.WriteJSON(w, http.StatusOK, userToAdminResponse(user))
 }
 
 func (a *API) handleActivateUser(w http.ResponseWriter, r *http.Request) {
@@ -329,22 +324,22 @@ func (a *API) handleActivateUser(w http.ResponseWriter, r *http.Request) {
 	user, err := a.userStore.GetByID(targetID)
 	if err != nil {
 		if errors.Is(err, users.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "User not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
 		return
 	}
 
 	user.Status = users.StatusActive
 	if err := a.userStore.Update(user); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to activate user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to activate user")
 		return
 	}
 
 	a.logAuditEvent(r.Context(), adminID, audit.ActionUserActivated, audit.ResourceUser, targetID, nil)
 
-	writeJSON(w, http.StatusOK, userToAdminResponse(user))
+	apiutil.WriteJSON(w, http.StatusOK, userToAdminResponse(user))
 }
 
 func (a *API) handleSetRole(w http.ResponseWriter, r *http.Request) {
@@ -353,53 +348,53 @@ func (a *API) handleSetRole(w http.ResponseWriter, r *http.Request) {
 
 	var req SetRoleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	if req.Role != users.RoleUser && req.Role != users.RoleAdmin {
-		writeError(w, http.StatusBadRequest, "invalid_role", "Role must be 'user' or 'admin'")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_role", "Role must be 'user' or 'admin'")
 		return
 	}
 
 	// Prevent self-demotion.
 	if targetID == adminID && req.Role != users.RoleAdmin {
-		writeError(w, http.StatusConflict, "self_demotion", "Cannot remove your own admin role")
+		apiutil.WriteError(w, http.StatusConflict, "self_demotion", "Cannot remove your own admin role")
 		return
 	}
 
 	user, err := a.userStore.GetByID(targetID)
 	if err != nil {
 		if errors.Is(err, users.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "User not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "User not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve user")
 		return
 	}
 
 	user.Role = req.Role
 	if err := a.userStore.Update(user); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to update role")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update role")
 		return
 	}
 
 	a.logAuditEvent(r.Context(), adminID, audit.ActionConfigUpdated, audit.ResourceUser, targetID,
 		map[string]string{"role": req.Role})
 
-	writeJSON(w, http.StatusOK, userToAdminResponse(user))
+	apiutil.WriteJSON(w, http.StatusOK, userToAdminResponse(user))
 }
 
 func (a *API) handleStats(w http.ResponseWriter, r *http.Request) {
 	total, err := a.userStore.Count()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to get user count")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to get user count")
 		return
 	}
 
 	allUsers, err := a.userStore.List()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to list users")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to list users")
 		return
 	}
 
@@ -425,12 +420,12 @@ func (a *API) handleStats(w http.ResponseWriter, r *http.Request) {
 		RetrievedAt: time.Now().UTC().Format(time.RFC3339),
 	}
 
-	writeJSON(w, http.StatusOK, resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleAuditEvents(w http.ResponseWriter, r *http.Request) {
 	if a.auditStore == nil {
-		writeError(w, http.StatusInternalServerError, "audit_not_configured", "Audit logging is not configured")
+		apiutil.WriteError(w, http.StatusInternalServerError, "audit_not_configured", "Audit logging is not configured")
 		return
 	}
 
@@ -438,7 +433,7 @@ func (a *API) handleAuditEvents(w http.ResponseWriter, r *http.Request) {
 
 	events, err := a.auditStore.Query(r.Context(), filter)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to query audit events")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to query audit events")
 		return
 	}
 
@@ -446,7 +441,7 @@ func (a *API) handleAuditEvents(w http.ResponseWriter, r *http.Request) {
 		events = []*audit.Event{}
 	}
 
-	writeJSON(w, http.StatusOK, map[string]interface{}{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]interface{}{
 		"events": events,
 		"count":  len(events),
 		"limit":  filter.Limit,
@@ -551,17 +546,3 @@ func isValidStatus(s string) bool {
 	return false
 }
 
-func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
-}
-
-func writeError(w http.ResponseWriter, status int, code, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(ErrorResponse{
-		Error: message,
-		Code:  code,
-	})
-}

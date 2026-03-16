@@ -171,6 +171,25 @@ func CompositeCheck(checks map[string]CheckerFunc) CheckerFunc {
 	}
 }
 
+// ChannelStatusChecker is satisfied by messaging channels that expose IsRunning().
+type ChannelStatusChecker interface {
+	IsRunning() bool
+}
+
+// ChannelCheck returns a checker function for a messaging channel.
+// It reports healthy if the channel is running, unhealthy otherwise.
+func ChannelCheck(name string, ch ChannelStatusChecker) CheckerFunc {
+	return func(ctx context.Context) CheckResult {
+		if ch == nil {
+			return CheckResult{Status: StatusUnhealthy, Message: fmt.Sprintf("%s channel is nil", name)}
+		}
+		if !ch.IsRunning() {
+			return CheckResult{Status: StatusUnhealthy, Message: fmt.Sprintf("%s channel is not running", name)}
+		}
+		return CheckResult{Status: StatusHealthy, Message: "ok", Details: map[string]any{"channel": name}}
+	}
+}
+
 // TimeoutCheck wraps a checker function with a specific timeout.
 // The check returns unhealthy if it doesn't complete within the given duration.
 func TimeoutCheck(timeout time.Duration, fn CheckerFunc) CheckerFunc {

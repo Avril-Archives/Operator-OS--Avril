@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // API provides REST endpoints for the integration registry and user integrations.
@@ -30,7 +32,7 @@ func (a *API) RegisterRoutes(mux *http.ServeMux) {
 // GET /api/v1/integrations?category=email&status=active
 func (a *API) handleIntegrations(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET only")
 		return
 	}
 	category := r.URL.Query().Get("category")
@@ -46,7 +48,7 @@ func (a *API) handleIntegrations(w http.ResponseWriter, r *http.Request) {
 	for i, integ := range list {
 		sanitized[i] = summarizeIntegration(integ)
 	}
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"integrations": sanitized,
 		"count":        len(sanitized),
 	})
@@ -56,10 +58,10 @@ func (a *API) handleIntegrations(w http.ResponseWriter, r *http.Request) {
 // GET /api/v1/integrations/categories
 func (a *API) handleCategories(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET only")
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"categories": a.registry.Categories(),
 	})
 }
@@ -68,20 +70,20 @@ func (a *API) handleCategories(w http.ResponseWriter, r *http.Request) {
 // GET /api/v1/integrations/{id}
 func (a *API) handleIntegrationByID(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET only")
 		return
 	}
 	id := strings.TrimPrefix(r.URL.Path, "/api/v1/integrations/")
 	if id == "" {
-		writeJSON(w, http.StatusBadRequest, errorResp("missing_id", "Integration ID is required"))
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_id", "Integration ID is required")
 		return
 	}
 	integ := a.registry.Get(id)
 	if integ == nil {
-		writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not found"))
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not found")
 		return
 	}
-	writeJSON(w, http.StatusOK, summarizeIntegration(integ))
+	apiutil.WriteJSON(w, http.StatusOK, summarizeIntegration(integ))
 }
 
 // handleUserIntegrations lists or creates user integrations.
@@ -90,11 +92,11 @@ func (a *API) handleIntegrationByID(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleUserIntegrations(w http.ResponseWriter, r *http.Request) {
 	userID := userIDFromRequest(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, errorResp("unauthorized", "Authentication required"))
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 	if a.store == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("not_configured", "User integration store not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "User integration store not configured")
 		return
 	}
 
@@ -103,13 +105,13 @@ func (a *API) handleUserIntegrations(w http.ResponseWriter, r *http.Request) {
 		status := r.URL.Query().Get("status")
 		list, err := a.store.ListByUser(userID, status)
 		if err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
 		if list == nil {
 			list = []*UserIntegration{}
 		}
-		writeJSON(w, http.StatusOK, map[string]any{
+		apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 			"integrations": list,
 			"count":        len(list),
 		})
@@ -121,16 +123,16 @@ func (a *API) handleUserIntegrations(w http.ResponseWriter, r *http.Request) {
 			Scopes        []string          `json:"scopes,omitempty"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			writeJSON(w, http.StatusBadRequest, errorResp("invalid_json", "Invalid request body"))
+			apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 			return
 		}
 		if req.IntegrationID == "" {
-			writeJSON(w, http.StatusBadRequest, errorResp("missing_integration_id", "integration_id is required"))
+			apiutil.WriteError(w, http.StatusBadRequest, "missing_integration_id", "integration_id is required")
 			return
 		}
 		// Verify integration exists in registry
 		if a.registry.Get(req.IntegrationID) == nil {
-			writeJSON(w, http.StatusNotFound, errorResp("integration_not_found", "Integration not found in registry"))
+			apiutil.WriteError(w, http.StatusNotFound, "integration_not_found", "Integration not found in registry")
 			return
 		}
 		ui := &UserIntegration{
@@ -142,16 +144,16 @@ func (a *API) handleUserIntegrations(w http.ResponseWriter, r *http.Request) {
 		}
 		if err := a.store.Create(ui); err != nil {
 			if strings.Contains(err.Error(), "already connected") {
-				writeJSON(w, http.StatusConflict, errorResp("already_connected", err.Error()))
+				apiutil.WriteError(w, http.StatusConflict, "already_connected", err.Error())
 				return
 			}
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
-		writeJSON(w, http.StatusCreated, ui)
+		apiutil.WriteJSON(w, http.StatusCreated, ui)
 
 	default:
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET or POST only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET or POST only")
 	}
 }
 
@@ -161,17 +163,17 @@ func (a *API) handleUserIntegrations(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleUserIntegrationByID(w http.ResponseWriter, r *http.Request) {
 	userID := userIDFromRequest(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, errorResp("unauthorized", "Authentication required"))
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 	if a.store == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("not_configured", "User integration store not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "User integration store not configured")
 		return
 	}
 
 	integrationID := strings.TrimPrefix(r.URL.Path, "/api/v1/user/integrations/")
 	if integrationID == "" {
-		writeJSON(w, http.StatusBadRequest, errorResp("missing_id", "Integration ID is required"))
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_id", "Integration ID is required")
 		return
 	}
 
@@ -180,28 +182,28 @@ func (a *API) handleUserIntegrationByID(w http.ResponseWriter, r *http.Request) 
 		ui, err := a.store.Get(userID, integrationID)
 		if err != nil {
 			if strings.Contains(err.Error(), "not found") {
-				writeJSON(w, http.StatusNotFound, errorResp("not_found", "User integration not found"))
+				apiutil.WriteError(w, http.StatusNotFound, "not_found", "User integration not found")
 				return
 			}
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
-		writeJSON(w, http.StatusOK, ui)
+		apiutil.WriteJSON(w, http.StatusOK, ui)
 
 	case http.MethodDelete:
 		err := a.store.Delete(userID, integrationID)
 		if err != nil {
 			if strings.Contains(err.Error(), "not found") {
-				writeJSON(w, http.StatusNotFound, errorResp("not_found", "User integration not found"))
+				apiutil.WriteError(w, http.StatusNotFound, "not_found", "User integration not found")
 				return
 			}
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
-		writeJSON(w, http.StatusOK, map[string]any{"deleted": true})
+		apiutil.WriteJSON(w, http.StatusOK, map[string]any{"deleted": true})
 
 	default:
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET or DELETE only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET or DELETE only")
 	}
 }
 
@@ -237,16 +239,6 @@ func summarizeIntegration(i *Integration) integrationSummary {
 		Version:      i.Version,
 		HasOAuth:     i.OAuth != nil,
 	}
-}
-
-func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
-}
-
-func errorResp(code, message string) map[string]any {
-	return map[string]any{"error": code, "message": message}
 }
 
 // userIDFromRequest extracts user_id from the request context.

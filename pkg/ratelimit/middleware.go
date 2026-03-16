@@ -1,13 +1,13 @@
 package ratelimit
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/operatoronline/Operator-OS/pkg/users"
 )
 
@@ -40,9 +40,7 @@ func Middleware(limiter *Limiter) func(http.Handler) http.Handler {
 					setRateLimitHeaders(w, limiter, userID)
 					w.Header().Set("Retry-After", strconv.Itoa(retrySeconds))
 
-					w.Header().Set("Content-Type", "application/json")
-					w.WriteHeader(http.StatusTooManyRequests)
-					json.NewEncoder(w).Encode(map[string]interface{}{
+					apiutil.WriteJSON(w, http.StatusTooManyRequests, map[string]interface{}{
 						"error":       "Rate limit exceeded",
 						"code":        "rate_limited",
 						"retry_after": retrySeconds,
@@ -85,23 +83,13 @@ func StatusHandler(limiter *Limiter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := users.UserIDFromContext(r.Context())
 		if userID == "" {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(map[string]string{
-				"error": "Authentication required",
-				"code":  "unauthorized",
-			})
+			apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 			return
 		}
 
 		status, err := limiter.GetStatus(userID)
 		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(map[string]string{
-				"error": "No rate limit configured for user",
-				"code":  "no_plan",
-			})
+			apiutil.WriteError(w, http.StatusNotFound, "no_plan", "No rate limit configured for user")
 			return
 		}
 
@@ -115,9 +103,7 @@ func StatusHandler(limiter *Limiter) http.HandlerFunc {
 			ResetAt:        status.ResetAt.UTC().Format(time.RFC3339),
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp)
+		apiutil.WriteJSON(w, http.StatusOK, resp)
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/operatoronline/Operator-OS/pkg/users"
 )
 
@@ -94,22 +95,17 @@ type AgentListResponse struct {
 	Count  int              `json:"count"`
 }
 
-// ErrorResponse is a standard error JSON response.
-type ErrorResponse struct {
-	Error string `json:"error"`
-	Code  string `json:"code,omitempty"`
-}
 
 func (a *API) handleList(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
 	agents, err := a.store.ListByUser(userID)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to list agents")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to list agents")
 		return
 	}
 
@@ -121,52 +117,52 @@ func (a *API) handleList(w http.ResponseWriter, r *http.Request) {
 		resp.Agents[i] = agentToResponse(ag)
 	}
 
-	writeJSON(w, http.StatusOK, resp)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }
 
 func (a *API) handleCreate(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
 	var req CreateAgentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	// Validate.
 	req.Name = strings.TrimSpace(req.Name)
 	if req.Name == "" {
-		writeError(w, http.StatusBadRequest, "name_required", ErrNameRequired.Error())
+		apiutil.WriteError(w, http.StatusBadRequest, "name_required", ErrNameRequired.Error())
 		return
 	}
 	if len(req.Name) > 100 {
-		writeError(w, http.StatusBadRequest, "name_too_long", ErrNameTooLong.Error())
+		apiutil.WriteError(w, http.StatusBadRequest, "name_too_long", ErrNameTooLong.Error())
 		return
 	}
 	if len(req.SystemPrompt) > 50000 {
-		writeError(w, http.StatusBadRequest, "prompt_too_long", ErrPromptTooLong.Error())
+		apiutil.WriteError(w, http.StatusBadRequest, "prompt_too_long", ErrPromptTooLong.Error())
 		return
 	}
 
 	// Check agent count limit.
 	count, err := a.store.CountByUser(userID)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to check agent count")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to check agent count")
 		return
 	}
 	if count >= int64(MaxAgentsPerUser) {
-		writeError(w, http.StatusConflict, "max_agents", ErrMaxAgents.Error())
+		apiutil.WriteError(w, http.StatusConflict, "max_agents", ErrMaxAgents.Error())
 		return
 	}
 
 	// Validate allowed integrations.
 	for i, scope := range req.AllowedIntegrations {
 		if scope.IntegrationID == "" {
-			writeError(w, http.StatusBadRequest, "invalid_integration_scope",
+			apiutil.WriteError(w, http.StatusBadRequest, "invalid_integration_scope",
 				fmt.Sprintf("allowed_integrations[%d]: integration_id is required", i))
 			return
 		}
@@ -190,20 +186,20 @@ func (a *API) handleCreate(w http.ResponseWriter, r *http.Request) {
 
 	if err := a.store.Create(agent); err != nil {
 		if errors.Is(err, ErrNameExists) {
-			writeError(w, http.StatusConflict, "name_exists", "An agent with this name already exists")
+			apiutil.WriteError(w, http.StatusConflict, "name_exists", "An agent with this name already exists")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to create agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to create agent")
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, agentToResponse(agent))
+	apiutil.WriteJSON(w, http.StatusCreated, agentToResponse(agent))
 }
 
 func (a *API) handleGet(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -211,26 +207,26 @@ func (a *API) handleGet(w http.ResponseWriter, r *http.Request) {
 	agent, err := a.store.GetByID(agentID)
 	if err != nil {
 		if errors.Is(err, ErrAgentNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
 		return
 	}
 
 	// Ensure the agent belongs to the authenticated user.
 	if agent.UserID != userID {
-		writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, agentToResponse(agent))
+	apiutil.WriteJSON(w, http.StatusOK, agentToResponse(agent))
 }
 
 func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -238,21 +234,21 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	agent, err := a.store.GetByID(agentID)
 	if err != nil {
 		if errors.Is(err, ErrAgentNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
 		return
 	}
 
 	if agent.UserID != userID {
-		writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 		return
 	}
 
 	var req UpdateAgentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
@@ -260,11 +256,11 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	if req.Name != nil {
 		name := strings.TrimSpace(*req.Name)
 		if name == "" {
-			writeError(w, http.StatusBadRequest, "name_required", ErrNameRequired.Error())
+			apiutil.WriteError(w, http.StatusBadRequest, "name_required", ErrNameRequired.Error())
 			return
 		}
 		if len(name) > 100 {
-			writeError(w, http.StatusBadRequest, "name_too_long", ErrNameTooLong.Error())
+			apiutil.WriteError(w, http.StatusBadRequest, "name_too_long", ErrNameTooLong.Error())
 			return
 		}
 		agent.Name = name
@@ -274,7 +270,7 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.SystemPrompt != nil {
 		if len(*req.SystemPrompt) > 50000 {
-			writeError(w, http.StatusBadRequest, "prompt_too_long", ErrPromptTooLong.Error())
+			apiutil.WriteError(w, http.StatusBadRequest, "prompt_too_long", ErrPromptTooLong.Error())
 			return
 		}
 		agent.SystemPrompt = *req.SystemPrompt
@@ -306,7 +302,7 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	if req.Status != nil {
 		status := *req.Status
 		if status != AgentStatusActive && status != AgentStatusArchived {
-			writeError(w, http.StatusBadRequest, "invalid_status", ErrInvalidStatus.Error())
+			apiutil.WriteError(w, http.StatusBadRequest, "invalid_status", ErrInvalidStatus.Error())
 			return
 		}
 		agent.Status = status
@@ -315,7 +311,7 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		scopes := *req.AllowedIntegrations
 		for i, scope := range scopes {
 			if scope.IntegrationID == "" {
-				writeError(w, http.StatusBadRequest, "invalid_integration_scope",
+				apiutil.WriteError(w, http.StatusBadRequest, "invalid_integration_scope",
 					fmt.Sprintf("allowed_integrations[%d]: integration_id is required", i))
 				return
 			}
@@ -325,20 +321,20 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 
 	if err := a.store.Update(agent); err != nil {
 		if errors.Is(err, ErrNameExists) {
-			writeError(w, http.StatusConflict, "name_exists", "An agent with this name already exists")
+			apiutil.WriteError(w, http.StatusConflict, "name_exists", "An agent with this name already exists")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to update agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update agent")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, agentToResponse(agent))
+	apiutil.WriteJSON(w, http.StatusOK, agentToResponse(agent))
 }
 
 func (a *API) handleDelete(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -346,20 +342,20 @@ func (a *API) handleDelete(w http.ResponseWriter, r *http.Request) {
 	agent, err := a.store.GetByID(agentID)
 	if err != nil {
 		if errors.Is(err, ErrAgentNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
 		return
 	}
 
 	if agent.UserID != userID {
-		writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 		return
 	}
 
 	if err := a.store.Delete(agentID); err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to delete agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to delete agent")
 		return
 	}
 
@@ -369,28 +365,28 @@ func (a *API) handleDelete(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleSetDefault(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
 	agentID := r.PathValue("id")
 	if err := a.store.SetDefault(userID, agentID); err != nil {
 		if errors.Is(err, ErrAgentNotFound) {
-			writeError(w, http.StatusNotFound, "not_found", "Agent not found")
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Agent not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to set default agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to set default agent")
 		return
 	}
 
 	// Return the updated agent.
 	agent, err := a.store.GetByID(agentID)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to retrieve agent")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, agentToResponse(agent))
+	apiutil.WriteJSON(w, http.StatusOK, agentToResponse(agent))
 }
 
 func agentToResponse(a *UserAgent) *AgentResponse {
@@ -414,17 +410,3 @@ func agentToResponse(a *UserAgent) *AgentResponse {
 	}
 }
 
-func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
-}
-
-func writeError(w http.ResponseWriter, status int, code, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(ErrorResponse{
-		Error: message,
-		Code:  code,
-	})
-}

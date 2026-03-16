@@ -23,6 +23,11 @@ Setup guides for each messaging channel:
 - [MaixCAM](channels/maixcam/README.md)
 
 ## Providers
+- [Provider Setup Overview](providers/README.md) — All providers at a glance
+- [OpenAI](providers/openai.md) — GPT-4o, GPT-4.1, o3, and OpenAI-compatible providers
+- [Anthropic](providers/anthropic.md) — Claude Opus, Sonnet, Haiku
+- [Google Gemini](providers/gemini.md) — Gemini 2.5 Pro/Flash via AI Studio or Vertex AI
+- [Ollama](providers/ollama.md) — Local models (Llama, Qwen, Mistral, DeepSeek)
 - [Antigravity (Google Cloud Code Assist)](providers/ANTIGRAVITY_AUTH.md) — Auth & setup
 - [Antigravity Usage Guide](providers/ANTIGRAVITY_USAGE.md)
 

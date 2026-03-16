@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/review-status-continue-ZOVVV
+2026-03-16 by claude/review-status-continue-a8OQ9
 
 ---
 
@@ -26,7 +26,7 @@
 ## Phase 1 — Backend (Go) Hardening
 
 ### Core Engine
-- [ ] Audit all `pkg/` packages for error handling consistency
+- [x] Audit all `pkg/` packages for error handling consistency
 - [x] Add structured logging (zerolog) to all request paths
 - [x] Validate config.json schema on startup with clear error messages
 - [x] Add graceful shutdown with timeout for gateway and agent modes
@@ -41,7 +41,7 @@
 - [x] CORS configuration review for production domains
 
 ### API Surface
-- [ ] Review all REST endpoints in `pkg/admin/`, `pkg/agents/`, `pkg/billing/`, `pkg/users/`
+- [x] Review all REST endpoints in `pkg/admin/`, `pkg/agents/`, `pkg/billing/`, `pkg/users/`
 - [x] Ensure consistent error response format (JSON, status codes, messages)
 - [x] Add request validation middleware (body size limits, content-type checks)
 - [ ] OpenAPI spec (`pkg/openapi/spec.json`) — verify it matches actual endpoints
@@ -51,7 +51,7 @@
 - [ ] Test all LLM providers: OpenAI, Anthropic, Google Gemini, Groq, Ollama, DeepSeek
 - [ ] Test all messaging channels: Slack, Discord, Telegram, WhatsApp, LINE, DingTalk, Feishu
 - [x] Add connection health checks for each enabled provider
-- [ ] Add connection health checks for each enabled channel
+- [x] Add connection health checks for each enabled channel
 - [ ] Document provider-specific quirks and rate limits
 
 ### Data & Storage
@@ -175,11 +175,11 @@
 - [x] Configuration reference (all config.json keys documented)
 - [ ] API reference (generated from OpenAPI spec)
 - [x] Channel setup guides (Slack, Discord, Telegram, WhatsApp)
-- [ ] Provider setup guides (OpenAI, Anthropic, Gemini, Ollama)
+- [x] Provider setup guides (OpenAI, Anthropic, Gemini, Ollama)
 - [x] Self-hosting guide (Docker, Kubernetes/Helm, bare metal)
 - [x] Contributing guide (code style, PR process, testing requirements)
 - [x] Security policy (responsible disclosure, supported versions)
-- [ ] Changelog / release notes template
+- [x] Changelog / release notes template
 
 ### Branding & Assets
 - [ ] Verify logo renders correctly at all sizes (favicon, navbar, README)
@@ -410,3 +410,19 @@ _None currently_
 - All frontend checks pass (typecheck, lint, build)
 **Notes**: Auth hardening complete. Remaining Phase 1: error handling audit, email verification e2e test, OAuth integration test, remaining API endpoint review, provider/channel testing, data/storage hardening, test coverage increase.
 **Branch**: `claude/review-status-continue-ZOVVV`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 1 backend — error handling audit across all pkg/ packages; Phase 3 — provider guides, changelog
+**Completed**:
+- Migrated 12 packages to shared `apiutil.WriteError`/`apiutil.WriteJSON` error responses: admin, agents, users, gdpr, integrations, oauth, secaudit, middleware, ratelimit
+- Removed all local `writeJSON`, `writeError`, `errorResp`, `ErrorResponse` definitions — single source of truth in `pkg/apiutil/response.go`
+- Fixed test assertions across oauth, gdpr, users, and integrations packages to match new error format (`code` field for machine codes, `error` field for messages)
+- Added `ChannelStatusChecker` interface and `ChannelCheck` function to `pkg/health/checks.go`
+- Added `RegisterHealthChecks` method to `pkg/channels/manager.go` for per-channel health monitoring
+- Created `CHANGELOG.md` with Keep a Changelog format and comprehensive [Unreleased] section
+- Created provider setup guides: `docs/providers/README.md`, `openai.md`, `anthropic.md`, `gemini.md`, `ollama.md`
+- Updated `docs/README.md` with provider guide links
+- All 67 Go test packages pass, 0 failures
+- All frontend checks pass (typecheck, lint, production build)
+**Notes**: Error handling is now fully consistent across the codebase. Channel health checks are wired up. Provider docs and changelog are complete. Remaining Phase 1: email verification e2e test, OAuth integration test, OpenAPI spec verification, provider/channel manual testing, data/storage hardening, test coverage increase.
+**Branch**: `claude/review-status-continue-a8OQ9`

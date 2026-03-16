@@ -104,7 +104,7 @@ func TestAPI_Authorize_MissingProvider(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var resp map[string]any
 	json.NewDecoder(w.Body).Decode(&resp)
-	assert.Equal(t, "missing_provider", resp["error"])
+	assert.Equal(t, "missing_provider", resp["code"])
 }
 
 func TestAPI_Authorize_ProviderNotFound(t *testing.T) {
@@ -147,7 +147,7 @@ func TestAPI_Callback_MissingState(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var resp map[string]any
 	json.NewDecoder(w.Body).Decode(&resp)
-	assert.Equal(t, "missing_state", resp["error"])
+	assert.Equal(t, "missing_state", resp["code"])
 }
 
 func TestAPI_Callback_MissingCode(t *testing.T) {
@@ -160,7 +160,7 @@ func TestAPI_Callback_MissingCode(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var resp map[string]any
 	json.NewDecoder(w.Body).Decode(&resp)
-	assert.Equal(t, "missing_code", resp["error"])
+	assert.Equal(t, "missing_code", resp["code"])
 }
 
 func TestAPI_Callback_ProviderError(t *testing.T) {
@@ -173,8 +173,8 @@ func TestAPI_Callback_ProviderError(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var resp map[string]any
 	json.NewDecoder(w.Body).Decode(&resp)
-	assert.Equal(t, "provider_error", resp["error"])
-	assert.Equal(t, "User denied", resp["message"])
+	assert.Equal(t, "provider_error", resp["code"])
+	assert.Equal(t, "User denied", resp["error"])
 }
 
 func TestAPI_Callback_InvalidState(t *testing.T) {
@@ -264,7 +264,7 @@ func TestAPI_Refresh_MissingProvider(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	var resp map[string]any
 	json.NewDecoder(w.Body).Decode(&resp)
-	assert.Equal(t, "missing_provider", resp["error"])
+	assert.Equal(t, "missing_provider", resp["code"])
 }
 
 func TestAPI_Refresh_MissingToken(t *testing.T) {

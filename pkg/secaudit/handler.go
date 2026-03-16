@@ -1,9 +1,10 @@
 package secaudit
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // Handler returns an HTTP handler that runs the security audit and returns results.
@@ -11,18 +12,12 @@ import (
 func Handler(auditor *Auditor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet && r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{
-				"code":    "method_not_allowed",
-				"message": "Use GET or POST",
-			})
+			apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Use GET or POST")
 			return
 		}
 
 		if auditor == nil {
-			writeJSON(w, http.StatusServiceUnavailable, map[string]string{
-				"code":    "audit_not_configured",
-				"message": "Security audit is not configured",
-			})
+			apiutil.WriteError(w, http.StatusServiceUnavailable, "audit_not_configured", "Security audit is not configured")
 			return
 		}
 
@@ -51,17 +46,11 @@ func Handler(auditor *Auditor) http.HandlerFunc {
 			return
 		}
 
-		writeJSON(w, http.StatusOK, report)
+		apiutil.WriteJSON(w, http.StatusOK, report)
 	}
 }
 
 // RegisterRoutes registers the security audit handler on the given mux.
 func RegisterRoutes(mux *http.ServeMux, auditor *Auditor) {
 	mux.HandleFunc("/api/v1/admin/security-audit", Handler(auditor))
-}
-
-func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
 }

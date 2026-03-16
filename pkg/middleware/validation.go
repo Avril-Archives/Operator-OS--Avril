@@ -3,8 +3,9 @@
 package middleware
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // DefaultMaxBodySize is the default maximum request body size (1 MB).
@@ -36,7 +37,7 @@ func RequireJSON(next http.Handler) http.Handler {
 			if r.ContentLength != 0 {
 				ct := r.Header.Get("Content-Type")
 				if ct != "application/json" && ct != "application/json; charset=utf-8" {
-					writeJSONError(w, http.StatusUnsupportedMediaType,
+					apiutil.WriteError(w, http.StatusUnsupportedMediaType,
 						"unsupported_media_type",
 						"Content-Type must be application/json")
 					return
@@ -53,20 +54,11 @@ func RecoverPanic(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				writeJSONError(w, http.StatusInternalServerError,
+				apiutil.WriteError(w, http.StatusInternalServerError,
 					"internal_error",
 					"An unexpected error occurred")
 			}
 		}()
 		next.ServeHTTP(w, r)
-	})
-}
-
-func writeJSONError(w http.ResponseWriter, status int, code, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{
-		"error": message,
-		"code":  code,
 	})
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"strings"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // Context keys for authenticated user information.
@@ -27,13 +29,13 @@ func AuthMiddleware(ts *TokenService) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenStr := extractBearerToken(r)
 			if tokenStr == "" {
-				writeError(w, http.StatusUnauthorized, "missing_token", "Authorization header with Bearer token is required")
+				apiutil.WriteError(w, http.StatusUnauthorized, "missing_token", "Authorization header with Bearer token is required")
 				return
 			}
 
 			claims, err := ts.ValidateAccessToken(tokenStr)
 			if err != nil {
-				writeError(w, http.StatusUnauthorized, "invalid_token", "Invalid or expired access token")
+				apiutil.WriteError(w, http.StatusUnauthorized, "invalid_token", "Invalid or expired access token")
 				return
 			}
 

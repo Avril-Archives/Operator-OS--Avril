@@ -3,6 +3,8 @@ package gdpr
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // userIDFromContext extracts the user ID from the request context.
@@ -43,41 +45,41 @@ func (a *API) RegisterRoutes(mux *http.ServeMux) {
 // handleExport initiates a data export for the authenticated user.
 func (a *API) handleExport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
 	if a.service == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "GDPR service not configured"})
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "GDPR service not configured")
 		return
 	}
 	userID := userIDFromContext(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
 	export, err := a.service.ExportUserData(r.Context(), userID, userID)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, export)
+	apiutil.WriteJSON(w, http.StatusOK, export)
 }
 
 // handleErase initiates data erasure for the authenticated user.
 func (a *API) handleErase(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
 	if a.service == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "GDPR service not configured"})
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "GDPR service not configured")
 		return
 	}
 	userID := userIDFromContext(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -89,48 +91,45 @@ func (a *API) handleErase(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewDecoder(r.Body).Decode(&body)
 	}
 	if !body.Confirm {
-		writeJSON(w, http.StatusBadRequest, map[string]string{
-			"error":   "confirmation required",
-			"message": "Set confirm=true to proceed with data erasure. This action is irreversible.",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "confirmation_required", "Set confirm=true to proceed with data erasure. This action is irreversible.")
 		return
 	}
 
 	report, err := a.service.EraseUserData(r.Context(), userID, userID)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, report)
+	apiutil.WriteJSON(w, http.StatusOK, report)
 }
 
 // handleRequests lists the user's DSRs.
 func (a *API) handleRequests(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
 	if a.service == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "GDPR service not configured"})
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "GDPR service not configured")
 		return
 	}
 	userID := userIDFromContext(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
 	requests, err := a.service.ListUserRequests(userID)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 	if requests == nil {
 		requests = []*DataSubjectRequest{}
 	}
 
-	writeJSON(w, http.StatusOK, map[string]interface{}{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]interface{}{
 		"requests": requests,
 		"count":    len(requests),
 	})
@@ -139,19 +138,19 @@ func (a *API) handleRequests(w http.ResponseWriter, r *http.Request) {
 // handleRequestByID returns or cancels a specific DSR.
 func (a *API) handleRequestByID(w http.ResponseWriter, r *http.Request) {
 	if a.service == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "GDPR service not configured"})
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "GDPR service not configured")
 		return
 	}
 	userID := userIDFromContext(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
 	// Extract ID from path: /api/v1/gdpr/requests/{id}
 	id := r.URL.Path[len("/api/v1/gdpr/requests/"):]
 	if id == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "request ID required"})
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_id", "Request ID is required")
 		return
 	}
 
@@ -160,62 +159,62 @@ func (a *API) handleRequestByID(w http.ResponseWriter, r *http.Request) {
 		req, err := a.service.GetRequest(id)
 		if err != nil {
 			if err == ErrRequestNotFound {
-				writeJSON(w, http.StatusNotFound, map[string]string{"error": "request not found"})
+				apiutil.WriteError(w, http.StatusNotFound, "not_found", "Request not found")
 				return
 			}
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
 		// Ensure user can only see their own requests
 		if req.UserID != userID {
-			writeJSON(w, http.StatusNotFound, map[string]string{"error": "request not found"})
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Request not found")
 			return
 		}
-		writeJSON(w, http.StatusOK, req)
+		apiutil.WriteJSON(w, http.StatusOK, req)
 
 	case http.MethodDelete:
 		// Cancel a pending request
 		req, err := a.service.GetRequest(id)
 		if err != nil {
 			if err == ErrRequestNotFound {
-				writeJSON(w, http.StatusNotFound, map[string]string{"error": "request not found"})
+				apiutil.WriteError(w, http.StatusNotFound, "not_found", "Request not found")
 				return
 			}
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
 		if req.UserID != userID {
-			writeJSON(w, http.StatusNotFound, map[string]string{"error": "request not found"})
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Request not found")
 			return
 		}
 		if err := a.service.CancelRequest(id); err != nil {
 			if err == ErrAlreadyProcessed {
-				writeJSON(w, http.StatusConflict, map[string]string{"error": "request already processed"})
+				apiutil.WriteError(w, http.StatusConflict, "already_processed", "Request already processed")
 				return
 			}
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 			return
 		}
-		writeJSON(w, http.StatusOK, map[string]string{"status": "canceled"})
+		apiutil.WriteJSON(w, http.StatusOK, map[string]string{"status": "canceled"})
 
 	default:
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 	}
 }
 
 // handleRetention returns the current retention policy.
 func (a *API) handleRetention(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
 	if a.service == nil {
-		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "GDPR service not configured"})
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "GDPR service not configured")
 		return
 	}
 	userID := userIDFromContext(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -233,11 +232,5 @@ func (a *API) handleRetention(w http.ResponseWriter, r *http.Request) {
 		DeletedUserDays: int(a.service.retention.DeletedUserRetention.Hours() / 24),
 	}
 
-	writeJSON(w, http.StatusOK, resp)
-}
-
-func writeJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
+	apiutil.WriteJSON(w, http.StatusOK, resp)
 }

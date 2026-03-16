@@ -855,7 +855,7 @@ func TestAPI_Erase_NoConfirm(t *testing.T) {
 	w := httptest.NewRecorder()
 	api.handleErase(w, makeAuthRequest(http.MethodPost, "/api/v1/gdpr/erase", `{}`, "user-1"))
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Contains(t, w.Body.String(), "confirmation required")
+	assert.Contains(t, w.Body.String(), "confirmation_required")
 }
 
 func TestAPI_Erase_Success(t *testing.T) {

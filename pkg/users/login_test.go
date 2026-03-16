@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -108,7 +109,7 @@ func TestLogin_WrongPassword(t *testing.T) {
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "invalid_credentials", resp.Code)
 }
@@ -123,7 +124,7 @@ func TestLogin_NonexistentUser(t *testing.T) {
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	// Same error as wrong password to prevent email enumeration.
 	assert.Equal(t, "invalid_credentials", resp.Code)
@@ -138,7 +139,7 @@ func TestLogin_MissingEmail(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "missing_email", resp.Code)
 }
@@ -153,7 +154,7 @@ func TestLogin_MissingPassword(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "missing_password", resp.Code)
 }
@@ -201,7 +202,7 @@ func TestLogin_SuspendedAccount(t *testing.T) {
 
 	assert.Equal(t, http.StatusForbidden, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "account_suspended", resp.Code)
 }
@@ -223,7 +224,7 @@ func TestLogin_DeletedAccount(t *testing.T) {
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	// Same as invalid credentials to prevent enumeration.
 	assert.Equal(t, "invalid_credentials", resp.Code)
@@ -239,7 +240,7 @@ func TestLogin_NoTokenServiceConfigured(t *testing.T) {
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "auth_not_configured", resp.Code)
 }
@@ -289,7 +290,7 @@ func TestRefresh_InvalidToken(t *testing.T) {
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "invalid_token", resp.Code)
 }
@@ -321,7 +322,7 @@ func TestRefresh_MissingToken(t *testing.T) {
 	w := doRefresh(t, api, RefreshRequest{})
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "missing_token", resp.Code)
 }

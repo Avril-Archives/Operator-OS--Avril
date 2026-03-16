@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/operatoronline/Operator-OS/pkg/oauth"
 )
 
@@ -99,40 +100,40 @@ type ConnectResponse struct {
 // POST /api/v1/manage/integrations/connect
 func (m *ManagementAPI) handleConnect(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "POST only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "POST only")
 		return
 	}
 	userID := userIDFromRequest(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, errorResp("unauthorized", "Authentication required"))
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 	if m.store == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("not_configured", "Integration store not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "Integration store not configured")
 		return
 	}
 
 	var req ConnectRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, errorResp("invalid_json", "Invalid request body"))
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 	if req.IntegrationID == "" {
-		writeJSON(w, http.StatusBadRequest, errorResp("missing_integration_id", "integration_id is required"))
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_integration_id", "integration_id is required")
 		return
 	}
 
 	// Check if integration exists in the registry.
 	integ := m.registry.Get(req.IntegrationID)
 	if integ == nil {
-		writeJSON(w, http.StatusNotFound, errorResp("integration_not_found", "Integration not found in registry"))
+		apiutil.WriteError(w, http.StatusNotFound, "integration_not_found", "Integration not found in registry")
 		return
 	}
 
 	// Check if already connected.
 	existing, _ := m.store.Get(userID, req.IntegrationID)
 	if existing != nil && (existing.Status == UserIntegrationActive || existing.Status == UserIntegrationPending) {
-		writeJSON(w, http.StatusConflict, errorResp("already_connected", "Integration is already connected"))
+		apiutil.WriteError(w, http.StatusConflict, "already_connected", "Integration is already connected")
 		return
 	}
 
@@ -144,13 +145,13 @@ func (m *ManagementAPI) handleConnect(w http.ResponseWriter, r *http.Request) {
 	case "none":
 		m.connectNoAuth(w, userID, integ, req, existing)
 	default:
-		writeJSON(w, http.StatusBadRequest, errorResp("unsupported_auth", "Unsupported auth type: "+integ.AuthType))
+		apiutil.WriteError(w, http.StatusBadRequest, "unsupported_auth", "Unsupported auth type: "+integ.AuthType)
 	}
 }
 
 func (m *ManagementAPI) connectOAuth(w http.ResponseWriter, userID string, integ *Integration, req ConnectRequest, existing *UserIntegration) {
 	if m.oauthService == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("oauth_not_configured", "OAuth service not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "oauth_not_configured", "OAuth service not configured")
 		return
 	}
 
@@ -164,13 +165,13 @@ func (m *ManagementAPI) connectOAuth(w http.ResponseWriter, userID string, integ
 			Scopes:        req.Scopes,
 		}
 		if err := m.store.Create(ui); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to create integration record"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to create integration record")
 			return
 		}
 	} else {
 		// Reactivate a previously disconnected integration.
 		if err := m.store.UpdateStatus(userID, integ.ID, UserIntegrationPending, ""); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to update integration status"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update integration status")
 			return
 		}
 	}
@@ -180,11 +181,11 @@ func (m *ManagementAPI) connectOAuth(w http.ResponseWriter, userID string, integ
 	if err != nil {
 		// Mark as failed.
 		_ = m.store.UpdateStatus(userID, integ.ID, UserIntegrationFailed, err.Error())
-		writeJSON(w, http.StatusBadGateway, errorResp("oauth_error", "Failed to start OAuth flow: "+err.Error()))
+		apiutil.WriteError(w, http.StatusBadGateway, "oauth_error", "Failed to start OAuth flow: "+err.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, ConnectResponse{
+	apiutil.WriteJSON(w, http.StatusOK, ConnectResponse{
 		IntegrationID: integ.ID,
 		Status:        UserIntegrationPending,
 		AuthURL:       result.AuthURL,
@@ -193,7 +194,7 @@ func (m *ManagementAPI) connectOAuth(w http.ResponseWriter, userID string, integ
 
 func (m *ManagementAPI) connectAPIKey(w http.ResponseWriter, userID string, integ *Integration, req ConnectRequest, existing *UserIntegration) {
 	if req.APIKey == "" {
-		writeJSON(w, http.StatusBadRequest, errorResp("missing_api_key", "api_key is required for API key integrations"))
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_api_key", "api_key is required for API key integrations")
 		return
 	}
 
@@ -208,7 +209,7 @@ func (m *ManagementAPI) connectAPIKey(w http.ResponseWriter, userID string, inte
 			Status:      oauth.CredentialStatusActive,
 		}
 		if err := m.vault.Store(cred); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to store API key"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to store API key")
 			return
 		}
 	}
@@ -223,17 +224,17 @@ func (m *ManagementAPI) connectAPIKey(w http.ResponseWriter, userID string, inte
 			Scopes:        req.Scopes,
 		}
 		if err := m.store.Create(ui); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to create integration record"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to create integration record")
 			return
 		}
 	} else {
 		if err := m.store.UpdateStatus(userID, integ.ID, UserIntegrationActive, ""); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to update integration status"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update integration status")
 			return
 		}
 	}
 
-	writeJSON(w, http.StatusOK, ConnectResponse{
+	apiutil.WriteJSON(w, http.StatusOK, ConnectResponse{
 		IntegrationID: integ.ID,
 		Status:        UserIntegrationActive,
 		Message:       "API key stored successfully",
@@ -249,17 +250,17 @@ func (m *ManagementAPI) connectNoAuth(w http.ResponseWriter, userID string, inte
 			Config:        req.Config,
 		}
 		if err := m.store.Create(ui); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to create integration record"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to create integration record")
 			return
 		}
 	} else {
 		if err := m.store.UpdateStatus(userID, integ.ID, UserIntegrationActive, ""); err != nil {
-			writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to update integration status"))
+			apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update integration status")
 			return
 		}
 	}
 
-	writeJSON(w, http.StatusOK, ConnectResponse{
+	apiutil.WriteJSON(w, http.StatusOK, ConnectResponse{
 		IntegrationID: integ.ID,
 		Status:        UserIntegrationActive,
 		Message:       "Integration connected",
@@ -270,16 +271,16 @@ func (m *ManagementAPI) connectNoAuth(w http.ResponseWriter, userID string, inte
 // POST /api/v1/manage/integrations/disconnect
 func (m *ManagementAPI) handleDisconnect(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "POST only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "POST only")
 		return
 	}
 	userID := userIDFromRequest(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, errorResp("unauthorized", "Authentication required"))
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 	if m.store == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("not_configured", "Integration store not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "Integration store not configured")
 		return
 	}
 
@@ -287,11 +288,11 @@ func (m *ManagementAPI) handleDisconnect(w http.ResponseWriter, r *http.Request)
 		IntegrationID string `json:"integration_id"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, errorResp("invalid_json", "Invalid request body"))
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 	if req.IntegrationID == "" {
-		writeJSON(w, http.StatusBadRequest, errorResp("missing_integration_id", "integration_id is required"))
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_integration_id", "integration_id is required")
 		return
 	}
 
@@ -299,10 +300,10 @@ func (m *ManagementAPI) handleDisconnect(w http.ResponseWriter, r *http.Request)
 	_, err := m.store.Get(userID, req.IntegrationID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not connected"))
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not connected")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
@@ -318,7 +319,7 @@ func (m *ManagementAPI) handleDisconnect(w http.ResponseWriter, r *http.Request)
 
 	// Delete the user integration record.
 	if err := m.store.Delete(userID, req.IntegrationID); err != nil {
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to delete integration"))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to delete integration")
 		return
 	}
 
@@ -327,7 +328,7 @@ func (m *ManagementAPI) handleDisconnect(w http.ResponseWriter, r *http.Request)
 		_ = m.vault.Delete(userID, req.IntegrationID)
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"integration_id": req.IntegrationID,
 		"disconnected":   true,
 	})
@@ -337,23 +338,23 @@ func (m *ManagementAPI) handleDisconnect(w http.ResponseWriter, r *http.Request)
 // GET /api/v1/manage/integrations/status
 func (m *ManagementAPI) handleListStatus(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET only"))
+		apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET only")
 		return
 	}
 	userID := userIDFromRequest(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, errorResp("unauthorized", "Authentication required"))
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 	if m.store == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("not_configured", "Integration store not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "Integration store not configured")
 		return
 	}
 
 	statusFilter := r.URL.Query().Get("status")
 	userIntegrations, err := m.store.ListByUser(userID, statusFilter)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
@@ -363,7 +364,7 @@ func (m *ManagementAPI) handleListStatus(w http.ResponseWriter, r *http.Request)
 		statuses = append(statuses, status)
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"integrations": statuses,
 		"count":        len(statuses),
 	})
@@ -378,11 +379,11 @@ func (m *ManagementAPI) handleListStatus(w http.ResponseWriter, r *http.Request)
 func (m *ManagementAPI) handleIntegrationAction(w http.ResponseWriter, r *http.Request) {
 	userID := userIDFromRequest(r)
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, errorResp("unauthorized", "Authentication required"))
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 	if m.store == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("not_configured", "Integration store not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "not_configured", "Integration store not configured")
 		return
 	}
 
@@ -390,7 +391,7 @@ func (m *ManagementAPI) handleIntegrationAction(w http.ResponseWriter, r *http.R
 	path := strings.TrimPrefix(r.URL.Path, "/api/v1/manage/integrations/")
 	parts := strings.SplitN(path, "/", 2)
 	if len(parts) < 2 || parts[0] == "" || parts[1] == "" {
-		writeJSON(w, http.StatusBadRequest, errorResp("invalid_path", "Expected /api/v1/manage/integrations/{id}/{action}"))
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_path", "Expected /api/v1/manage/integrations/{id}/{action}")
 		return
 	}
 	integrationID := parts[0]
@@ -399,36 +400,36 @@ func (m *ManagementAPI) handleIntegrationAction(w http.ResponseWriter, r *http.R
 	switch action {
 	case "status":
 		if r.Method != http.MethodGet {
-			writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "GET only"))
+			apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "GET only")
 			return
 		}
 		m.handleSingleStatus(w, userID, integrationID)
 	case "enable":
 		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "POST only"))
+			apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "POST only")
 			return
 		}
 		m.handleEnable(w, userID, integrationID)
 	case "disable":
 		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "POST only"))
+			apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "POST only")
 			return
 		}
 		m.handleDisable(w, userID, integrationID)
 	case "reconnect":
 		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "POST only"))
+			apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "POST only")
 			return
 		}
 		m.handleReconnect(w, r, userID, integrationID)
 	case "config":
 		if r.Method != http.MethodPut {
-			writeJSON(w, http.StatusMethodNotAllowed, errorResp("method_not_allowed", "PUT only"))
+			apiutil.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "PUT only")
 			return
 		}
 		m.handleUpdateConfig(w, r, userID, integrationID)
 	default:
-		writeJSON(w, http.StatusNotFound, errorResp("unknown_action", "Unknown action: "+action))
+		apiutil.WriteError(w, http.StatusNotFound, "unknown_action", "Unknown action: "+action)
 	}
 }
 
@@ -437,15 +438,15 @@ func (m *ManagementAPI) handleSingleStatus(w http.ResponseWriter, userID, integr
 	ui, err := m.store.Get(userID, integrationID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not connected"))
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not connected")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
 	status := m.buildIntegrationStatus(userID, ui)
-	writeJSON(w, http.StatusOK, status)
+	apiutil.WriteJSON(w, http.StatusOK, status)
 }
 
 // handleEnable re-enables a disabled integration.
@@ -453,28 +454,28 @@ func (m *ManagementAPI) handleEnable(w http.ResponseWriter, userID, integrationI
 	ui, err := m.store.Get(userID, integrationID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not connected"))
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not connected")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
 	if ui.Status == UserIntegrationActive {
-		writeJSON(w, http.StatusConflict, errorResp("already_active", "Integration is already active"))
+		apiutil.WriteError(w, http.StatusConflict, "already_active", "Integration is already active")
 		return
 	}
 	if ui.Status != UserIntegrationDisabled {
-		writeJSON(w, http.StatusBadRequest, errorResp("invalid_state", "Can only enable disabled integrations, current status: "+ui.Status))
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_state", "Can only enable disabled integrations, current status: "+ui.Status)
 		return
 	}
 
 	if err := m.store.UpdateStatus(userID, integrationID, UserIntegrationActive, ""); err != nil {
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to enable integration"))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to enable integration")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"integration_id": integrationID,
 		"status":         UserIntegrationActive,
 		"message":        "Integration enabled",
@@ -486,28 +487,28 @@ func (m *ManagementAPI) handleDisable(w http.ResponseWriter, userID, integration
 	ui, err := m.store.Get(userID, integrationID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not connected"))
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not connected")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
 	if ui.Status == UserIntegrationDisabled {
-		writeJSON(w, http.StatusConflict, errorResp("already_disabled", "Integration is already disabled"))
+		apiutil.WriteError(w, http.StatusConflict, "already_disabled", "Integration is already disabled")
 		return
 	}
 	if ui.Status != UserIntegrationActive {
-		writeJSON(w, http.StatusBadRequest, errorResp("invalid_state", "Can only disable active integrations, current status: "+ui.Status))
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_state", "Can only disable active integrations, current status: "+ui.Status)
 		return
 	}
 
 	if err := m.store.UpdateStatus(userID, integrationID, UserIntegrationDisabled, ""); err != nil {
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to disable integration"))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to disable integration")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"integration_id": integrationID,
 		"status":         UserIntegrationDisabled,
 		"message":        "Integration disabled",
@@ -519,26 +520,26 @@ func (m *ManagementAPI) handleReconnect(w http.ResponseWriter, r *http.Request, 
 	ui, err := m.store.Get(userID, integrationID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not connected"))
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not connected")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
 	integ := m.registry.Get(integrationID)
 	if integ == nil {
-		writeJSON(w, http.StatusNotFound, errorResp("integration_not_found", "Integration not found in registry"))
+		apiutil.WriteError(w, http.StatusNotFound, "integration_not_found", "Integration not found in registry")
 		return
 	}
 
 	if integ.AuthType != "oauth2" {
-		writeJSON(w, http.StatusBadRequest, errorResp("not_oauth", "Reconnect is only available for OAuth integrations"))
+		apiutil.WriteError(w, http.StatusBadRequest, "not_oauth", "Reconnect is only available for OAuth integrations")
 		return
 	}
 
 	if m.oauthService == nil {
-		writeJSON(w, http.StatusServiceUnavailable, errorResp("oauth_not_configured", "OAuth service not configured"))
+		apiutil.WriteError(w, http.StatusServiceUnavailable, "oauth_not_configured", "OAuth service not configured")
 		return
 	}
 
@@ -557,7 +558,7 @@ func (m *ManagementAPI) handleReconnect(w http.ResponseWriter, r *http.Request, 
 
 	// Reset status to pending.
 	if err := m.store.UpdateStatus(userID, integrationID, UserIntegrationPending, ""); err != nil {
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to update status"))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update status")
 		return
 	}
 
@@ -570,11 +571,11 @@ func (m *ManagementAPI) handleReconnect(w http.ResponseWriter, r *http.Request, 
 	result, flowErr := m.oauthService.StartFlow(userID, integrationID, scopes, req.RedirectAfter)
 	if flowErr != nil {
 		_ = m.store.UpdateStatus(userID, integrationID, UserIntegrationFailed, flowErr.Error())
-		writeJSON(w, http.StatusBadGateway, errorResp("oauth_error", "Failed to start OAuth flow: "+flowErr.Error()))
+		apiutil.WriteError(w, http.StatusBadGateway, "oauth_error", "Failed to start OAuth flow: "+flowErr.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, ConnectResponse{
+	apiutil.WriteJSON(w, http.StatusOK, ConnectResponse{
 		IntegrationID: integrationID,
 		Status:        UserIntegrationPending,
 		AuthURL:       result.AuthURL,
@@ -586,10 +587,10 @@ func (m *ManagementAPI) handleUpdateConfig(w http.ResponseWriter, r *http.Reques
 	ui, err := m.store.Get(userID, integrationID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, errorResp("not_found", "Integration not connected"))
+			apiutil.WriteError(w, http.StatusNotFound, "not_found", "Integration not connected")
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", err.Error()))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", err.Error())
 		return
 	}
 
@@ -597,11 +598,11 @@ func (m *ManagementAPI) handleUpdateConfig(w http.ResponseWriter, r *http.Reques
 		Config map[string]string `json:"config"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, errorResp("invalid_json", "Invalid request body"))
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 	if req.Config == nil {
-		writeJSON(w, http.StatusBadRequest, errorResp("missing_config", "config is required"))
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_config", "config is required")
 		return
 	}
 
@@ -614,11 +615,11 @@ func (m *ManagementAPI) handleUpdateConfig(w http.ResponseWriter, r *http.Reques
 	}
 
 	if err := m.store.Update(ui); err != nil {
-		writeJSON(w, http.StatusInternalServerError, errorResp("internal", "Failed to update config"))
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "Failed to update config")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"integration_id": integrationID,
 		"config":         ui.Config,
 		"message":        "Configuration updated",

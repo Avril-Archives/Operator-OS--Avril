@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -82,7 +83,7 @@ func TestRegister_DuplicateEmail(t *testing.T) {
 	})
 	assert.Equal(t, http.StatusConflict, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "email_exists", resp.Code)
 }
@@ -95,7 +96,7 @@ func TestRegister_MissingEmail(t *testing.T) {
 	})
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "missing_email", resp.Code)
 }
@@ -109,7 +110,7 @@ func TestRegister_InvalidEmail(t *testing.T) {
 	})
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "invalid_email", resp.Code)
 }
@@ -123,7 +124,7 @@ func TestRegister_WeakPassword(t *testing.T) {
 	})
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "weak_password", resp.Code)
 }
@@ -141,7 +142,7 @@ func TestRegister_InvalidJSON(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
-	var resp ErrorResponse
+	var resp apiutil.ErrorResponse
 	require.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 	assert.Equal(t, "invalid_json", resp.Code)
 }

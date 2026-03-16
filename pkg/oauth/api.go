@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 	"github.com/operatoronline/Operator-OS/pkg/users"
 )
 
@@ -49,16 +50,14 @@ func (a *API) handleListProviders(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	writeJSON(w, http.StatusOK, map[string]any{"providers": result})
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{"providers": result})
 }
 
 // handleAuthorize initiates an OAuth flow for the authenticated user.
 func (a *API) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]any{
-			"error": "unauthorized",
-		})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -68,36 +67,26 @@ func (a *API) handleAuthorize(w http.ResponseWriter, r *http.Request) {
 		RedirectAfter string   `json:"redirect_after"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "invalid_json",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	if req.Provider == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "missing_provider",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_provider", "Provider is required")
 		return
 	}
 
 	result, err := a.service.StartFlow(userID, req.Provider, req.Scopes, req.RedirectAfter)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, map[string]any{
-				"error":   "provider_not_found",
-				"message": fmt.Sprintf("Provider %q is not configured", req.Provider),
-			})
+			apiutil.WriteError(w, http.StatusNotFound, "provider_not_found", fmt.Sprintf("Provider %q is not configured", req.Provider))
 			return
 		}
-		writeJSON(w, http.StatusInternalServerError, map[string]any{
-			"error":   "flow_start_failed",
-			"message": err.Error(),
-		})
+		apiutil.WriteError(w, http.StatusInternalServerError, "flow_start_failed", err.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, result)
+	apiutil.WriteJSON(w, http.StatusOK, result)
 }
 
 // handleCallback processes the OAuth provider callback.
@@ -111,24 +100,17 @@ func (a *API) handleCallback(w http.ResponseWriter, r *http.Request) {
 		if errDesc == "" {
 			errDesc = errParam
 		}
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error":   "provider_error",
-			"message": errDesc,
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "provider_error", errDesc)
 		return
 	}
 
 	if state == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "missing_state",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_state", "State parameter is required")
 		return
 	}
 
 	if code == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "missing_code",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_code", "Code parameter is required")
 		return
 	}
 
@@ -142,16 +124,13 @@ func (a *API) handleCallback(w http.ResponseWriter, r *http.Request) {
 			status = http.StatusBadRequest
 			errorCode = "invalid_state"
 		}
-		writeJSON(w, status, map[string]any{
-			"error":   errorCode,
-			"message": err.Error(),
-		})
+		apiutil.WriteError(w, status, errorCode, err.Error())
 		return
 	}
 
 	// Return tokens (in production, you'd store these in the vault
 	// and redirect the user, but the API layer handles that).
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"access_token":  tokenResp.AccessToken,
 		"refresh_token": tokenResp.RefreshToken,
 		"token_type":    tokenResp.TokenType,
@@ -166,9 +145,7 @@ func (a *API) handleCallback(w http.ResponseWriter, r *http.Request) {
 func (a *API) handleRefresh(w http.ResponseWriter, r *http.Request) {
 	userID := users.UserIDFromContext(r.Context())
 	if userID == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]any{
-			"error": "unauthorized",
-		})
+		apiutil.WriteError(w, http.StatusUnauthorized, "unauthorized", "Authentication required")
 		return
 	}
 
@@ -177,44 +154,32 @@ func (a *API) handleRefresh(w http.ResponseWriter, r *http.Request) {
 		RefreshToken string `json:"refresh_token"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "invalid_json",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "invalid_json", "Invalid request body")
 		return
 	}
 
 	if req.Provider == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "missing_provider",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_provider", "Provider is required")
 		return
 	}
 	if req.RefreshToken == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]any{
-			"error": "missing_refresh_token",
-		})
+		apiutil.WriteError(w, http.StatusBadRequest, "missing_refresh_token", "Refresh token is required")
 		return
 	}
 
 	tokenResp, err := a.service.RefreshToken(req.Provider, req.RefreshToken)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			writeJSON(w, http.StatusNotFound, map[string]any{
-				"error":   "provider_not_found",
-				"message": err.Error(),
-			})
+			apiutil.WriteError(w, http.StatusNotFound, "provider_not_found", err.Error())
 			return
 		}
-		writeJSON(w, http.StatusBadGateway, map[string]any{
-			"error":   "refresh_failed",
-			"message": err.Error(),
-		})
+		apiutil.WriteError(w, http.StatusBadGateway, "refresh_failed", err.Error())
 		return
 	}
 
 	tokenResp.UserID = userID
 
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"access_token":  tokenResp.AccessToken,
 		"refresh_token": tokenResp.RefreshToken,
 		"token_type":    tokenResp.TokenType,
@@ -222,10 +187,4 @@ func (a *API) handleRefresh(w http.ResponseWriter, r *http.Request) {
 		"scope":         tokenResp.Scope,
 		"provider":      tokenResp.ProviderID,
 	})
-}
-
-func writeJSON(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
 }

@@ -762,6 +762,30 @@ func (m *Manager) runTTLJanitor(ctx context.Context) {
 	}
 }
 
+// RegisterHealthChecks registers health check components for all enabled channels
+// with the given health Checker. Each channel is registered as a non-critical
+// messaging component that reports healthy when IsRunning() returns true.
+func (m *Manager) RegisterHealthChecks(checker *health.Checker) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	for name, ch := range m.channels {
+		componentName := "channel:" + name
+		if err := checker.Register(health.ComponentConfig{
+			Name:      componentName,
+			Type:      health.TypeMessaging,
+			CheckFunc: health.ChannelCheck(name, ch),
+			Critical:  false,
+			Interval:  15 * time.Second,
+		}); err != nil {
+			logger.WarnCF("channels", "Failed to register health check", map[string]any{
+				"channel": name,
+				"error":   err.Error(),
+			})
+		}
+	}
+}
+
 func (m *Manager) GetChannel(name string) (Channel, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
