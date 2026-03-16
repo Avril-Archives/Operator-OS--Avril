@@ -107,7 +107,7 @@ export const IntegrationCard = memo(function IntegrationCard({
                 {integration.name}
               </h3>
               <StatusBadge
-                status={connectionStatus as any}
+                status={connectionStatus as 'active' | 'pending' | 'failed' | 'revoked' | 'disabled' | 'disconnected'}
                 tokenExpired={tokenExpired}
                 needsRefresh={needsRefresh}
               />

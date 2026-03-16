@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-10 by claude/setup-starter-kit-rNWYL
+2026-03-16 by claude/continue-status-implementation-JbitC
 
 ---
 
@@ -86,7 +86,7 @@
 - [ ] Polish `TopBar` — cleaner spacing, refined user dropdown
 - [ ] Polish `BottomTabs` — glass morphism refinement, active indicator
 - [ ] Polish `MobileSidebar` — slide animation polish, backdrop blur tuning
-- [ ] Add FAB (Floating Action Button) for quick chat/new-agent actions
+- [x] Add FAB (Floating Action Button) for quick chat/new-agent actions
 - [ ] Verify responsive breakpoints: 320px, 375px, 428px, 768px, 1024px, 1440px
 
 ### Chat Experience
@@ -133,8 +133,8 @@
 - [ ] Polish `ApiKeyDialog` — masked input, copy, regenerate
 
 ### Auth Pages
-- [ ] Redesign `Login` — premium centered card, branding, social login buttons
-- [ ] Redesign `Register` — step indicator, password strength meter
+- [x] Redesign `Login` — premium centered card, branding, icon-based actions
+- [x] Redesign `Register` — step indicator, password strength meter
 - [ ] Redesign `Verify` — clear success/pending/error states
 
 ### Shared Components
@@ -145,9 +145,9 @@
 - [ ] Polish `ConfirmDialog` — destructive vs. safe action styling
 - [ ] Polish `EmptyState` — illustration + CTA
 - [ ] Polish `ToastContainer` — slide-in animation, auto-dismiss, action button
-- [ ] Add `Skeleton` loader component (reusable)
-- [ ] Add `Tooltip` component (hover/focus triggered)
-- [ ] Add `Dropdown` menu component (reusable, accessible)
+- [x] Add `Skeleton` loader component (reusable)
+- [x] Add `Tooltip` component (hover/focus triggered)
+- [x] Add `Dropdown` menu component (reusable, accessible)
 
 ### Accessibility (WCAG 2.1 AA)
 - [ ] Keyboard navigation audit — all interactive elements reachable via Tab
@@ -246,3 +246,19 @@ _None currently_
 - Aligned services/api/ and docker-compose.yml for project stack
 **Notes**: Ready for Phase 1 backend hardening and Phase 2 UI redesign
 **Branch**: `claude/setup-starter-kit-rNWYL`
+
+### Session: 2026-03-16
+**Focus**: Frontend fixes, new shared components, auth page redesign
+**Completed**:
+- Fixed ESLint config (broken flat config reference for react-hooks plugin)
+- Fixed 7 ESLint errors: conditional hook in RateLimitIndicator, unused vars, `as any` casts
+- Added Skeleton component (Skeleton, SkeletonText, SkeletonAvatar variants)
+- Added Tooltip component (accessible, placement options, hover/focus triggered)
+- Added Dropdown component (keyboard navigation, accessible menu role)
+- Added FAB (Floating Action Button) with speed-dial for New Chat / New Agent
+- Redesigned Login page — premium card layout, brand mark, icon-based CTA
+- Redesigned Register page — step indicator, password strength meter, card layout
+- Added EmptyState to shared barrel export
+- Verified typecheck, lint, and production build all pass cleanly
+**Notes**: Go backend requires Go 1.25.7 (env has 1.24.7) — backend work blocked on toolchain. Next: continue Phase 2 UI polish (agent management, settings, billing pages)
+**Branch**: `claude/continue-status-implementation-JbitC`

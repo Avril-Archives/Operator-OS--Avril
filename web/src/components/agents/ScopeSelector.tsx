@@ -295,7 +295,7 @@ const IntegrationRow = memo(function IntegrationRow({
   onToggle,
   onExpand,
   onToggleTool,
-  onToggleScope: _onToggleScope,
+  onToggleScope: _onToggleScope, // eslint-disable-line @typescript-eslint/no-unused-vars
   onToggleAllTools,
 }: IntegrationRowProps) {
   const hasTools = integration.tools && integration.tools.length > 0

@@ -131,14 +131,14 @@ export const RateLimitIndicator = memo(function RateLimitIndicator() {
   const storeState = useRateLimitStore.getState()
   const severity = getOverallSeverity(storeState)
 
-  // Don't render anything if we have no data at all
-  if (!status && !headerBucket) return null
-
   const handleToggle = useCallback(() => {
     setPopoverOpen((prev) => !prev)
     // Refresh status when opening
     if (!popoverOpen) fetchStatus()
   }, [popoverOpen, fetchStatus])
+
+  // Don't render anything if we have no data at all
+  if (!status && !headerBucket) return null
 
   return (
     <div className="relative" ref={containerRef}>

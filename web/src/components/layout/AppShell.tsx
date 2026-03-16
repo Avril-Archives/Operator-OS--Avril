@@ -9,6 +9,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 import { BottomTabs } from './BottomTabs'
+import { FAB } from './FAB'
 import { MobileSidebar } from './MobileSidebar'
 import { OfflineBanner } from '../shared/OfflineBanner'
 import { ToastContainer } from '../shared/ToastContainer'
@@ -54,6 +55,9 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+
+      {/* ─── FAB (mobile) ─── */}
+      <FAB />
 
       {/* ─── Bottom tabs (mobile) ─── */}
       <BottomTabs />

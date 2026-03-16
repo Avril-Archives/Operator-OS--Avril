@@ -57,8 +57,18 @@ const DEFAULT_FILTERS: AuditFilters = {
   perPage: 25,
 }
 
-function buildParams(filters: AuditFilters): Record<string, string | number> {
-  const params: Record<string, string | number> = {
+interface AuditParams {
+  page?: number
+  per_page?: number
+  action?: string
+  user_id?: string
+  resource?: string
+  start?: string
+  end?: string
+}
+
+function buildParams(filters: AuditFilters): AuditParams {
+  const params: AuditParams = {
     page: filters.page,
     per_page: filters.perPage,
   }
@@ -87,7 +97,7 @@ export const useAuditStore = create<AuditState>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const { filters } = get()
-      const events = await api.audit.events(buildParams(filters) as any)
+      const events = await api.audit.events(buildParams(filters) )
       set({ events, loading: false, forbidden: false })
     } catch (err) {
       if (err instanceof ApiRequestError && err.status === 403) {
@@ -108,7 +118,7 @@ export const useAuditStore = create<AuditState>((set, get) => ({
       const params = buildParams(filters)
       delete params.page
       delete params.per_page
-      const result = await api.audit.count(params as any)
+      const result = await api.audit.count(params )
       set({ totalCount: result.count, countLoading: false })
     } catch {
       set({ countLoading: false })

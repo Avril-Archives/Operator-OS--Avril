@@ -67,14 +67,12 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     set({ loadingUsers: true, usersError: null })
     try {
       const { filters } = get()
-      const params: Record<string, string | number> = {
+      const users = await api.admin.users({
         page: filters.page,
         per_page: filters.perPage,
-      }
-      if (filters.search) params.search = filters.search
-      if (filters.status) params.status = filters.status
-
-      const users = await api.admin.users(params as any)
+        ...(filters.search ? { search: filters.search } : {}),
+        ...(filters.status ? { status: filters.status } : {}),
+      })
       set({ users, loadingUsers: false, forbidden: false })
     } catch (err) {
       if (err instanceof ApiRequestError && err.status === 403) {
