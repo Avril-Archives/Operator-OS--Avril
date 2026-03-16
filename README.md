@@ -13,7 +13,7 @@
     <img src="https://img.shields.io/badge/Architecture-x86__64%20%7C%20ARM64%20%7C%20RISC--V-blue" alt="Architecture">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
     <br>
-    <a href="https://operator.ws"><img src="https://img.shields.io/badge/Website-operator.onl-blue?style=flat&logo=google-chrome&logoColor=white" alt="Website"></a>
+    <a href="https://operator.ws"><img src="https://img.shields.io/badge/Website-operator.ws-blue?style=flat&logo=google-chrome&logoColor=white" alt="Website"></a>
     <a href="https://discord.gg/Ve9eakT9n"><img src="https://img.shields.io/badge/Discord-Community-4c60eb?style=flat&logo=discord&logoColor=white" alt="Discord"></a>
   </p>
 </div>
