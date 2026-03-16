@@ -633,6 +633,141 @@ func TestFullVerificationFlow(t *testing.T) {
 	assert.Equal(t, StatusActive, updated.Status)
 }
 
+// --- End-to-End Email Verification Tests ---
+
+// TestE2E_RegisterVerifyLogin exercises the full user lifecycle:
+// Register → Create Token → Verify → Login with verified account.
+func TestE2E_RegisterVerifyLogin(t *testing.T) {
+	api, us, _ := newTestAPIWithVerification(t)
+	mux := http.NewServeMux()
+	api.RegisterRoutes(mux)
+
+	// 1. Register.
+	regBody := `{"email":"e2e@example.com","password":"E2eTest123!","display_name":"E2E User"}`
+	regReq := httptest.NewRequest("POST", "/api/v1/auth/register", strings.NewReader(regBody))
+	regW := httptest.NewRecorder()
+	mux.ServeHTTP(regW, regReq)
+	require.Equal(t, http.StatusCreated, regW.Code)
+
+	var regResp RegisterResponse
+	require.NoError(t, json.NewDecoder(regW.Body).Decode(&regResp))
+	assert.Equal(t, StatusPendingVerification, regResp.Status)
+	assert.False(t, regResp.EmailVerified)
+	assert.Equal(t, "E2E User", regResp.DisplayName)
+
+	// 2. Attempt login before verification — should succeed but status is pending.
+	loginBody := `{"email":"e2e@example.com","password":"E2eTest123!"}`
+	loginReq := httptest.NewRequest("POST", "/api/v1/auth/login", strings.NewReader(loginBody))
+	loginW := httptest.NewRecorder()
+	mux.ServeHTTP(loginW, loginReq)
+	require.Equal(t, http.StatusOK, loginW.Code)
+
+	var loginResp LoginResponse
+	require.NoError(t, json.NewDecoder(loginW.Body).Decode(&loginResp))
+	assert.Equal(t, StatusPendingVerification, loginResp.User.Status)
+	assert.False(t, loginResp.User.EmailVerified)
+	assert.NotEmpty(t, loginResp.AccessToken)
+
+	// 3. Create verification token.
+	user, err := us.GetByEmail("e2e@example.com")
+	require.NoError(t, err)
+	vt, err := api.verificationStore.(*SQLiteVerificationStore).CreateToken(user.ID, DefaultTokenExpiry)
+	require.NoError(t, err)
+
+	// 4. Verify email via HTTP endpoint.
+	verifyBody := `{"token":"` + vt.Token + `"}`
+	verifyReq := httptest.NewRequest("POST", "/api/v1/auth/verify-email", strings.NewReader(verifyBody))
+	verifyW := httptest.NewRecorder()
+	mux.ServeHTTP(verifyW, verifyReq)
+	require.Equal(t, http.StatusOK, verifyW.Code)
+
+	var verifyResp VerifyEmailResponse
+	require.NoError(t, json.NewDecoder(verifyW.Body).Decode(&verifyResp))
+	assert.True(t, verifyResp.EmailVerified)
+	assert.Equal(t, StatusActive, verifyResp.Status)
+
+	// 5. Login again — user should now be active and verified.
+	loginReq2 := httptest.NewRequest("POST", "/api/v1/auth/login", strings.NewReader(loginBody))
+	loginW2 := httptest.NewRecorder()
+	mux.ServeHTTP(loginW2, loginReq2)
+	require.Equal(t, http.StatusOK, loginW2.Code)
+
+	var loginResp2 LoginResponse
+	require.NoError(t, json.NewDecoder(loginW2.Body).Decode(&loginResp2))
+	assert.Equal(t, StatusActive, loginResp2.User.Status)
+	assert.True(t, loginResp2.User.EmailVerified)
+
+	// 6. Re-verify same token should fail (already used).
+	reuseReq := httptest.NewRequest("POST", "/api/v1/auth/verify-email", strings.NewReader(verifyBody))
+	reuseW := httptest.NewRecorder()
+	mux.ServeHTTP(reuseW, reuseReq)
+	assert.Equal(t, http.StatusConflict, reuseW.Code)
+}
+
+// TestE2E_ResendVerificationCooldown exercises the resend flow with cooldown.
+func TestE2E_ResendVerificationCooldown(t *testing.T) {
+	api, _, _ := newTestAPIWithVerification(t)
+	mux := http.NewServeMux()
+	api.RegisterRoutes(mux)
+
+	// Register user.
+	regBody := `{"email":"resend@example.com","password":"Resend123!"}`
+	regReq := httptest.NewRequest("POST", "/api/v1/auth/register", strings.NewReader(regBody))
+	regW := httptest.NewRecorder()
+	mux.ServeHTTP(regW, regReq)
+	require.Equal(t, http.StatusCreated, regW.Code)
+
+	// First resend should succeed.
+	resendBody := `{"email":"resend@example.com"}`
+	resendReq := httptest.NewRequest("POST", "/api/v1/auth/resend-verification", strings.NewReader(resendBody))
+	resendW := httptest.NewRecorder()
+	mux.ServeHTTP(resendW, resendReq)
+	assert.Equal(t, http.StatusOK, resendW.Code)
+
+	// Immediate second resend should return 429 (cooldown enforced).
+	resendReq2 := httptest.NewRequest("POST", "/api/v1/auth/resend-verification", strings.NewReader(resendBody))
+	resendW2 := httptest.NewRecorder()
+	mux.ServeHTTP(resendW2, resendReq2)
+	assert.Equal(t, http.StatusTooManyRequests, resendW2.Code)
+
+	// Resend for nonexistent user should also return 200 (anti-enumeration).
+	nonexistentBody := `{"email":"nonexistent@example.com"}`
+	nonexistentReq := httptest.NewRequest("POST", "/api/v1/auth/resend-verification", strings.NewReader(nonexistentBody))
+	nonexistentW := httptest.NewRecorder()
+	mux.ServeHTTP(nonexistentW, nonexistentReq)
+	assert.Equal(t, http.StatusOK, nonexistentW.Code)
+}
+
+// TestE2E_VerifyWithExpiredToken checks that expired tokens are rejected.
+func TestE2E_VerifyWithExpiredToken(t *testing.T) {
+	api, us, _ := newTestAPIWithVerification(t)
+	mux := http.NewServeMux()
+	api.RegisterRoutes(mux)
+
+	// Register.
+	regBody := `{"email":"expired@example.com","password":"Expired123!"}`
+	regReq := httptest.NewRequest("POST", "/api/v1/auth/register", strings.NewReader(regBody))
+	regW := httptest.NewRecorder()
+	mux.ServeHTTP(regW, regReq)
+	require.Equal(t, http.StatusCreated, regW.Code)
+
+	// Create token with 0 expiry (immediately expired).
+	user, err := us.GetByEmail("expired@example.com")
+	require.NoError(t, err)
+	vt, err := api.verificationStore.(*SQLiteVerificationStore).CreateToken(user.ID, 0)
+	require.NoError(t, err)
+
+	// Small sleep to ensure expiry.
+	time.Sleep(10 * time.Millisecond)
+
+	// Verify should fail with 410 Gone.
+	verifyBody := `{"token":"` + vt.Token + `"}`
+	verifyReq := httptest.NewRequest("POST", "/api/v1/auth/verify-email", strings.NewReader(verifyBody))
+	verifyW := httptest.NewRecorder()
+	mux.ServeHTTP(verifyW, verifyReq)
+	assert.Equal(t, http.StatusGone, verifyW.Code)
+}
+
 // Ensure we don't leave test files.
 func TestCleanup(t *testing.T) {
 	dir := t.TempDir()

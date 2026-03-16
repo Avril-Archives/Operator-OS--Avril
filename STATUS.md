@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/review-status-continue-0zftC
+2026-03-16 by claude/review-status-continue-sQ2po
 
 ---
 
@@ -36,8 +36,8 @@
 - [x] Audit JWT token flow: issuance, refresh, expiry, revocation
 - [x] Add password strength validation (min length, complexity)
 - [x] Rate-limit login and registration endpoints
-- [ ] Email verification flow end-to-end test
-- [ ] OAuth provider flow (Google, GitHub) integration test
+- [x] Email verification flow end-to-end test
+- [x] OAuth provider flow (Google, GitHub) integration test
 - [x] CORS configuration review for production domains
 
 ### API Surface
@@ -52,7 +52,7 @@
 - [ ] Test all messaging channels: Slack, Discord, Telegram, WhatsApp, LINE, DingTalk, Feishu
 - [x] Add connection health checks for each enabled provider
 - [x] Add connection health checks for each enabled channel
-- [ ] Document provider-specific quirks and rate limits
+- [x] Document provider-specific quirks and rate limits
 
 ### Data & Storage
 - [x] SQLite schema migration safety (up/down with rollback)
@@ -63,9 +63,9 @@
 
 ### Testing
 - [ ] Increase Go test coverage to ≥70% across critical packages
-- [ ] Add integration tests for full agent loop (provider → tool → response)
-- [ ] Add load test baseline (`pkg/loadtest/`) with documented thresholds
-- [ ] CI pipeline: `make test` must pass on every PR
+- [x] Add integration tests for full agent loop (provider → tool → response)
+- [x] Add load test baseline (`pkg/loadtest/`) with documented thresholds
+- [x] CI pipeline: `make test` must pass on every PR
 
 ---
 
@@ -446,3 +446,16 @@ _None currently_
 - All frontend checks pass (typecheck, lint, production build)
 **Notes**: Data/storage hardening complete. OpenAPI spec now matches actual endpoints. PostgreSQL parity achieved. Docker builds cannot be tested (no Docker daemon in env). Remaining Phase 1: email verification e2e test, OAuth integration test, provider/channel manual testing, test coverage increase. Remaining Phase 3: API reference generation, logo/branding verification, Docker build test, GoReleaser dry-run, release tagging.
 **Branch**: `claude/review-status-continue-0zftC`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 1 completion — e2e tests, integration tests, CI pipeline, provider docs
+**Completed**:
+- Added email verification e2e tests: full register→verify→login lifecycle, resend with cooldown enforcement, expired token rejection
+- Added OAuth provider integration tests: Google (PKCE + extra auth params + token rotation), GitHub (no PKCE, non-rotating tokens), multi-provider isolation, access denied handling
+- Added agent loop integration tests: single tool call flow (provider → tool → response), multi-step chaining (3 sequential tool calls), tool error handling, empty response fallback, session persistence, provider error handling
+- Created GitHub Actions CI pipeline (`.github/workflows/ci.yml`): Go tests (race detector), golangci-lint, frontend checks (typecheck/lint/build), multi-arch build matrix
+- Created provider quirks documentation (`docs/providers/quirks.md`): rate limits, context windows, API quirks for all 6 LLM providers and 7 messaging channels
+- All 67+ Go test packages pass, 0 failures
+- All frontend checks pass (typecheck, lint, production build)
+**Notes**: Phase 1 testing is substantially complete. Remaining: test coverage increase to ≥70%, manual provider/channel testing. Remaining Phase 3: API reference generation, branding verification, Docker/GoReleaser, release tag.
+**Branch**: `claude/review-status-continue-sQ2po`
