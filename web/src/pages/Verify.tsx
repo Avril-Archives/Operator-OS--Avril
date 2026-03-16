@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import {
+  Envelope,
   EnvelopeSimple,
   CheckCircle,
   XCircle,
@@ -147,6 +148,7 @@ export function VerifyPage() {
                       placeholder="Enter your email to resend"
                       value={resendEmail}
                       onChange={(e) => setResendEmail(e.target.value)}
+                      icon={<Envelope size={16} weight="duotone" />}
                     />
                     <Button
                       variant="secondary"
@@ -202,6 +204,7 @@ export function VerifyPage() {
                         placeholder="Enter your email"
                         value={resendEmail}
                         onChange={(e) => setResendEmail(e.target.value)}
+                        icon={<Envelope size={16} weight="duotone" />}
                       />
                     )}
                     <Button
