@@ -2,6 +2,8 @@ package sandbox
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -104,6 +106,21 @@ type FilesystemPolicy struct {
 	ReadOnlyRoot bool `json:"readonly_root"`
 }
 
+// DangerousCommands is a default deny list of commands that should never be
+// executed in a sandbox. These commands can destroy data, escalate privileges,
+// or exfiltrate information.
+var DangerousCommands = []string{
+	"rm", "rmdir", "mkfs", "dd", "fdisk", "parted",
+	"shutdown", "reboot", "halt", "poweroff", "init",
+	"mount", "umount", "chroot",
+	"su", "sudo", "passwd", "useradd", "userdel", "usermod",
+	"iptables", "ip6tables", "nft",
+	"nc", "ncat", "socat",
+	"crontab", "at",
+	"insmod", "rmmod", "modprobe",
+	"kill", "killall", "pkill",
+}
+
 // DefaultPolicy returns a reasonable default policy for sandboxed agent execution.
 func DefaultPolicy() *Policy {
 	return &Policy{
@@ -124,6 +141,7 @@ func DefaultPolicy() *Policy {
 			ReadOnlyRoot: true,
 			TempDirSize:  64 * 1024 * 1024, // 64 MB
 		},
+		DeniedCommands: DangerousCommands,
 		InheritEnv:     false,
 		MaxOutputBytes: 10 * 1024 * 1024, // 10 MB
 	}
@@ -192,6 +210,16 @@ func (p *Policy) Validate() error {
 	}
 	if !p.Network.AllowNetwork && len(p.Network.AllowedPorts) > 0 {
 		return fmt.Errorf("sandbox: allowed_ports specified but network is disabled")
+	}
+	// Validate that ReadWritePaths don't escape WorkingDir when one is set.
+	if p.Filesystem.WorkingDir != "" {
+		workDir, _ := filepath.Abs(p.Filesystem.WorkingDir)
+		for _, rwp := range p.Filesystem.ReadWritePaths {
+			absRW, _ := filepath.Abs(rwp)
+			if !strings.HasPrefix(absRW, workDir) {
+				return fmt.Errorf("sandbox: read-write path %q is outside working directory %q", rwp, workDir)
+			}
+		}
 	}
 	return nil
 }

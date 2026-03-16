@@ -51,6 +51,7 @@ type TokenService struct {
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
 	issuer          string
+	blacklist       *TokenBlacklist
 }
 
 // TokenServiceOption configures a TokenService.
@@ -69,6 +70,11 @@ func WithRefreshTokenTTL(d time.Duration) TokenServiceOption {
 // WithIssuer sets the "iss" claim.
 func WithIssuer(iss string) TokenServiceOption {
 	return func(ts *TokenService) { ts.issuer = iss }
+}
+
+// WithBlacklist enables token revocation via the given blacklist.
+func WithBlacklist(bl *TokenBlacklist) TokenServiceOption {
+	return func(ts *TokenService) { ts.blacklist = bl }
 }
 
 // NewTokenService creates a TokenService. signingKey must be non-empty.
@@ -131,6 +137,11 @@ func (ts *TokenService) ValidateToken(tokenStr string) (*TokenClaims, error) {
 		return nil, ErrInvalidToken
 	}
 
+	// Check blacklist if configured.
+	if ts.blacklist != nil && claims.ID != "" && ts.blacklist.IsRevoked(claims.ID) {
+		return nil, ErrInvalidToken
+	}
+
 	return claims, nil
 }
 
@@ -156,6 +167,24 @@ func (ts *TokenService) ValidateRefreshToken(tokenStr string) (*TokenClaims, err
 		return nil, ErrInvalidTokenType
 	}
 	return claims, nil
+}
+
+// RevokeToken adds a token to the blacklist. Requires WithBlacklist to be configured.
+// The token is kept in the blacklist until its natural expiry time.
+func (ts *TokenService) RevokeToken(claims *TokenClaims) {
+	if ts.blacklist == nil || claims == nil || claims.ID == "" {
+		return
+	}
+	expiry := time.Now().Add(ts.accessTokenTTL) // safe fallback
+	if claims.ExpiresAt != nil {
+		expiry = claims.ExpiresAt.Time
+	}
+	ts.blacklist.Revoke(claims.ID, expiry)
+}
+
+// Blacklist returns the token blacklist, or nil if not configured.
+func (ts *TokenService) Blacklist() *TokenBlacklist {
+	return ts.blacklist
 }
 
 func (ts *TokenService) createToken(user *User, tokenType string, now time.Time, ttl time.Duration, jti string) (string, error) {

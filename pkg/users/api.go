@@ -33,12 +33,22 @@ func NewAPIFull(store UserStore, ts *TokenService, vs VerificationStore) *API {
 }
 
 // RegisterRoutes registers user management endpoints on the given ServeMux.
-func (a *API) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("POST /api/v1/auth/register", a.handleRegister)
-	mux.HandleFunc("POST /api/v1/auth/login", a.handleLogin)
-	mux.HandleFunc("POST /api/v1/auth/refresh", a.handleRefresh)
-	mux.HandleFunc("POST /api/v1/auth/verify-email", a.handleVerifyEmail)
-	mux.HandleFunc("POST /api/v1/auth/resend-verification", a.handleResendVerification)
+// An optional rate-limiting middleware can be provided to protect auth endpoints
+// against brute-force attacks (applied to login, register, and resend-verification).
+func (a *API) RegisterRoutes(mux *http.ServeMux, rateLimitMiddleware ...func(http.Handler) http.Handler) {
+	wrap := func(h http.HandlerFunc) http.Handler {
+		var handler http.Handler = h
+		for i := len(rateLimitMiddleware) - 1; i >= 0; i-- {
+			handler = rateLimitMiddleware[i](handler)
+		}
+		return handler
+	}
+	mux.Handle("POST /api/v1/auth/register", wrap(a.handleRegister))
+	mux.Handle("POST /api/v1/auth/login", wrap(a.handleLogin))
+	mux.Handle("POST /api/v1/auth/refresh", http.HandlerFunc(a.handleRefresh))
+	mux.Handle("POST /api/v1/auth/verify-email", http.HandlerFunc(a.handleVerifyEmail))
+	mux.Handle("POST /api/v1/auth/resend-verification", wrap(a.handleResendVerification))
+	mux.Handle("POST /api/v1/auth/logout", http.HandlerFunc(a.handleLogout))
 }
 
 // RegisterRequest is the JSON body for user registration.
@@ -407,6 +417,24 @@ func (a *API) handleResendVerification(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func (a *API) handleLogout(w http.ResponseWriter, r *http.Request) {
+	if a.tokenService == nil {
+		writeError(w, http.StatusInternalServerError, "auth_not_configured", "Authentication is not configured")
+		return
+	}
+
+	// Extract and revoke the access token from the Authorization header.
+	tokenStr := extractBearerToken(r)
+	if tokenStr != "" {
+		claims, err := a.tokenService.ValidateToken(tokenStr)
+		if err == nil {
+			a.tokenService.RevokeToken(claims)
+		}
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]any{"message": "Logged out successfully"})
+}
+
 // validateEmail checks basic email format using net/mail.
 func validateEmail(email string) error {
 	_, err := mail.ParseAddress(email)
@@ -514,6 +542,10 @@ func (a *API) handleChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	if CheckPassword(user.PasswordHash, req.CurrentPassword) != nil {
 		writeError(w, http.StatusUnauthorized, "invalid_password", "Current password is incorrect")
+		return
+	}
+	if err := ValidatePassword(req.NewPassword); err != nil {
+		writeError(w, http.StatusBadRequest, "weak_password", err.Error())
 		return
 	}
 	hash, err := HashPassword(req.NewPassword)

@@ -73,11 +73,11 @@ func doRefresh(t *testing.T, api *API, body interface{}) *httptest.ResponseRecor
 
 func TestLogin_Success(t *testing.T) {
 	api, _, ts := newTestAPIWithAuth(t)
-	registerUser(t, api, "login@example.com", "securepassword123")
+	registerUser(t, api, "login@example.com", "Secure@Pass1")
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "login@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -99,11 +99,11 @@ func TestLogin_Success(t *testing.T) {
 
 func TestLogin_WrongPassword(t *testing.T) {
 	api, _, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "wrong@example.com", "securepassword123")
+	registerUser(t, api, "wrong@example.com", "Secure@Pass1")
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "wrong@example.com",
-		Password: "wrongpassword",
+		Password: "Wrong@Pass1",
 	})
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
@@ -118,7 +118,7 @@ func TestLogin_NonexistentUser(t *testing.T) {
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "nobody@example.com",
-		Password: "somepassword123",
+		Password: "Some@Pass1",
 	})
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
@@ -133,7 +133,7 @@ func TestLogin_MissingEmail(t *testing.T) {
 	api, _, _ := newTestAPIWithAuth(t)
 
 	w := doLogin(t, api, LoginRequest{
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -145,7 +145,7 @@ func TestLogin_MissingEmail(t *testing.T) {
 
 func TestLogin_MissingPassword(t *testing.T) {
 	api, _, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "nopw@example.com", "securepassword123")
+	registerUser(t, api, "nopw@example.com", "Secure@Pass1")
 
 	w := doLogin(t, api, LoginRequest{
 		Email: "nopw@example.com",
@@ -174,11 +174,11 @@ func TestLogin_InvalidJSON(t *testing.T) {
 
 func TestLogin_CaseInsensitiveEmail(t *testing.T) {
 	api, _, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "CaSe@Example.COM", "securepassword123")
+	registerUser(t, api, "CaSe@Example.COM", "Secure@Pass1")
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "case@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -186,7 +186,7 @@ func TestLogin_CaseInsensitiveEmail(t *testing.T) {
 
 func TestLogin_SuspendedAccount(t *testing.T) {
 	api, store, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "suspended@example.com", "securepassword123")
+	registerUser(t, api, "suspended@example.com", "Secure@Pass1")
 
 	// Suspend the user.
 	user, err := store.GetByEmail("suspended@example.com")
@@ -196,7 +196,7 @@ func TestLogin_SuspendedAccount(t *testing.T) {
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "suspended@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 
 	assert.Equal(t, http.StatusForbidden, w.Code)
@@ -208,7 +208,7 @@ func TestLogin_SuspendedAccount(t *testing.T) {
 
 func TestLogin_DeletedAccount(t *testing.T) {
 	api, store, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "deleted@example.com", "securepassword123")
+	registerUser(t, api, "deleted@example.com", "Secure@Pass1")
 
 	// Mark user as deleted.
 	user, err := store.GetByEmail("deleted@example.com")
@@ -218,7 +218,7 @@ func TestLogin_DeletedAccount(t *testing.T) {
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "deleted@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
@@ -234,7 +234,7 @@ func TestLogin_NoTokenServiceConfigured(t *testing.T) {
 
 	w := doLogin(t, api, LoginRequest{
 		Email:    "test@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
@@ -248,12 +248,12 @@ func TestLogin_NoTokenServiceConfigured(t *testing.T) {
 
 func TestRefresh_Success(t *testing.T) {
 	api, _, ts := newTestAPIWithAuth(t)
-	registerUser(t, api, "refresh@example.com", "securepassword123")
+	registerUser(t, api, "refresh@example.com", "Secure@Pass1")
 
 	// Login first.
 	loginResp := doLogin(t, api, LoginRequest{
 		Email:    "refresh@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	require.Equal(t, http.StatusOK, loginResp.Code)
 
@@ -296,11 +296,11 @@ func TestRefresh_InvalidToken(t *testing.T) {
 
 func TestRefresh_AccessTokenRejected(t *testing.T) {
 	api, _, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "noaccess@example.com", "securepassword123")
+	registerUser(t, api, "noaccess@example.com", "Secure@Pass1")
 
 	loginResp := doLogin(t, api, LoginRequest{
 		Email:    "noaccess@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	require.Equal(t, http.StatusOK, loginResp.Code)
 
@@ -328,12 +328,12 @@ func TestRefresh_MissingToken(t *testing.T) {
 
 func TestRefresh_SuspendedUser(t *testing.T) {
 	api, store, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "suspend-refresh@example.com", "securepassword123")
+	registerUser(t, api, "suspend-refresh@example.com", "Secure@Pass1")
 
 	// Login while active.
 	loginResp := doLogin(t, api, LoginRequest{
 		Email:    "suspend-refresh@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	require.Equal(t, http.StatusOK, loginResp.Code)
 
@@ -356,11 +356,11 @@ func TestRefresh_SuspendedUser(t *testing.T) {
 
 func TestRefresh_DeletedUser(t *testing.T) {
 	api, store, _ := newTestAPIWithAuth(t)
-	registerUser(t, api, "delete-refresh@example.com", "securepassword123")
+	registerUser(t, api, "delete-refresh@example.com", "Secure@Pass1")
 
 	loginResp := doLogin(t, api, LoginRequest{
 		Email:    "delete-refresh@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	require.Equal(t, http.StatusOK, loginResp.Code)
 
@@ -410,12 +410,12 @@ func TestFullAuthFlow(t *testing.T) {
 	api, _, ts := newTestAPIWithAuth(t)
 
 	// 1. Register.
-	registerUser(t, api, "flow@example.com", "securepassword123")
+	registerUser(t, api, "flow@example.com", "Secure@Pass1")
 
 	// 2. Login.
 	loginW := doLogin(t, api, LoginRequest{
 		Email:    "flow@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	require.Equal(t, http.StatusOK, loginW.Code)
 
