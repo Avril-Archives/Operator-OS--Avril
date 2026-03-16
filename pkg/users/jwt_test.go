@@ -84,7 +84,7 @@ func TestValidateToken_AccessToken(t *testing.T) {
 	assert.Equal(t, "user-123", claims.UserID)
 	assert.Equal(t, "test@example.com", claims.Email)
 	assert.Equal(t, TokenTypeAccess, claims.TokenType)
-	assert.Equal(t, "operator-os", claims.Issuer)
+	assert.Equal(t, "operator-os.standardcompute", claims.Issuer)
 }
 
 func TestValidateToken_RefreshToken(t *testing.T) {

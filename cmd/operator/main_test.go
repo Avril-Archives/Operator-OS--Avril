@@ -39,6 +39,7 @@ func TestNewOperatorCommand(t *testing.T) {
 		"gateway",
 		"migrate",
 		"onboard",
+		"services",
 		"skills",
 		"status",
 		"version",
