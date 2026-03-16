@@ -17,6 +17,7 @@ type Server struct {
 	mu        sync.RWMutex
 	ready     bool
 	checks    map[string]Check
+	checker   *Checker
 	startTime time.Time
 }
 
@@ -163,7 +164,86 @@ func (s *Server) readyHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) RegisterOnMux(mux *http.ServeMux) {
 	mux.HandleFunc("/health", s.healthHandler)
 	mux.HandleFunc("/ready", s.readyHandler)
+	mux.HandleFunc("/health/detailed", s.detailedHandler)
 	mux.Handle("/metrics", metrics.Handler())
+}
+
+// SetChecker attaches an advanced health Checker to the server.
+// When set, the /health/detailed endpoint returns component-level health data.
+func (s *Server) SetChecker(c *Checker) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.checker = c
+}
+
+// detailedHandler returns component-level health data from the advanced Checker.
+func (s *Server) detailedHandler(w http.ResponseWriter, _ *http.Request) {
+	s.mu.RLock()
+	c := s.checker
+	s.mu.RUnlock()
+
+	if c == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"status": "no checker configured"})
+		return
+	}
+
+	results := c.CheckCached()
+	overall := OverallStatus(results)
+
+	type componentDetail struct {
+		Status     ComponentStatus `json:"status"`
+		Type       ComponentType   `json:"type"`
+		Critical   bool            `json:"critical"`
+		DurationMs float64         `json:"duration_ms"`
+		Message    string          `json:"message,omitempty"`
+	}
+
+	components := make(map[string]componentDetail, len(results))
+	healthy, degraded, unhealthy := 0, 0, 0
+
+	c.mu.RLock()
+	for name, result := range results {
+		cs := c.components[name]
+		components[name] = componentDetail{
+			Status:     result.Status,
+			Type:       cs.config.Type,
+			Critical:   cs.config.Critical,
+			DurationMs: result.DurationMs,
+			Message:    result.Message,
+		}
+		switch result.Status {
+		case StatusHealthy:
+			healthy++
+		case StatusDegraded:
+			degraded++
+		default:
+			unhealthy++
+		}
+	}
+	c.mu.RUnlock()
+
+	status := http.StatusOK
+	if overall == StatusUnhealthy {
+		status = http.StatusServiceUnavailable
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]any{
+		"status":         overall,
+		"uptime":         c.Uptime().String(),
+		"uptime_seconds": c.Uptime().Seconds(),
+		"timestamp":      time.Now().UTC(),
+		"components":     components,
+		"summary": map[string]int{
+			"total":     healthy + degraded + unhealthy,
+			"healthy":   healthy,
+			"degraded":  degraded,
+			"unhealthy": unhealthy,
+		},
+	})
 }
 
 func statusString(ok bool) string {

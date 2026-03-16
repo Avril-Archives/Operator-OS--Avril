@@ -1,10 +1,11 @@
 package audit
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // API provides HTTP handlers for querying audit logs.
@@ -31,9 +32,7 @@ func (a *API) handleListEvents(w http.ResponseWriter, r *http.Request) {
 
 	events, err := a.store.Query(r.Context(), filter)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{
-			"error": "failed to query audit events",
-		})
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "failed to query audit events")
 		return
 	}
 
@@ -41,7 +40,7 @@ func (a *API) handleListEvents(w http.ResponseWriter, r *http.Request) {
 		events = []*Event{}
 	}
 
-	writeJSON(w, http.StatusOK, map[string]interface{}{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"events": events,
 		"count":  len(events),
 		"limit":  filter.Limit,
@@ -55,13 +54,11 @@ func (a *API) handleCountEvents(w http.ResponseWriter, r *http.Request) {
 
 	count, err := a.store.Count(r.Context(), filter)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{
-			"error": "failed to count audit events",
-		})
+		apiutil.WriteError(w, http.StatusInternalServerError, "internal", "failed to count audit events")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, map[string]interface{}{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"count": count,
 	})
 }
@@ -101,8 +98,3 @@ func parseFilter(r *http.Request) QueryFilter {
 	return filter
 }
 
-func writeJSON(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
-}

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"database/sql"
@@ -61,6 +62,11 @@ func gatewayCmd(debug bool) error {
 	cfg, err := internal.LoadConfig()
 	if err != nil {
 		return fmt.Errorf("error loading config: %w", err)
+	}
+
+	// Validate config schema before proceeding.
+	if err := cfg.Validate(); err != nil {
+		return fmt.Errorf("config validation error: %w", err)
 	}
 
 	provider, modelID, err := providers.CreateProvider(cfg)
@@ -226,6 +232,32 @@ func gatewayCmd(debug bool) error {
 
 	adminAPI := admin.NewAPI(userStore, auditStore)
 
+	// Register health check components now that DB is available
+	healthChecker := health.NewChecker()
+	healthChecker.Register(health.ComponentConfig{
+		Name: "database",
+		Type: health.TypeDatabase,
+		CheckFunc: func(ctx context.Context) health.CheckResult {
+			if err := auditDB.PingContext(ctx); err != nil {
+				return health.CheckResult{Status: health.StatusUnhealthy, Message: err.Error()}
+			}
+			return health.CheckResult{Status: health.StatusHealthy, Message: "sqlite ok"}
+		},
+		Critical: true,
+	})
+	healthChecker.Register(health.ComponentConfig{
+		Name: "provider",
+		Type: health.TypeExternal,
+		CheckFunc: func(_ context.Context) health.CheckResult {
+			if provider == nil {
+				return health.CheckResult{Status: health.StatusUnhealthy, Message: "no provider configured"}
+			}
+			return health.CheckResult{Status: health.StatusHealthy, Message: fmt.Sprintf("model: %s", modelID)}
+		},
+		Critical: true,
+	})
+	healthServer.SetChecker(healthChecker)
+
 	// ── Agents API ──
 	agentStore, err := agents.NewSQLiteUserAgentStore(dbPath)
 	if err != nil {
@@ -306,9 +338,10 @@ func gatewayCmd(debug bool) error {
 	go agentLoop.Run(ctx)
 
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt)
-	<-sigChan
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	sig := <-sigChan
 
+	logger.InfoCF("gateway", "Shutdown signal received", map[string]any{"signal": sig.String()})
 	fmt.Println("\nShutting down...")
 	if cp, ok := provider.(providers.StatefulProvider); ok {
 		cp.Close()
@@ -321,12 +354,18 @@ func gatewayCmd(debug bool) error {
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer shutdownCancel()
 
+	// Mark system as not ready before shutting down services.
+	healthServer.SetReady(false)
+
 	channelManager.StopAll(shutdownCtx)
 	deviceService.Stop()
 	heartbeatService.Stop()
 	cronService.Stop()
 	mediaStore.Stop()
 	agentLoop.Stop()
+	auditDB.Close()
+
+	logger.InfoC("gateway", "Gateway stopped")
 	fmt.Println("✓ Gateway stopped")
 
 	return nil

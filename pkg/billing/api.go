@@ -1,8 +1,9 @@
 package billing
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/operatoronline/Operator-OS/pkg/apiutil"
 )
 
 // API provides HTTP handlers for billing plan endpoints.
@@ -27,7 +28,7 @@ func (a *API) RegisterRoutes(mux *http.ServeMux) {
 // handleListPlans returns all active plans.
 func (a *API) handleListPlans(w http.ResponseWriter, r *http.Request) {
 	plans := a.catalogue.ListActive()
-	writeJSON(w, http.StatusOK, map[string]any{
+	apiutil.WriteJSON(w, http.StatusOK, map[string]any{
 		"plans": plans,
 		"count": len(plans),
 	})
@@ -38,18 +39,14 @@ func (a *API) handleGetPlan(w http.ResponseWriter, r *http.Request) {
 	id := PlanID(r.PathValue("id"))
 	plan := a.catalogue.Get(id)
 	if plan == nil {
-		writeJSON(w, http.StatusNotFound, map[string]any{
-			"error": "plan not found",
-			"code":  "not_found",
-		})
+		apiutil.WriteError(w, http.StatusNotFound, "not_found", "plan not found")
 		return
 	}
-	writeJSON(w, http.StatusOK, plan)
+	apiutil.WriteJSON(w, http.StatusOK, plan)
 }
 
-// writeJSON writes a JSON response.
+// writeJSON is a package-level convenience wrapper for apiutil.WriteJSON.
+// Used by usage_api.go, plan_change.go, webhook.go, overage.go.
 func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(v)
+	apiutil.WriteJSON(w, status, v)
 }

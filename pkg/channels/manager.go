@@ -23,6 +23,7 @@ import (
 	"github.com/operatoronline/Operator-OS/pkg/health"
 	"github.com/operatoronline/Operator-OS/pkg/logger"
 	"github.com/operatoronline/Operator-OS/pkg/media"
+	"github.com/operatoronline/Operator-OS/pkg/middleware"
 )
 
 const (
@@ -303,9 +304,15 @@ func (m *Manager) SetupHTTPServer(addr string, healthServer *health.Server) {
 		}
 	}
 
+	// Build middleware stack: panic recovery → request logging → body size limit → mux
+	var handler http.Handler = m.mux
+	handler = middleware.BodySizeLimit(0)(handler) // 1 MB default
+	handler = logger.RequestLogging(handler)
+	handler = middleware.RecoverPanic(handler)
+
 	m.httpServer = &http.Server{
 		Addr:         addr,
-		Handler:      m.mux,
+		Handler:      handler,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
