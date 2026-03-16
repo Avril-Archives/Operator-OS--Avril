@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/review-status-continue-f90pr
+2026-03-16 by claude/review-status-continue-bFgCX
 
 ---
 
@@ -72,12 +72,12 @@
 ## Phase 2 — Frontend (Web) UI Redesign for Public Release
 
 ### Design System Foundation
-- [ ] Audit `index.css` OKLCH tokens for light/dark theme completeness
-- [ ] Verify 80/20 monochrome-to-color ratio across all pages
-- [ ] Ensure single primary hue consistency (no competing accent colors)
-- [ ] Validate 4px spacing scale adherence in all components
+- [x] Audit `index.css` OKLCH tokens for light/dark theme completeness
+- [x] Verify 80/20 monochrome-to-color ratio across all pages
+- [x] Ensure single primary hue consistency (no competing accent colors)
+- [x] Validate 4px spacing scale adherence in all components
 - [x] Confirm no flex-wrap anywhere — enforce truncation/icon-only/scroll
-- [ ] Verify 44px minimum touch targets on all interactive elements
+- [x] Verify 44px minimum touch targets on all interactive elements
 - [ ] Test safe-area-inset rendering on notch devices (iOS, Android)
 
 ### Layout & Navigation
@@ -160,7 +160,7 @@
 
 ### Performance
 - [ ] Lighthouse score ≥90 on all pages (Performance, A11y, Best Practices, SEO)
-- [ ] Bundle size audit — keep initial JS bundle under 200KB gzipped
+- [x] Bundle size audit — keep initial JS bundle under 200KB gzipped (~157KB)
 - [x] Lazy loading verified for all route-level pages
 - [x] WebSocket reconnection with exponential backoff verified
 - [x] Service worker (`sw.js`) — offline fallback page
@@ -325,3 +325,23 @@ _None currently_
 - Typecheck, lint, and production build all pass cleanly
 **Notes**: Phase 2 UI is feature-complete. Remaining: screen reader testing (requires manual VoiceOver/NVDA), Lighthouse audit, bundle size optimization. Next: Phase 1 backend hardening or Phase 3 documentation.
 **Branch**: `claude/review-status-continue-f90pr`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 2 design system audit — OKLCH tokens, color consistency, touch targets, bundle size
+**Completed**:
+- Added `--info`, `--info-subtle`, `--overlay-bg` tokens to dark/light/high-contrast themes in `index.css`
+- Added Tailwind v4 `@theme` mappings for new tokens (`--color-info`, `--color-info-subtle`, `--color-overlay-bg`)
+- Fixed `Badge` info variant — replaced 4 hardcoded OKLCH values with `bg-info-subtle text-info` tokens
+- Fixed `ErrorBoundary` — replaced hardcoded OKLCH with `bg-error-subtle text-error`
+- Fixed `OfflineBanner` — replaced 4 hardcoded dark/light OKLCH overrides with `bg-error-subtle text-error`
+- Fixed `SecurityDashboard` — "high" severity now uses `--warning` / `--warning-subtle` tokens
+- Fixed `AuditLog` — Integration and Data category colors use `--info` and `--accent` tokens
+- Fixed `StatsCards` — Active/Pending bgColors use `--success-subtle` and `--warning-subtle` tokens
+- Fixed `MobileSidebar` — overlay backdrop uses `bg-overlay-bg` instead of hardcoded `oklch(0 0 0/0.5)`
+- Fixed touch targets: TopBar hamburger (`p-1.5` → `w-11 h-11`), theme toggle (`w-9 h-9` → `w-11 h-11`), MobileSidebar close (`w-8 h-8` → `w-11 h-11`)
+- Audited 80/20 monochrome-to-color ratio — confirmed single primary hue (260°) with functional status colors
+- Audited 4px spacing scale — all values aligned (exceptions: 3px scrollbar, sub-pixel glass border are intentional)
+- Bundle size audit: initial JS ~157KB gzipped (under 200KB target)
+- Verified typecheck, lint, and production build all pass cleanly
+**Notes**: Go 1.25.7 download still fails (network timeout). Remaining Phase 2: safe-area-inset testing (manual), screen reader testing (manual), Lighthouse audit (manual). Next: Phase 1 backend hardening or Phase 3 documentation.
+**Branch**: `claude/review-status-continue-bFgCX`

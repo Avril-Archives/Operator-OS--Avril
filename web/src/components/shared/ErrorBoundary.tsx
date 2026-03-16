@@ -51,8 +51,8 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] p-6">
           <div className="max-w-md w-full text-center space-y-6">
             {/* Icon */}
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-[oklch(0.85_0.15_25)] flex items-center justify-center">
-              <Warning size={32} weight="fill" className="text-[oklch(0.55_0.2_25)]" />
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-error-subtle flex items-center justify-center">
+              <Warning size={32} weight="fill" className="text-error" />
             </div>
 
             {/* Heading */}

@@ -54,9 +54,9 @@ const SEVERITY_CONFIG: Record<AuditSeverity, {
   },
   high: {
     label: 'High',
-    color: 'oklch(0.65 0.2 25)',
-    bgColor: 'oklch(0.65 0.2 25 / 0.1)',
-    borderColor: 'oklch(0.65 0.2 25 / 0.3)',
+    color: 'var(--warning)',
+    bgColor: 'var(--warning-subtle)',
+    borderColor: 'var(--warning)',
     badgeVariant: 'warning',
   },
   medium: {
