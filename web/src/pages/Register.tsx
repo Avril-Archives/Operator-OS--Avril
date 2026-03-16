@@ -3,10 +3,12 @@
 // Email + password + display name registration with verification redirect.
 // ============================================================================
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { UserPlus, Warning, X } from '@phosphor-icons/react'
+import { UserPlus, Warning, X, Envelope, Lock, User } from '@phosphor-icons/react'
 import { useAuthStore } from '../stores/authStore'
+import { Input } from '../components/shared/Input'
+import { Button } from '../components/shared/Button'
 
 // ---------------------------------------------------------------------------
 // Password strength meter
@@ -73,14 +75,6 @@ export function RegisterPage() {
 
   const combinedError = localError || error
 
-  // Step indicator: how many fields are filled
-  const step = useMemo(() => {
-    if (!email) return 1
-    if (!password) return 2
-    if (!confirmPassword) return 3
-    return 4
-  }, [email, password, confirmPassword])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLocalError(null)
@@ -111,38 +105,26 @@ export function RegisterPage() {
 
   return (
     <div className="h-full flex items-center justify-center bg-bg px-4 overflow-y-auto">
-      <div className="w-full max-w-sm py-8 animate-fade-slide">
+      <div className="w-full max-w-[380px] py-8 animate-fade-slide">
         {/* ─── Brand mark ─── */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center mb-4 shadow-[0_4px_16px_var(--glass-shadow)]">
-            <span className="text-white text-lg font-bold leading-none">OS</span>
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-5 shadow-[0_4px_16px_var(--glass-shadow)]">
+            <span className="text-white text-xl font-bold leading-none tracking-tight">OS</span>
           </div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">
+          <h1 className="text-[22px] font-bold text-text tracking-tight">
             Create Account
           </h1>
-          <p className="text-sm text-text-secondary mt-1">
+          <p className="text-[13px] text-text-dim mt-1.5">
             Get started with Operator OS
           </p>
         </div>
 
-        {/* ─── Step indicator ─── */}
-        <div className="flex gap-1 mb-6 px-1">
-          {[1, 2, 3, 4].map((s) => (
-            <div
-              key={s}
-              className={`h-0.5 flex-1 rounded-full transition-colors duration-200 ${
-                s <= step ? 'bg-accent' : 'bg-border'
-              }`}
-            />
-          ))}
-        </div>
-
         {/* ─── Card ─── */}
-        <div className="bg-surface border border-border rounded-[var(--radius)] p-6 shadow-[0_4px_24px_var(--glass-shadow)]">
+        <div className="bg-surface border border-border rounded-[var(--radius)] p-6 shadow-[0_8px_32px_var(--glass-shadow)]">
           {/* Error banner */}
           {combinedError && (
-            <div className="mb-4 px-3 py-2.5 bg-error-subtle border border-error/20 rounded-[var(--radius-sm)] text-sm text-error flex items-start gap-2" role="alert">
-              <Warning size={16} weight="bold" className="shrink-0 mt-0.5" />
+            <div className="mb-5 px-3 py-2.5 bg-error-subtle border border-error/20 rounded-[var(--radius-sm)] text-[13px] text-error flex items-start gap-2" role="alert">
+              <Warning size={15} weight="bold" className="shrink-0 mt-0.5" />
               <span className="flex-1">{combinedError}</span>
               <button
                 onClick={() => {
@@ -157,86 +139,81 @@ export function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="reg-name" className="text-[13px] font-medium text-text-secondary">
-                Display name <span className="text-text-dim">(optional)</span>
-              </label>
-              <input
-                id="reg-name"
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                autoComplete="name"
-                autoFocus
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="reg-email" className="text-[13px] font-medium text-text-secondary">Email</label>
-              <input
-                id="reg-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="reg-password" className="text-[13px] font-medium text-text-secondary">Password</label>
-              <input
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <Input
+              id="reg-name"
+              type="text"
+              label="Display name"
+              helper="Optional — you can set this later"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              autoComplete="name"
+              autoFocus
+              disabled={isLoading}
+              placeholder="How should we call you?"
+              icon={<User size={16} weight="duotone" />}
+            />
+
+            <Input
+              id="reg-email"
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+              disabled={isLoading}
+              placeholder="you@example.com"
+              icon={<Envelope size={16} weight="duotone" />}
+            />
+
+            <div>
+              <Input
                 id="reg-password"
                 type="password"
+                label="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 required
                 disabled={isLoading}
-                aria-describedby="pw-strength"
+                placeholder="Min. 8 characters"
+                icon={<Lock size={16} weight="duotone" />}
               />
               <div id="pw-strength">
                 <PasswordStrength password={password} />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="reg-confirm" className="text-[13px] font-medium text-text-secondary">Confirm password</label>
-              <input
-                id="reg-confirm"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                required
-                disabled={isLoading}
-              />
-              {confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-error" role="alert">Passwords do not match</p>
-              )}
-            </div>
-            <button
+
+            <Input
+              id="reg-confirm"
+              type="password"
+              label="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+              disabled={isLoading}
+              placeholder="Re-enter your password"
+              icon={<Lock size={16} weight="duotone" />}
+              error={confirmPassword && password !== confirmPassword ? 'Passwords do not match' : undefined}
+            />
+
+            <Button
               type="submit"
               disabled={isLoading || !email || !password || !confirmPassword}
-              className="w-full py-3 bg-accent text-white text-sm font-semibold rounded-[var(--radius-sm)] hover:opacity-90 active:scale-[0.98] transition-all mt-1 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+              loading={isLoading}
+              icon={!isLoading ? <UserPlus size={16} weight="bold" /> : undefined}
+              size="lg"
+              className="w-full mt-1"
             >
-              {isLoading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Creating account…
-                </>
-              ) : (
-                <>
-                  <UserPlus size={16} weight="bold" />
-                  Create Account
-                </>
-              )}
-            </button>
+              {isLoading ? 'Creating account…' : 'Create Account'}
+            </Button>
           </form>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-text-dim mt-6">
+        <p className="text-center text-[13px] text-text-dim mt-6">
           Already have an account?{' '}
           <Link to="/login" className="text-accent-text hover:underline font-medium">
             Sign in

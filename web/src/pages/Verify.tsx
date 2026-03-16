@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import {
+  Envelope,
   EnvelopeSimple,
   CheckCircle,
   XCircle,
@@ -70,11 +71,11 @@ export function VerifyPage() {
 
   return (
     <div className="h-full flex items-center justify-center bg-bg px-4">
-      <div className="w-full max-w-sm animate-fade-slide">
+      <div className="w-full max-w-[380px] animate-fade-slide">
         {/* ─── Brand mark ─── */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center mb-4 shadow-[0_4px_16px_var(--glass-shadow)]">
-            <span className="text-white text-lg font-bold leading-none">OS</span>
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-5 shadow-[0_4px_16px_var(--glass-shadow)]">
+            <span className="text-white text-xl font-bold leading-none tracking-tight">OS</span>
           </div>
         </div>
 
@@ -85,17 +86,17 @@ export function VerifyPage() {
             <div className="text-center">
               {verifyState === 'verifying' && (
                 <>
-                  <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 rounded-2xl bg-accent-subtle flex items-center justify-center mx-auto mb-4">
                     <SpinnerGap
                       size={28}
                       weight="bold"
-                      className="text-[var(--accent-text)] animate-spin"
+                      className="text-accent-text animate-spin"
                     />
                   </div>
-                  <h1 className="text-xl font-bold text-[var(--text)]">
+                  <h1 className="text-xl font-bold text-text">
                     Verifying your email
                   </h1>
-                  <p className="text-sm text-[var(--text-secondary)] mt-2">
+                  <p className="text-[13px] text-text-dim mt-2">
                     This will only take a moment.
                   </p>
                 </>
@@ -110,14 +111,14 @@ export function VerifyPage() {
                       className="text-success"
                     />
                   </div>
-                  <h1 className="text-xl font-bold text-[var(--text)]">
+                  <h1 className="text-xl font-bold text-text">
                     Email Verified
                   </h1>
-                  <p className="text-sm text-[var(--text-secondary)] mt-2">
+                  <p className="text-[13px] text-text-dim mt-2">
                     Your account is now active. You can sign in.
                   </p>
                   <Link to="/login" className="block mt-6">
-                    <Button className="w-full">
+                    <Button className="w-full" size="lg">
                       Sign In
                     </Button>
                   </Link>
@@ -133,10 +134,10 @@ export function VerifyPage() {
                       className="text-error"
                     />
                   </div>
-                  <h1 className="text-xl font-bold text-[var(--text)]">
+                  <h1 className="text-xl font-bold text-text">
                     Verification Failed
                   </h1>
-                  <p className="text-sm text-[var(--text-secondary)] mt-2">
+                  <p className="text-[13px] text-text-dim mt-2">
                     {error || 'This link may be invalid or expired.'}
                   </p>
 
@@ -147,6 +148,7 @@ export function VerifyPage() {
                       placeholder="Enter your email to resend"
                       value={resendEmail}
                       onChange={(e) => setResendEmail(e.target.value)}
+                      icon={<Envelope size={16} weight="duotone" />}
                     />
                     <Button
                       variant="secondary"
@@ -166,21 +168,21 @@ export function VerifyPage() {
           ) : (
             /* ─── Post-registration: check your email ─── */
             <div className="text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-accent-subtle flex items-center justify-center mx-auto mb-4">
                 <EnvelopeSimple
                   size={28}
                   weight="duotone"
-                  className="text-[var(--accent-text)]"
+                  className="text-accent-text"
                 />
               </div>
 
-              <h1 className="text-xl font-bold text-[var(--text)]">
+              <h1 className="text-xl font-bold text-text">
                 Check Your Email
               </h1>
-              <p className="text-sm text-[var(--text-secondary)] mt-2">
+              <p className="text-[13px] text-text-dim mt-2">
                 We sent a verification link to{' '}
                 {emailFromState ? (
-                  <span className="text-[var(--text)] font-medium">{emailFromState}</span>
+                  <span className="text-text font-medium">{emailFromState}</span>
                 ) : (
                   'your email'
                 )}
@@ -190,7 +192,7 @@ export function VerifyPage() {
               {/* Resend */}
               <div className="mt-6">
                 {resendSuccess ? (
-                  <div className="flex items-center justify-center gap-2 text-sm text-success py-3">
+                  <div className="flex items-center justify-center gap-2 text-[13px] text-success py-3">
                     <CheckCircle size={16} weight="fill" />
                     Verification email resent. Check your inbox.
                   </div>
@@ -202,6 +204,7 @@ export function VerifyPage() {
                         placeholder="Enter your email"
                         value={resendEmail}
                         onChange={(e) => setResendEmail(e.target.value)}
+                        icon={<Envelope size={16} weight="duotone" />}
                       />
                     )}
                     <Button
@@ -243,7 +246,7 @@ export function VerifyPage() {
         <div className="mt-6 text-center">
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-text)]
+            className="inline-flex items-center gap-1.5 text-[13px] text-accent-text
               hover:underline transition-colors"
           >
             <ArrowLeft size={14} />

@@ -5,8 +5,10 @@
 
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { SignIn, Warning, X } from '@phosphor-icons/react'
+import { SignIn, Warning, X, Envelope, Lock } from '@phosphor-icons/react'
 import { useAuthStore } from '../stores/authStore'
+import { Input } from '../components/shared/Input'
+import { Button } from '../components/shared/Button'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -33,26 +35,26 @@ export function LoginPage() {
 
   return (
     <div className="h-full flex items-center justify-center bg-bg px-4">
-      <div className="w-full max-w-sm animate-fade-slide">
+      <div className="w-full max-w-[380px] animate-fade-slide">
         {/* ─── Brand mark ─── */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center mb-4 shadow-[0_4px_16px_var(--glass-shadow)]">
-            <span className="text-white text-lg font-bold leading-none">OS</span>
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-5 shadow-[0_4px_16px_var(--glass-shadow)]">
+            <span className="text-white text-xl font-bold leading-none tracking-tight">OS</span>
           </div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">
+          <h1 className="text-[22px] font-bold text-text tracking-tight">
             Welcome back
           </h1>
-          <p className="text-sm text-text-secondary mt-1">
-            Sign in to Operator OS
+          <p className="text-[13px] text-text-dim mt-1.5">
+            Sign in to your account
           </p>
         </div>
 
         {/* ─── Card ─── */}
-        <div className="bg-surface border border-border rounded-[var(--radius)] p-6 shadow-[0_4px_24px_var(--glass-shadow)]">
+        <div className="bg-surface border border-border rounded-[var(--radius)] p-6 shadow-[0_8px_32px_var(--glass-shadow)]">
           {/* Error banner */}
           {error && (
-            <div className="mb-4 px-3 py-2.5 bg-error-subtle border border-error/20 rounded-[var(--radius-sm)] text-sm text-error flex items-start gap-2" role="alert">
-              <Warning size={16} weight="bold" className="shrink-0 mt-0.5" />
+            <div className="mb-5 px-3 py-2.5 bg-error-subtle border border-error/20 rounded-[var(--radius-sm)] text-[13px] text-error flex items-start gap-2" role="alert">
+              <Warning size={15} weight="bold" className="shrink-0 mt-0.5" />
               <span className="flex-1">{error}</span>
               <button
                 onClick={clearError}
@@ -64,54 +66,49 @@ export function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="login-email" className="text-[13px] font-medium text-text-secondary">Email</label>
-              <input
-                id="login-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                autoFocus
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="login-password" className="text-[13px] font-medium text-text-secondary">Password</label>
-              <input
-                id="login-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <button
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <Input
+              id="login-email"
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              autoFocus
+              required
+              disabled={isLoading}
+              placeholder="you@example.com"
+              icon={<Envelope size={16} weight="duotone" />}
+            />
+
+            <Input
+              id="login-password"
+              type="password"
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+              disabled={isLoading}
+              placeholder="Enter your password"
+              icon={<Lock size={16} weight="duotone" />}
+            />
+
+            <Button
               type="submit"
               disabled={isLoading || !email || !password}
-              className="w-full py-3 bg-accent text-white text-sm font-semibold rounded-[var(--radius-sm)] hover:opacity-90 active:scale-[0.98] transition-all mt-1 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+              loading={isLoading}
+              icon={!isLoading ? <SignIn size={16} weight="bold" /> : undefined}
+              size="lg"
+              className="w-full mt-1"
             >
-              {isLoading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                <>
-                  <SignIn size={16} weight="bold" />
-                  Sign In
-                </>
-              )}
-            </button>
+              {isLoading ? 'Signing in…' : 'Sign In'}
+            </Button>
           </form>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-text-dim mt-6">
+        <p className="text-center text-[13px] text-text-dim mt-6">
           Don't have an account?{' '}
           <Link to="/register" className="text-accent-text hover:underline font-medium">
             Create one
