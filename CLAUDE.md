@@ -15,30 +15,33 @@ Operator OS is an ultra-lightweight, high-performance personal AI Agent framewor
 ## Directory Structure
 ```
 /
-├── cmd/operator/           # Go CLI entry point (gateway, agent, onboard)
-├── pkg/                    # Go packages (agent, auth, billing, channels, tools…)
-├── web/                    # React frontend (Vite + Tailwind v4)
+├── cmd/operator/              # Go CLI entry point (gateway, agent, onboard)
+├── cmd/operator-launcher/     # Windows GUI launcher
+├── cmd/operator-launcher-tui/ # Terminal UI launcher
+├── pkg/                       # Go packages (agent, auth, billing, channels, tools…)
+├── web/                       # React frontend (Vite + Tailwind v4)
 │   ├── src/
-│   │   ├── components/     # UI components (layout, chat, agents, billing, admin…)
-│   │   ├── pages/          # Route-level pages
-│   │   ├── stores/         # Zustand state stores
-│   │   ├── services/       # API client + WebSocket manager
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── types/          # TypeScript type definitions
-│   │   └── styles/         # Additional CSS (hljs themes)
+│   │   ├── components/        # UI components (layout, chat, agents, billing, admin…)
+│   │   ├── pages/             # Route-level pages
+│   │   ├── stores/            # Zustand state stores
+│   │   ├── services/          # API client + WebSocket manager
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── types/             # TypeScript type definitions
+│   │   └── styles/            # Additional CSS (hljs themes)
 │   └── index.html
-├── config/                 # config.example.json
-├── docker/                 # Dockerfiles + docker-compose variants
-├── deploy/helm/            # Helm chart for Kubernetes
-├── workspace/              # Agent identity, soul, memory
-├── assets/                 # Logo, GIFs, screenshots
-├── docs/                   # Documentation hub
-├── services/api/           # Optional containerized API service layer
-├── .claude/                # Claude Code skills + commands
-├── _start/                 # Starter kit and initialization protocols
-├── Makefile                # Build, test, lint, install, Docker targets
-├── STATUS.md               # Progress tracker (read first each session)
-└── CLAUDE.md               # This file
+├── config/                    # config.example.json
+├── docker/                    # Dockerfiles + docker-compose variants
+├── deploy/helm/               # Helm chart for Kubernetes
+├── workspace/                 # Agent identity, soul, memory, skills
+├── assets/                    # Logo and README media (active only)
+├── docs/                      # Documentation hub
+├── services/api/              # Optional containerized API service layer
+├── archives/                  # Archived unused files (historical reference)
+├── .claude/                   # Claude Code skills + commands
+├── .github/                   # GitHub Actions CI workflows
+├── Makefile                   # Build, test, lint, install, Docker targets
+├── STATUS.md                  # Progress tracker (read first each session)
+└── CLAUDE.md                  # This file
 ```
 
 ## Quick Start

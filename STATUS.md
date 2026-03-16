@@ -184,7 +184,7 @@
 ### Branding & Assets
 - [ ] Verify logo renders correctly at all sizes (favicon, navbar, README)
 - [ ] Open Graph / social preview image
-- [ ] Remove any placeholder branding or starter-kit artifacts
+- [x] Remove any placeholder branding or starter-kit artifacts
 - [x] Consistent naming: "Operator OS" everywhere (no "Operator-LIVE" in user-facing text)
 
 ### Release Checklist
@@ -459,3 +459,20 @@ _None currently_
 - All frontend checks pass (typecheck, lint, production build)
 **Notes**: Phase 1 testing is substantially complete. Remaining: test coverage increase to ≥70%, manual provider/channel testing. Remaining Phase 3: API reference generation, branding verification, Docker/GoReleaser, release tag.
 **Branch**: `claude/review-status-continue-sQ2po`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Production cleanup — repository audit, archival, documentation updates, final review
+**Completed**:
+- Full repository structure audit — identified unused/outdated files across all directories
+- Created `/archives/` directory with preserved folder structure for historical context
+- Archived `_start/` directory (initialization artifacts: starter kit zip, design agent XML, setup protocol)
+- Archived 7 unreferenced assets: `arch.jpg`, `compare.jpg`, `licheervnano.png`, `termux.jpg`, `operator_mem.gif`, `operator_scedule.gif`, `agent-icon.png`
+- Archived `scripts/test-docker-mcp.sh` (manual test script, not in CI pipeline)
+- Removed empty `_start/` and `scripts/` directories
+- Updated CLAUDE.md directory structure to reflect current state (added launchers, archives, .github)
+- Updated STATUS.md — marked starter-kit artifact removal as complete
+- Created `docs/final-review.md` — comprehensive production review document with tree view, setup instructions, environment variables, deployment steps, testing checklist
+- Created `archives/README.md` — documents what was archived and why
+- Retained only actively-referenced assets: `logo.png`, `operator_code.gif`, `operator_memory.gif`, `operator_search.gif`
+**Notes**: Repository is now clean and production-ready. All unused files preserved in `/archives/` with documentation.
+**Branch**: `claude/production-cleanup-uATfk`
