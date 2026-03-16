@@ -8,11 +8,13 @@ import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react'
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
+  /** Helper text shown below input when no error */
+  helper?: string
   icon?: ReactNode
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, className = '', id, ...props }, ref) => {
+  ({ label, error, helper, icon, className = '', id, ...props }, ref) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
 
     return (
@@ -45,7 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
         </div>
-        {error && (
+        {error ? (
           <p
             id={inputId ? `${inputId}-error` : undefined}
             className="text-xs text-error"
@@ -53,7 +55,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           >
             {error}
           </p>
-        )}
+        ) : helper ? (
+          <p className="text-[11px] text-[var(--text-dim)]">{helper}</p>
+        ) : null}
       </div>
     )
   },

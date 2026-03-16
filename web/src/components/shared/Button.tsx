@@ -12,6 +12,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant
   size?: Size
   icon?: ReactNode
+  /** Render as icon-only button (square, no text padding) */
+  iconOnly?: boolean
   loading?: boolean
 }
 
@@ -32,8 +34,14 @@ const sizeClasses: Record<Size, string> = {
   lg: 'h-12 px-6 text-[15px] gap-2.5 rounded-[var(--radius)]',
 }
 
+const iconOnlySizeClasses: Record<Size, string> = {
+  sm: 'h-8 w-8 text-xs rounded-lg',
+  md: 'h-10 w-10 text-sm rounded-[var(--radius-md)]',
+  lg: 'h-12 w-12 text-[15px] rounded-[var(--radius)]',
+}
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', icon, loading, children, className = '', disabled, ...props }, ref) => {
+  ({ variant = 'primary', size = 'md', icon, iconOnly, loading, children, className = '', disabled, ...props }, ref) => {
     return (
       <button
         ref={ref}
@@ -41,10 +49,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={`
           inline-flex items-center justify-center font-medium
           transition-all duration-150 select-none
-          focus-ring
+          focus-ring cursor-pointer
           disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none
           ${variantClasses[variant]}
-          ${sizeClasses[size]}
+          ${iconOnly ? iconOnlySizeClasses[size] : sizeClasses[size]}
           ${className}
         `}
         {...props}
@@ -54,7 +62,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ) : icon ? (
           <span className="shrink-0">{icon}</span>
         ) : null}
-        {children}
+        {!iconOnly && children}
       </button>
     )
   },

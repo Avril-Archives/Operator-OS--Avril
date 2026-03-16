@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/continue-status-implementation-JbitC
+2026-03-16 by claude/continue-status-implementation-IDMLQ
 
 ---
 
@@ -100,17 +100,17 @@
 - [ ] Session panel redesign — cleaner list, search, active indicator
 
 ### Agent Management
-- [ ] Redesign `AgentCard` — status badges, model info, clean action menu
-- [ ] Redesign `AgentEditor` — form layout, validation feedback, scope selector
-- [ ] Polish `AgentList` — filter pills, empty state, loading skeleton
+- [x] Redesign `AgentCard` — status badges, model info, clean action menu (Dropdown)
+- [x] Redesign `AgentEditor` — section grouping, validation feedback, scope selector
+- [x] Polish `AgentList` — filter pills, empty state, Skeleton loading
 - [ ] Add agent creation wizard (step-by-step for new users)
 
 ### Settings
-- [ ] Redesign `ProfileForm` — avatar upload area, field styling
-- [ ] Redesign `ThemePreference` — live preview toggle
-- [ ] Redesign `ApiKeyManager` — secure display, copy, rotate actions
-- [ ] Polish `NotificationSettings` — toggle switches, grouping
-- [ ] Polish `GDPRPanel` — export/delete actions with confirmation
+- [x] Redesign `ProfileForm` — avatar upload area, field styling
+- [x] Redesign `ThemePreference` — live preview toggle (already complete)
+- [x] Redesign `ApiKeyManager` — secure display, copy, rotate actions (already complete)
+- [x] Polish `NotificationSettings` — toggle switches, grouping (already complete)
+- [x] Polish `GDPRPanel` — export/delete actions with confirmation (already complete)
 
 ### Billing & Usage
 - [ ] Redesign `PlanCard` — feature comparison, current plan highlight
@@ -135,16 +135,16 @@
 ### Auth Pages
 - [x] Redesign `Login` — premium centered card, branding, icon-based actions
 - [x] Redesign `Register` — step indicator, password strength meter
-- [ ] Redesign `Verify` — clear success/pending/error states
+- [x] Redesign `Verify` — clear success/pending/error states
 
 ### Shared Components
-- [ ] Polish `Button` — size variants, loading states, icon support
-- [ ] Polish `Input` — label, error, helper text, focus ring
-- [ ] Polish `Modal` — backdrop blur, smooth enter/exit, focus trap
-- [ ] Polish `Badge` — semantic colors (success, warning, error, info, neutral)
-- [ ] Polish `ConfirmDialog` — destructive vs. safe action styling
-- [ ] Polish `EmptyState` — illustration + CTA
-- [ ] Polish `ToastContainer` — slide-in animation, auto-dismiss, action button
+- [x] Polish `Button` — size variants, loading states, icon-only support
+- [x] Polish `Input` — label, error, helper text, focus ring
+- [x] Polish `Modal` — backdrop blur, smooth enter/exit, focus trap (already complete)
+- [x] Polish `Badge` — semantic colors (success, warning, error, info, neutral, accent)
+- [x] Polish `ConfirmDialog` — destructive vs. safe action styling (already complete)
+- [x] Polish `EmptyState` — illustration + CTA (already complete)
+- [x] Polish `ToastContainer` — theme-aware colors, action button, auto-dismiss
 - [x] Add `Skeleton` loader component (reusable)
 - [x] Add `Tooltip` component (hover/focus triggered)
 - [x] Add `Dropdown` menu component (reusable, accessible)
@@ -262,3 +262,21 @@ _None currently_
 - Verified typecheck, lint, and production build all pass cleanly
 **Notes**: Go backend requires Go 1.25.7 (env has 1.24.7) — backend work blocked on toolchain. Next: continue Phase 2 UI polish (agent management, settings, billing pages)
 **Branch**: `claude/continue-status-implementation-JbitC`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 2 UI polish — agent management, settings, shared components, Verify page
+**Completed**:
+- Polished `Button` — added `iconOnly` prop for square icon buttons, added `cursor-pointer`
+- Polished `Input` — added `helper` text prop (shown below input when no error)
+- Polished `Badge` — added `info` variant for blue info badges
+- Fixed `ToastContainer` — replaced broken Tailwind `dark:` prefix with CSS variable approach, added action button support
+- Added `action` field to Toast store (label + onClick)
+- Redesigned `AgentCard` — uses shared `Dropdown` component (accessible, keyboard-navigable), added status dot indicator, removed custom menu
+- Polished `AgentList` — loading skeleton uses `Skeleton` component with realistic card layout
+- Polished `AgentEditor` — added section grouping (Identity, Model Configuration, Capabilities) with dividers and helper text
+- Simplified `Agents` page — removed manual `menuOpenId` state (Dropdown handles its own open state)
+- Redesigned `ProfileForm` — added avatar upload placeholder area with camera overlay
+- Redesigned `Verify` page — Phosphor icons, card layout matching Login/Register, `Button`/`Input` components, clear success/pending/error states
+- Verified typecheck, lint, and production build all pass cleanly
+**Notes**: Settings components (ThemePreference, ApiKeyManager, NotificationSettings, GDPRPanel) were already well-built. Next: chat experience, billing/usage polish, admin panel, accessibility audit
+**Branch**: `claude/continue-status-implementation-IDMLQ`

@@ -7,7 +7,18 @@
 
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import {
+  EnvelopeSimple,
+  CheckCircle,
+  XCircle,
+  SpinnerGap,
+  ArrowLeft,
+  PaperPlaneTilt,
+  Warning,
+} from '@phosphor-icons/react'
 import { useAuthStore } from '../stores/authStore'
+import { Button } from '../components/shared/Button'
+import { Input } from '../components/shared/Input'
 
 type VerifyState = 'pending' | 'verifying' | 'success' | 'error'
 
@@ -57,149 +68,188 @@ export function VerifyPage() {
     }
   }
 
-  // ─── Token verification flow ───
-  if (token) {
-    return (
-      <div className="h-full flex items-center justify-center bg-bg">
-        <div className="w-full max-w-sm mx-4 animate-fade-slide text-center">
-          {verifyState === 'verifying' && (
-            <>
-              <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <h1 className="text-xl font-bold text-text">
-                Verifying your email…
-              </h1>
-              <p className="text-sm text-text-secondary mt-2">
-                This will only take a moment.
-              </p>
-            </>
-          )}
-
-          {verifyState === 'success' && (
-            <>
-              <div className="w-12 h-12 bg-success-subtle rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-success text-xl">✓</span>
-              </div>
-              <h1 className="text-xl font-bold text-text">Email Verified</h1>
-              <p className="text-sm text-text-secondary mt-2">
-                Your account is now active. You can sign in.
-              </p>
-              <Link
-                to="/login"
-                className="inline-block mt-6 px-6 py-3 bg-accent text-white text-sm font-semibold rounded-[var(--radius-sm)] hover:opacity-90 transition-opacity"
-              >
-                Sign In
-              </Link>
-            </>
-          )}
-
-          {verifyState === 'error' && (
-            <>
-              <div className="w-12 h-12 bg-error-subtle rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-error text-xl">✕</span>
-              </div>
-              <h1 className="text-xl font-bold text-text">
-                Verification Failed
-              </h1>
-              <p className="text-sm text-text-secondary mt-2">
-                {error || 'This link may be invalid or expired.'}
-              </p>
-
-              {/* Resend form */}
-              <div className="mt-6 flex flex-col gap-3">
-                <input
-                  type="email"
-                  placeholder="Enter your email to resend"
-                  value={resendEmail}
-                  onChange={(e) => setResendEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-surface border border-border rounded-[var(--radius-sm)] text-text text-sm placeholder:text-text-dim outline-none focus:border-accent transition-colors"
-                />
-                <button
-                  onClick={handleResend}
-                  disabled={isLoading || !resendEmail}
-                  className="w-full py-3 bg-surface-2 text-text text-sm font-medium rounded-[var(--radius-sm)] hover:bg-surface-3 transition-colors disabled:opacity-50"
-                >
-                  {isLoading ? 'Sending…' : 'Resend Verification Email'}
-                </button>
-              </div>
-
-              <Link
-                to="/login"
-                className="inline-block mt-4 text-sm text-accent-text hover:underline"
-              >
-                Back to sign in
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  // ─── Post-registration: check your email ───
   return (
-    <div className="h-full flex items-center justify-center bg-bg">
-      <div className="w-full max-w-sm mx-4 animate-fade-slide text-center">
-        <div className="w-12 h-12 bg-accent-subtle rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-accent-text text-xl">✉</span>
+    <div className="h-full flex items-center justify-center bg-bg px-4">
+      <div className="w-full max-w-sm animate-fade-slide">
+        {/* ─── Brand mark ─── */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center mb-4 shadow-[0_4px_16px_var(--glass-shadow)]">
+            <span className="text-white text-lg font-bold leading-none">OS</span>
+          </div>
         </div>
 
-        <h1 className="text-xl font-bold text-text">Check Your Email</h1>
-        <p className="text-sm text-text-secondary mt-2">
-          We sent a verification link to{' '}
-          {emailFromState ? (
-            <span className="text-text font-medium">{emailFromState}</span>
-          ) : (
-            'your email'
-          )}
-          . Click the link to activate your account.
-        </p>
-
-        {/* Resend */}
-        <div className="mt-8">
-          {resendSuccess ? (
-            <p className="text-sm text-success">
-              ✓ Verification email resent. Check your inbox.
-            </p>
-          ) : (
-            <>
-              {!emailFromState && (
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={resendEmail}
-                  onChange={(e) => setResendEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-surface border border-border rounded-[var(--radius-sm)] text-text text-sm placeholder:text-text-dim outline-none focus:border-accent transition-colors mb-3"
-                />
+        {/* ─── Card ─── */}
+        <div className="bg-surface border border-border rounded-[var(--radius)] p-6 shadow-[0_8px_32px_var(--glass-shadow)]">
+          {/* ─── Token verification flow ─── */}
+          {token ? (
+            <div className="text-center">
+              {verifyState === 'verifying' && (
+                <>
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mx-auto mb-4">
+                    <SpinnerGap
+                      size={28}
+                      weight="bold"
+                      className="text-[var(--accent-text)] animate-spin"
+                    />
+                  </div>
+                  <h1 className="text-xl font-bold text-[var(--text)]">
+                    Verifying your email
+                  </h1>
+                  <p className="text-sm text-[var(--text-secondary)] mt-2">
+                    This will only take a moment.
+                  </p>
+                </>
               )}
-              <button
-                onClick={handleResend}
-                disabled={isLoading || !resendEmail}
-                className="w-full py-3 bg-surface-2 text-text text-sm font-medium rounded-[var(--radius-sm)] hover:bg-surface-3 transition-colors disabled:opacity-50"
-              >
-                {isLoading ? 'Sending…' : "Didn't get the email? Resend"}
-              </button>
-            </>
-          )}
 
-          {error && (
-            <p className="text-sm text-error mt-3">
-              {error}
-              <button
-                onClick={clearError}
-                className="ml-2 text-error/60 hover:text-error"
-              >
-                ✕
-              </button>
-            </p>
+              {verifyState === 'success' && (
+                <>
+                  <div className="w-14 h-14 rounded-2xl bg-success-subtle flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle
+                      size={28}
+                      weight="fill"
+                      className="text-success"
+                    />
+                  </div>
+                  <h1 className="text-xl font-bold text-[var(--text)]">
+                    Email Verified
+                  </h1>
+                  <p className="text-sm text-[var(--text-secondary)] mt-2">
+                    Your account is now active. You can sign in.
+                  </p>
+                  <Link to="/login" className="block mt-6">
+                    <Button className="w-full">
+                      Sign In
+                    </Button>
+                  </Link>
+                </>
+              )}
+
+              {verifyState === 'error' && (
+                <>
+                  <div className="w-14 h-14 rounded-2xl bg-error-subtle flex items-center justify-center mx-auto mb-4">
+                    <XCircle
+                      size={28}
+                      weight="fill"
+                      className="text-error"
+                    />
+                  </div>
+                  <h1 className="text-xl font-bold text-[var(--text)]">
+                    Verification Failed
+                  </h1>
+                  <p className="text-sm text-[var(--text-secondary)] mt-2">
+                    {error || 'This link may be invalid or expired.'}
+                  </p>
+
+                  {/* Resend form */}
+                  <div className="mt-6 space-y-3 text-left">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email to resend"
+                      value={resendEmail}
+                      onChange={(e) => setResendEmail(e.target.value)}
+                    />
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      size="md"
+                      onClick={handleResend}
+                      disabled={isLoading || !resendEmail}
+                      loading={isLoading}
+                      icon={<PaperPlaneTilt size={16} />}
+                    >
+                      Resend Verification Email
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            /* ─── Post-registration: check your email ─── */
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mx-auto mb-4">
+                <EnvelopeSimple
+                  size={28}
+                  weight="duotone"
+                  className="text-[var(--accent-text)]"
+                />
+              </div>
+
+              <h1 className="text-xl font-bold text-[var(--text)]">
+                Check Your Email
+              </h1>
+              <p className="text-sm text-[var(--text-secondary)] mt-2">
+                We sent a verification link to{' '}
+                {emailFromState ? (
+                  <span className="text-[var(--text)] font-medium">{emailFromState}</span>
+                ) : (
+                  'your email'
+                )}
+                . Click the link to activate your account.
+              </p>
+
+              {/* Resend */}
+              <div className="mt-6">
+                {resendSuccess ? (
+                  <div className="flex items-center justify-center gap-2 text-sm text-success py-3">
+                    <CheckCircle size={16} weight="fill" />
+                    Verification email resent. Check your inbox.
+                  </div>
+                ) : (
+                  <div className="space-y-3 text-left">
+                    {!emailFromState && (
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={resendEmail}
+                        onChange={(e) => setResendEmail(e.target.value)}
+                      />
+                    )}
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      size="md"
+                      onClick={handleResend}
+                      disabled={isLoading || !resendEmail}
+                      loading={isLoading}
+                      icon={<PaperPlaneTilt size={16} />}
+                    >
+                      {emailFromState ? "Didn't get the email? Resend" : 'Resend verification'}
+                    </Button>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="flex items-center justify-between gap-2 mt-3 px-3 py-2
+                    rounded-lg bg-error-subtle text-error text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <Warning size={14} weight="fill" />
+                      {error}
+                    </div>
+                    <button
+                      onClick={clearError}
+                      className="p-0.5 rounded hover:bg-error/10 transition-colors cursor-pointer"
+                      aria-label="Dismiss error"
+                    >
+                      <XCircle size={14} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
-        <Link
-          to="/login"
-          className="inline-block mt-6 text-sm text-accent-text hover:underline"
-        >
-          Back to sign in
-        </Link>
+        {/* ─── Back to sign in ─── */}
+        <div className="mt-6 text-center">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-text)]
+              hover:underline transition-colors"
+          >
+            <ArrowLeft size={14} />
+            Back to sign in
+          </Link>
+        </div>
       </div>
     </div>
   )

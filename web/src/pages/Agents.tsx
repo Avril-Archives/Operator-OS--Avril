@@ -31,21 +31,12 @@ export function AgentsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Agent | null>(null)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all')
 
   // Fetch on mount
   useEffect(() => {
     fetchAgents()
   }, [fetchAgents])
-
-  // Close menus on outside click
-  useEffect(() => {
-    if (!menuOpenId) return
-    const handler = () => setMenuOpenId(null)
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
-  }, [menuOpenId])
 
   // ─── Handlers ───
 
@@ -168,8 +159,6 @@ export function AgentsPage() {
           agents={filteredAgents}
           loading={loading}
           error={error}
-          menuOpenId={menuOpenId}
-          onToggleMenu={setMenuOpenId}
           onCreate={handleCreate}
           onEdit={handleEdit}
           onDelete={setDeleteTarget}
@@ -225,7 +214,7 @@ function FilterPill({
       onClick={onClick}
       className={`
         px-2.5 py-1 rounded-full text-[11px] font-medium
-        transition-colors cursor-pointer
+        transition-colors cursor-pointer whitespace-nowrap
         ${active
           ? 'bg-[var(--accent-subtle)] text-[var(--accent-text)]'
           : 'text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]'

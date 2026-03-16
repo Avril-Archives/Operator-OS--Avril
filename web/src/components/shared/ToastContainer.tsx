@@ -15,63 +15,32 @@ import {
 import { useToastStore, type Toast, type ToastVariant } from '../../stores/toastStore'
 
 // ---------------------------------------------------------------------------
-// Variant config
+// Variant config — uses CSS custom properties for theme-aware colors
 // ---------------------------------------------------------------------------
 
 const VARIANT_CONFIG: Record<
   ToastVariant,
-  { icon: typeof CheckCircle; bg: string; border: string; iconColor: string }
+  { icon: typeof CheckCircle; iconClass: string; borderClass: string }
 > = {
   success: {
     icon: CheckCircle,
-    bg: 'bg-[oklch(0.25_0.04_145)]',
-    border: 'border-[oklch(0.45_0.12_145)]',
-    iconColor: 'text-[oklch(0.72_0.17_145)]',
+    iconClass: 'text-success',
+    borderClass: 'border-[var(--success)]/30',
   },
   error: {
     icon: WarningCircle,
-    bg: 'bg-[oklch(0.25_0.04_25)]',
-    border: 'border-[oklch(0.45_0.12_25)]',
-    iconColor: 'text-[oklch(0.72_0.17_25)]',
+    iconClass: 'text-error',
+    borderClass: 'border-[var(--error)]/30',
   },
   warning: {
     icon: Warning,
-    bg: 'bg-[oklch(0.28_0.04_80)]',
-    border: 'border-[oklch(0.5_0.1_80)]',
-    iconColor: 'text-[oklch(0.78_0.15_80)]',
+    iconClass: 'text-warning',
+    borderClass: 'border-[var(--warning)]/30',
   },
   info: {
     icon: Info,
-    bg: 'bg-[oklch(0.25_0.04_250)]',
-    border: 'border-[oklch(0.45_0.1_250)]',
-    iconColor: 'text-[oklch(0.72_0.14_250)]',
-  },
-}
-
-// Light theme overrides
-const VARIANT_CONFIG_LIGHT: Record<
-  ToastVariant,
-  { bg: string; border: string; iconColor: string }
-> = {
-  success: {
-    bg: 'bg-[oklch(0.97_0.01_145)]',
-    border: 'border-[oklch(0.85_0.08_145)]',
-    iconColor: 'text-[oklch(0.55_0.18_145)]',
-  },
-  error: {
-    bg: 'bg-[oklch(0.97_0.01_25)]',
-    border: 'border-[oklch(0.85_0.08_25)]',
-    iconColor: 'text-[oklch(0.55_0.18_25)]',
-  },
-  warning: {
-    bg: 'bg-[oklch(0.97_0.01_80)]',
-    border: 'border-[oklch(0.85_0.08_80)]',
-    iconColor: 'text-[oklch(0.6_0.15_80)]',
-  },
-  info: {
-    bg: 'bg-[oklch(0.97_0.01_250)]',
-    border: 'border-[oklch(0.85_0.08_250)]',
-    iconColor: 'text-[oklch(0.5_0.15_250)]',
+    iconClass: 'text-[var(--accent-text)]',
+    borderClass: 'border-[var(--accent)]/30',
   },
 }
 
@@ -104,9 +73,8 @@ const ToastItem = memo(function ToastItem({ toast: t }: { toast: Toast }) {
     }
   }, [t.duration])
 
-  const dark = VARIANT_CONFIG[t.variant]
-  const light = VARIANT_CONFIG_LIGHT[t.variant]
-  const Icon = dark.icon
+  const config = VARIANT_CONFIG[t.variant]
+  const Icon = config.icon
 
   return (
     <div
@@ -115,27 +83,32 @@ const ToastItem = memo(function ToastItem({ toast: t }: { toast: Toast }) {
       className={`
         relative flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg
         max-w-sm w-full backdrop-blur-md
+        bg-[var(--surface)] ${config.borderClass}
         transition-all duration-200 ease-out
         ${visible && !exiting ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
-        dark:${dark.bg} dark:${dark.border}
-        ${light.bg} ${light.border}
-        dark:${dark.bg} dark:${dark.border}
       `}
-      style={{
-        // Inline fallback for dark/light since Tailwind dark: prefix may not work with class strategy
-        // We use CSS custom properties to handle this more reliably
-      }}
     >
       <Icon
         size={20}
         weight="fill"
-        className={`shrink-0 mt-0.5 ${dark.iconColor}`}
+        className={`shrink-0 mt-0.5 ${config.iconClass}`}
         aria-hidden="true"
       />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-[var(--text)]">{t.title}</p>
         {t.message && (
           <p className="text-xs text-[var(--text-dim)] mt-0.5 line-clamp-2">{t.message}</p>
+        )}
+        {t.action && (
+          <button
+            onClick={() => {
+              t.action!.onClick()
+              handleDismiss()
+            }}
+            className="text-xs font-medium text-[var(--accent-text)] hover:underline mt-1.5 cursor-pointer"
+          >
+            {t.action.label}
+          </button>
         )}
       </div>
       {t.dismissible && (

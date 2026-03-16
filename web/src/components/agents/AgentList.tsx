@@ -1,20 +1,19 @@
 // ============================================================================
 // Operator OS — Agent List
-// Grid of AgentCards with create button and empty state.
+// Grid of AgentCards with create button, empty state, and loading skeleton.
 // ============================================================================
 
 import { Robot, Plus, WarningCircle } from '@phosphor-icons/react'
 import { AgentCard } from './AgentCard'
 import { Button } from '../shared/Button'
 import { EmptyState } from '../shared/EmptyState'
+import { Skeleton } from '../shared/Skeleton'
 import type { Agent } from '../../types/api'
 
 interface AgentListProps {
   agents: Agent[]
   loading: boolean
   error: string | null
-  menuOpenId: string | null
-  onToggleMenu: (id: string | null) => void
   onCreate: () => void
   onEdit: (agent: Agent) => void
   onDelete: (agent: Agent) => void
@@ -26,8 +25,6 @@ export function AgentList({
   agents,
   loading,
   error,
-  menuOpenId,
-  onToggleMenu,
   onCreate,
   onEdit,
   onDelete,
@@ -41,8 +38,23 @@ export function AgentList({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-48 rounded-[var(--radius)] bg-[var(--surface-2)] animate-pulse"
-          />
+            className="flex flex-col gap-3 p-4 rounded-[var(--radius)] border border-[var(--border-subtle)] bg-[var(--surface)]"
+          >
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-10 h-10 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </div>
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-3/4" />
+            <Skeleton className="h-12 w-full rounded-lg" />
+            <div className="flex items-center gap-3 mt-auto pt-1">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </div>
         ))}
       </div>
     )
@@ -87,8 +99,6 @@ export function AgentList({
           onEdit={onEdit}
           onDelete={onDelete}
           onSetDefault={onSetDefault}
-          menuOpenId={menuOpenId}
-          onToggleMenu={onToggleMenu}
         />
       ))}
     </div>

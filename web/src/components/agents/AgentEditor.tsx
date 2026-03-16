@@ -193,123 +193,134 @@ export function AgentEditor({ open, onClose, onSave, agent, loading }: AgentEdit
       title={isEditing ? `Edit ${agent!.name}` : 'Create Agent'}
       maxWidth="max-w-xl"
     >
-      <div className="flex flex-col gap-5">
-        {/* ─── Name ─── */}
-        <Input
-          label="Name"
-          placeholder="My Agent"
-          value={form.name}
-          onChange={(e) => update('name', e.target.value)}
-          error={errors.name}
-          autoFocus
-        />
-
-        {/* ─── Description ─── */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-medium text-[var(--text-secondary)]">
-            Description
-          </label>
-          <textarea
-            value={form.description}
-            onChange={(e) => update('description', e.target.value)}
-            placeholder="What does this agent do?"
-            rows={2}
-            className="resize-none focus-ring"
-          />
-        </div>
-
-        {/* ─── System Prompt ─── */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-medium text-[var(--text-secondary)]">
-            System Prompt
-          </label>
-          <textarea
-            value={form.system_prompt}
-            onChange={(e) => update('system_prompt', e.target.value)}
-            placeholder="You are a helpful assistant…"
-            rows={4}
-            className="resize-none font-mono text-xs focus-ring"
-          />
-        </div>
-
-        {/* ─── Model ─── */}
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-medium text-[var(--text-secondary)]">
-            Model
-          </label>
-          <select
-            value={form.model}
-            onChange={(e) => update('model', e.target.value)}
-            className="focus-ring cursor-pointer"
-          >
-            {AVAILABLE_MODELS.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-            {/* Show current value if it's custom / not in list */}
-            {form.model && !AVAILABLE_MODELS.includes(form.model) && (
-              <option value={form.model}>{form.model} (custom)</option>
-            )}
-          </select>
-        </div>
-
-        {/* ─── Numeric params row ─── */}
-        <div className="grid grid-cols-3 gap-4">
+      <div className="flex flex-col gap-6">
+        {/* ─── Identity Section ─── */}
+        <section className="flex flex-col gap-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
+            Identity
+          </h3>
           <Input
-            label="Temperature"
-            type="number"
-            step="0.1"
-            min="0"
-            max="2"
-            value={form.temperature}
-            onChange={(e) => update('temperature', e.target.value)}
-            error={errors.temperature}
+            label="Name"
+            placeholder="My Agent"
+            value={form.name}
+            onChange={(e) => update('name', e.target.value)}
+            error={errors.name}
+            autoFocus
+          />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-[var(--text-secondary)]">
+              Description
+            </label>
+            <textarea
+              value={form.description}
+              onChange={(e) => update('description', e.target.value)}
+              placeholder="What does this agent do?"
+              rows={2}
+              className="resize-none focus-ring"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-[var(--text-secondary)]">
+              System Prompt
+            </label>
+            <textarea
+              value={form.system_prompt}
+              onChange={(e) => update('system_prompt', e.target.value)}
+              placeholder="You are a helpful assistant…"
+              rows={4}
+              className="resize-none font-mono text-xs focus-ring"
+            />
+          </div>
+        </section>
+
+        <div className="border-t border-[var(--border-subtle)]" />
+
+        {/* ─── Model Configuration Section ─── */}
+        <section className="flex flex-col gap-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
+            Model Configuration
+          </h3>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-[var(--text-secondary)]">
+              Model
+            </label>
+            <select
+              value={form.model}
+              onChange={(e) => update('model', e.target.value)}
+              className="focus-ring cursor-pointer"
+            >
+              {AVAILABLE_MODELS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+              {form.model && !AVAILABLE_MODELS.includes(form.model) && (
+                <option value={form.model}>{form.model} (custom)</option>
+              )}
+            </select>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <Input
+              label="Temperature"
+              type="number"
+              step="0.1"
+              min="0"
+              max="2"
+              value={form.temperature}
+              onChange={(e) => update('temperature', e.target.value)}
+              error={errors.temperature}
+              helper="0–2"
+            />
+            <Input
+              label="Max Tokens"
+              type="number"
+              min="1"
+              value={form.max_tokens}
+              onChange={(e) => update('max_tokens', e.target.value)}
+              error={errors.max_tokens}
+            />
+            <Input
+              label="Max Iterations"
+              type="number"
+              min="1"
+              value={form.max_iterations}
+              onChange={(e) => update('max_iterations', e.target.value)}
+              error={errors.max_iterations}
+            />
+          </div>
+        </section>
+
+        <div className="border-t border-[var(--border-subtle)]" />
+
+        {/* ─── Capabilities Section ─── */}
+        <section className="flex flex-col gap-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-dim)]">
+            Capabilities
+          </h3>
+          <Input
+            label="Tools (comma-separated)"
+            placeholder="web_search, code_exec"
+            value={form.tools}
+            onChange={(e) => update('tools', e.target.value)}
+            helper="Functions available to the agent"
           />
           <Input
-            label="Max Tokens"
-            type="number"
-            min="1"
-            value={form.max_tokens}
-            onChange={(e) => update('max_tokens', e.target.value)}
-            error={errors.max_tokens}
+            label="Skills (comma-separated)"
+            placeholder="summarizer, coder"
+            value={form.skills}
+            onChange={(e) => update('skills', e.target.value)}
+            helper="Predefined behaviors"
           />
-          <Input
-            label="Max Iterations"
-            type="number"
-            min="1"
-            value={form.max_iterations}
-            onChange={(e) => update('max_iterations', e.target.value)}
-            error={errors.max_iterations}
+          <ScopeSelector
+            value={form.allowed_integrations}
+            onChange={(scopes) =>
+              setForm((prev) => ({ ...prev, allowed_integrations: scopes }))
+            }
+            integrations={integrations}
+            loading={integrationsLoading}
+            error={integrationsError}
           />
-        </div>
-
-        {/* ─── Tools ─── */}
-        <Input
-          label="Tools (comma-separated)"
-          placeholder="web_search, code_exec"
-          value={form.tools}
-          onChange={(e) => update('tools', e.target.value)}
-        />
-
-        {/* ─── Skills ─── */}
-        <Input
-          label="Skills (comma-separated)"
-          placeholder="summarizer, coder"
-          value={form.skills}
-          onChange={(e) => update('skills', e.target.value)}
-        />
-
-        {/* ─── Integration Scopes (C14) ─── */}
-        <ScopeSelector
-          value={form.allowed_integrations}
-          onChange={(scopes) =>
-            setForm((prev) => ({ ...prev, allowed_integrations: scopes }))
-          }
-          integrations={integrations}
-          loading={integrationsLoading}
-          error={integrationsError}
-        />
+        </section>
 
         {/* ─── Actions ─── */}
         <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border-subtle)]">

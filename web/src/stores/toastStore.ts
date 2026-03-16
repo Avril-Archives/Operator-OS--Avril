@@ -14,6 +14,7 @@ export interface Toast {
   message?: string
   duration?: number // ms, 0 = persistent
   dismissible?: boolean
+  action?: { label: string; onClick: () => void }
 }
 
 interface ToastState {

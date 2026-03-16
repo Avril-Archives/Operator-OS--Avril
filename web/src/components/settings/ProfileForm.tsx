@@ -11,6 +11,7 @@ import {
   Eye,
   EyeSlash,
   CheckCircle,
+  Camera,
 } from '@phosphor-icons/react'
 import { useAuthStore } from '../../stores/authStore'
 import { useSettingsStore } from '../../stores/settingsStore'
@@ -95,6 +96,35 @@ export function ProfileForm() {
         </div>
 
         <div className="space-y-4">
+          {/* Avatar upload placeholder */}
+          <div className="flex items-center gap-4 mb-2">
+            <div className="relative group">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--surface-2)] border-2 border-dashed border-[var(--border)]
+                flex items-center justify-center text-[var(--text-dim)] overflow-hidden">
+                {user?.display_name ? (
+                  <span className="text-xl font-bold text-[var(--text-secondary)]">
+                    {user.display_name.charAt(0).toUpperCase()}
+                  </span>
+                ) : (
+                  <User size={28} weight="thin" />
+                )}
+              </div>
+              <button
+                type="button"
+                className="absolute inset-0 flex items-center justify-center rounded-2xl
+                  bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                aria-label="Upload avatar"
+                title="Avatar upload coming soon"
+              >
+                <Camera size={20} weight="fill" className="text-white" />
+              </button>
+            </div>
+            <div>
+              <p className="text-xs text-[var(--text-secondary)] font-medium">Profile photo</p>
+              <p className="text-[11px] text-[var(--text-dim)]">Avatar upload coming soon</p>
+            </div>
+          </div>
+
           {/* Email — read only */}
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-medium text-text-secondary">
