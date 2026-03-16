@@ -32,6 +32,38 @@ function shouldShowTimestamp(
   return gap > 2 * 60 * 1000 // 2 minutes
 }
 
+// Show avatar for first message in a group (first overall or role changed)
+function shouldShowAvatar(
+  current: ChatMessage,
+  previous: ChatMessage | undefined,
+): boolean {
+  if (!previous) return true
+  return previous.role !== current.role
+}
+
+// Format date label for date separators
+function formatDateLabel(iso: string): string {
+  const date = new Date(iso)
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+
+  if (date.toDateString() === today.toDateString()) return 'Today'
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+  return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+// Check if we should show a date separator between two messages
+function shouldShowDateSeparator(
+  current: ChatMessage,
+  previous: ChatMessage | undefined,
+): boolean {
+  if (!previous) return true
+  const curDate = new Date(current.createdAt).toDateString()
+  const prevDate = new Date(previous.createdAt).toDateString()
+  return curDate !== prevDate
+}
+
 export function MessageList({ messages, isTyping, loading = false, streamingMessageId }: MessageListProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -140,13 +172,28 @@ export function MessageList({ messages, isTyping, loading = false, streamingMess
 
           {/* Messages */}
           <div role="list" aria-label="Chat messages">
-            {messages.map((msg, i) => (
-              <MessageBubble
-                key={msg.id}
-                message={msg}
-                showTimestamp={shouldShowTimestamp(msg, messages[i - 1])}
-              />
-            ))}
+            {messages.map((msg, i) => {
+              const prev = messages[i - 1]
+              const showDateSep = shouldShowDateSeparator(msg, prev)
+              return (
+                <div key={msg.id}>
+                  {showDateSep && (
+                    <div className="flex items-center gap-3 py-3 select-none" aria-label={`Messages from ${formatDateLabel(msg.createdAt)}`}>
+                      <div className="flex-1 h-px bg-[var(--border-subtle)]" />
+                      <span className="text-[10px] font-medium text-[var(--text-dim)] uppercase tracking-wider">
+                        {formatDateLabel(msg.createdAt)}
+                      </span>
+                      <div className="flex-1 h-px bg-[var(--border-subtle)]" />
+                    </div>
+                  )}
+                  <MessageBubble
+                    message={msg}
+                    showTimestamp={shouldShowTimestamp(msg, prev)}
+                    showAvatar={shouldShowAvatar(msg, prev)}
+                  />
+                </div>
+              )
+            })}
           </div>
 
           {/* Typing indicator */}

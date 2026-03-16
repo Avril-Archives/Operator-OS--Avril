@@ -3,9 +3,11 @@
 // Table showing token usage per model with proportional bars.
 // ============================================================================
 
-import { memo, useMemo } from 'react'
-import { Cube } from '@phosphor-icons/react'
+import { memo, useMemo, useState } from 'react'
+import { Cube, CaretUp, CaretDown } from '@phosphor-icons/react'
 import type { ModelUsage } from '../../types/api'
+
+type SortKey = 'tokens' | 'requests' | 'cost'
 
 interface ModelBreakdownProps {
   models: ModelUsage[]
@@ -30,11 +32,29 @@ export const ModelBreakdown = memo(function ModelBreakdown({
   models,
   loading,
 }: ModelBreakdownProps) {
+  const [sortKey, setSortKey] = useState<SortKey>('tokens')
+  const [sortAsc, setSortAsc] = useState(false)
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortAsc(!sortAsc)
+    } else {
+      setSortKey(key)
+      setSortAsc(false)
+    }
+  }
+
   const { sorted, maxTokens } = useMemo(() => {
-    const s = [...models].sort((a, b) => b.total_tokens - a.total_tokens)
+    const comparators: Record<SortKey, (a: ModelUsage, b: ModelUsage) => number> = {
+      tokens: (a, b) => b.total_tokens - a.total_tokens,
+      requests: (a, b) => b.requests - a.requests,
+      cost: (a, b) => b.cost - a.cost,
+    }
+    const compare = comparators[sortKey]
+    const s = [...models].sort((a, b) => sortAsc ? -compare(a, b) : compare(a, b))
     const max = Math.max(...s.map((m) => m.total_tokens), 1)
     return { sorted: s, maxTokens: max }
-  }, [models])
+  }, [models, sortKey, sortAsc])
 
   if (loading) {
     return (
@@ -69,7 +89,29 @@ export const ModelBreakdown = memo(function ModelBreakdown({
 
   return (
     <div className="bg-[var(--surface)] border border-border-subtle rounded-[var(--radius-md)] p-5">
-      <h3 className="text-sm font-semibold text-text mb-5">By Model</h3>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-text">By Model</h3>
+        <div className="flex items-center gap-1">
+          {(['tokens', 'requests', 'cost'] as SortKey[]).map((key) => {
+            const isActive = sortKey === key
+            const SortIcon = isActive && sortAsc ? CaretUp : CaretDown
+            return (
+              <button
+                key={key}
+                onClick={() => handleSort(key)}
+                className={`flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
+                  isActive
+                    ? 'text-accent-text bg-accent-subtle'
+                    : 'text-text-dim hover:text-text-secondary'
+                }`}
+              >
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {isActive && <SortIcon size={10} weight="bold" />}
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
       <div className="space-y-4">
         {sorted.map((model, idx) => {

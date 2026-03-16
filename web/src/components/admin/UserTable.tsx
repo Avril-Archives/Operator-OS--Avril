@@ -3,7 +3,7 @@
 // Responsive user list with role/status badges and action menus.
 // ============================================================================
 
-import { memo, useState, useRef, useEffect, useCallback } from 'react'
+import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import {
   DotsThreeVertical,
   UserCircle,
@@ -14,6 +14,8 @@ import {
   Crown,
   User as UserIcon,
   EnvelopeSimple,
+  CaretUp,
+  CaretDown,
 } from '@phosphor-icons/react'
 import { Badge } from '../shared/Badge'
 import type { AdminUser } from '../../types/api'
@@ -21,6 +23,8 @@ import type { AdminUser } from '../../types/api'
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+type SortField = 'name' | 'status' | 'role' | 'joined'
 
 interface UserTableProps {
   users: AdminUser[]
@@ -307,6 +311,36 @@ function UserTableSkeleton() {
 // User Table
 // ---------------------------------------------------------------------------
 
+function SortableHeader({
+  label,
+  field,
+  activeField,
+  ascending,
+  onSort,
+  className = '',
+}: {
+  label: string
+  field: SortField
+  activeField: SortField
+  ascending: boolean
+  onSort: (field: SortField) => void
+  className?: string
+}) {
+  const isActive = activeField === field
+  const Icon = isActive && ascending ? CaretUp : CaretDown
+  return (
+    <button
+      onClick={() => onSort(field)}
+      className={`flex items-center gap-0.5 cursor-pointer hover:text-[var(--text-secondary)] transition-colors ${
+        isActive ? 'text-[var(--accent-text)]' : ''
+      } ${className}`}
+    >
+      {label}
+      {isActive && <Icon size={9} weight="bold" />}
+    </button>
+  )
+}
+
 export const UserTable = memo(function UserTable({
   users,
   loading,
@@ -316,6 +350,37 @@ export const UserTable = memo(function UserTable({
   onSetRole,
   onDelete,
 }: UserTableProps) {
+  const [sortField, setSortField] = useState<SortField>('joined')
+  const [sortAsc, setSortAsc] = useState(false)
+
+  const handleSort = useCallback((field: SortField) => {
+    if (sortField === field) {
+      setSortAsc((a) => !a)
+    } else {
+      setSortField(field)
+      setSortAsc(false)
+    }
+  }, [sortField])
+
+  const sortedUsers = useMemo(() => {
+    const compare = (a: AdminUser, b: AdminUser): number => {
+      switch (sortField) {
+        case 'name':
+          return (a.display_name || a.email).localeCompare(b.display_name || b.email)
+        case 'status':
+          return a.status.localeCompare(b.status)
+        case 'role':
+          return a.role.localeCompare(b.role)
+        case 'joined':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        default:
+          return 0
+      }
+    }
+    const sorted = [...users].sort(compare)
+    return sortAsc ? sorted.reverse() : sorted
+  }, [users, sortField, sortAsc])
+
   if (loading) {
     return (
       <div className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface)] overflow-hidden">
@@ -340,21 +405,21 @@ export const UserTable = memo(function UserTable({
 
   return (
     <div className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface)] overflow-hidden">
-      {/* Column headers — desktop */}
+      {/* Column headers — desktop with sortable columns */}
       <div className="hidden sm:flex items-center gap-3 px-4 py-2
         border-b border-[var(--border-subtle)] bg-[var(--surface-2)]/50
-        text-[10px] font-semibold text-[var(--text-dim)] uppercase tracking-wider"
+        text-[10px] font-semibold text-[var(--text-dim)] uppercase tracking-wider select-none"
       >
-        <div className="w-9 shrink-0" /> {/* Avatar column */}
-        <div className="flex-1">User</div>
-        <div className="hidden sm:block w-20">Status</div>
-        <div className="hidden md:block w-14">Role</div>
-        <div className="hidden lg:block w-24 text-right">Joined</div>
-        <div className="w-8 shrink-0" /> {/* Actions column */}
+        <div className="w-9 shrink-0" />
+        <SortableHeader label="User" field="name" activeField={sortField} ascending={sortAsc} onSort={handleSort} className="flex-1" />
+        <SortableHeader label="Status" field="status" activeField={sortField} ascending={sortAsc} onSort={handleSort} className="hidden sm:flex w-20" />
+        <SortableHeader label="Role" field="role" activeField={sortField} ascending={sortAsc} onSort={handleSort} className="hidden md:flex w-14" />
+        <SortableHeader label="Joined" field="joined" activeField={sortField} ascending={sortAsc} onSort={handleSort} className="hidden lg:flex w-24 justify-end" />
+        <div className="w-8 shrink-0" />
       </div>
 
       {/* Rows */}
-      {users.map((user) => (
+      {sortedUsers.map((user) => (
         <UserRow
           key={user.id}
           user={user}

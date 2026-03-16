@@ -32,7 +32,7 @@ function BottomTabItem({ item }: { item: typeof tabs[number] }) {
       aria-label={item.label}
       {...prefetchProps}
       className={({ isActive }) =>
-        `flex flex-col items-center justify-center gap-0.5
+        `relative flex flex-col items-center justify-center gap-0.5
          min-w-[44px] min-h-[44px] px-2 py-1
          rounded-lg text-[10px] font-medium
          transition-colors duration-200 select-none
@@ -43,6 +43,10 @@ function BottomTabItem({ item }: { item: typeof tabs[number] }) {
     >
       {({ isActive }) => (
         <>
+          {/* Active indicator pill */}
+          {isActive && (
+            <span className="absolute top-0.5 left-1/2 -translate-x-1/2 w-4 h-[3px] rounded-full bg-[var(--accent)] animate-scale-in" />
+          )}
           <Icon size={22} weight={isActive ? 'fill' : 'regular'} aria-hidden="true" />
           <span className="leading-none" aria-hidden="true">{item.label}</span>
         </>

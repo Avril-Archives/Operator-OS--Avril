@@ -88,7 +88,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors cursor-pointer"
             aria-label="Close menu"
           >
             <X size={18} />

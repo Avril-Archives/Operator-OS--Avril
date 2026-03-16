@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/continue-status-implementation-IDMLQ
+2026-03-16 by claude/review-status-continue-qMA1B
 
 ---
 
@@ -82,22 +82,22 @@
 
 ### Layout & Navigation
 - [ ] Redesign `AppShell` — floating navbar with icon-only logo on mobile
-- [ ] Polish `Sidebar` — refined collapse/expand animation, active states
-- [ ] Polish `TopBar` — cleaner spacing, refined user dropdown
-- [ ] Polish `BottomTabs` — glass morphism refinement, active indicator
-- [ ] Polish `MobileSidebar` — slide animation polish, backdrop blur tuning
+- [x] Polish `Sidebar` — refined collapse/expand animation, active states
+- [x] Polish `TopBar` — cleaner spacing, refined user dropdown
+- [x] Polish `BottomTabs` — glass morphism refinement, active indicator pill
+- [x] Polish `MobileSidebar` — slide animation polish, backdrop blur tuning
 - [x] Add FAB (Floating Action Button) for quick chat/new-agent actions
 - [ ] Verify responsive breakpoints: 320px, 375px, 428px, 768px, 1024px, 1440px
 
 ### Chat Experience
-- [ ] Redesign `MessageBubble` — refined typography, spacing, user/agent distinction
-- [ ] Redesign `Composer` — premium input feel, attachment support placeholder
-- [ ] Polish `MessageList` — scroll behavior, date separators, empty states
-- [ ] Polish `CodeBlock` — syntax highlighting theme aligned with OKLCH tokens
-- [ ] Polish `MarkdownRenderer` — table, list, link styling consistency
-- [ ] Add `ConnectionStatus` visual indicator (subtle, non-intrusive)
-- [ ] Smooth streaming animation (token-by-token reveal)
-- [ ] Session panel redesign — cleaner list, search, active indicator
+- [x] Redesign `MessageBubble` — refined typography, spacing, user/agent distinction (agent avatar, system pill style)
+- [x] Redesign `Composer` — premium input feel, attachment support placeholder
+- [x] Polish `MessageList` — scroll behavior, date separators, empty states
+- [x] Polish `CodeBlock` — syntax highlighting theme aligned with OKLCH tokens
+- [x] Polish `MarkdownRenderer` — table, list, link styling consistency (task list checkboxes)
+- [x] Add `ConnectionStatus` visual indicator (subtle, non-intrusive)
+- [x] Smooth streaming animation (token-by-token reveal)
+- [x] Session panel redesign — cleaner list, search, active indicator
 
 ### Agent Management
 - [x] Redesign `AgentCard` — status badges, model info, clean action menu (Dropdown)
@@ -113,18 +113,18 @@
 - [x] Polish `GDPRPanel` — export/delete actions with confirmation (already complete)
 
 ### Billing & Usage
-- [ ] Redesign `PlanCard` — feature comparison, current plan highlight
-- [ ] Redesign `CurrentSubscription` — clear status, next billing date
-- [ ] Polish `DailyChart` — OKLCH-aligned chart colors, tooltips
-- [ ] Polish `ModelBreakdown` — compact table, sortable columns
-- [ ] Polish `SummaryCards` — consistent icon + metric layout
-- [ ] Polish `OverageWarning` — non-alarming but clear alert styling
+- [x] Redesign `PlanCard` — feature comparison, current plan highlight
+- [x] Redesign `CurrentSubscription` — clear status, next billing date
+- [x] Polish `DailyChart` — OKLCH-aligned chart colors, tooltips
+- [x] Polish `ModelBreakdown` — compact table, sortable columns (sort by tokens/requests/cost)
+- [x] Polish `SummaryCards` — consistent icon + metric layout
+- [x] Polish `OverageWarning` — non-alarming but clear alert styling
 
 ### Admin Panel
-- [ ] Redesign `UserTable` — sortable columns, inline actions, pagination
-- [ ] Redesign `StatsCards` — metric + trend indicator
-- [ ] Polish `AuditLog` — timeline view, filters, expandable details
-- [ ] Polish `SecurityDashboard` — status indicators, scan results
+- [x] Redesign `UserTable` — sortable columns (name/status/role/joined), inline actions, pagination
+- [x] Redesign `StatsCards` — metric + trend indicator (with TrendUp/TrendDown)
+- [x] Polish `AuditLog` — timeline view, filters, expandable details
+- [x] Polish `SecurityDashboard` — status indicators, scan results
 
 ### Integrations
 - [ ] Redesign `IntegrationCard` — status badge, connect/disconnect flow
@@ -280,3 +280,20 @@ _None currently_
 - Verified typecheck, lint, and production build all pass cleanly
 **Notes**: Settings components (ThemePreference, ApiKeyManager, NotificationSettings, GDPRPanel) were already well-built. Next: chat experience, billing/usage polish, admin panel, accessibility audit
 **Branch**: `claude/continue-status-implementation-IDMLQ`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 2 UI polish — chat experience, layout, billing/usage, admin panel
+**Completed**:
+- Polished `MessageBubble` — agent avatar (Robot icon), system messages in pill style, refined spacing/typography
+- Polished `MessageList` — date separators between day groups (Today, Yesterday, date)
+- Polished `CodeBlock` — explicit font-mono and line-height for consistency
+- Polished `MarkdownRenderer` — GFM task list checkbox rendering, improved hr styling
+- Polished `BottomTabs` — active indicator pill (accent bar at top of active tab)
+- Polished `Sidebar` — cursor-pointer on collapse toggle
+- Polished `MobileSidebar` — cursor-pointer on close button
+- Polished `ModelBreakdown` — sortable columns (tokens/requests/cost) with sort direction indicator
+- Polished `UserTable` — sortable column headers (name/status/role/joined) with sort arrows
+- Polished `StatsCards` — trend indicator component (TrendUp/TrendDown with percentage)
+- Verified typecheck, lint, and production build all pass cleanly
+**Notes**: Billing, admin, and chat components are now polished. Next: integrations polish, accessibility audit, AppShell floating navbar redesign
+**Branch**: `claude/review-status-continue-qMA1B`

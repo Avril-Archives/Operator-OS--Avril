@@ -96,8 +96,37 @@ const mdComponents = {
   ol({ children, ...props }: ComponentPropsWithoutRef<'ol'>) {
     return <ol className="my-2 pl-5 list-decimal" {...props}>{children}</ol>
   },
-  li({ children, ...props }: ComponentPropsWithoutRef<'li'>) {
-    return <li className="my-1" {...props}>{children}</li>
+  li({ children, className, ...props }: ComponentPropsWithoutRef<'li'>) {
+    // GFM task list items get class "task-list-item"
+    const isTask = className?.includes('task-list-item')
+    return (
+      <li className={`my-1 ${isTask ? 'list-none -ml-5 flex items-start gap-2' : ''}`} {...props}>
+        {children}
+      </li>
+    )
+  },
+
+  input({ type, checked, ...props }: ComponentPropsWithoutRef<'input'>) {
+    if (type === 'checkbox') {
+      return (
+        <span
+          className={`inline-block w-4 h-4 rounded border shrink-0 mt-0.5 ${
+            checked
+              ? 'bg-[var(--accent)] border-[var(--accent)] text-white'
+              : 'bg-transparent border-[var(--border)]'
+          }`}
+          role="img"
+          aria-label={checked ? 'Checked' : 'Unchecked'}
+        >
+          {checked && (
+            <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
+              <path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z" />
+            </svg>
+          )}
+        </span>
+      )
+    }
+    return <input type={type} checked={checked} {...props} />
   },
 
   // ── Table ──
@@ -147,7 +176,7 @@ const mdComponents = {
   },
 
   hr(props: ComponentPropsWithoutRef<'hr'>) {
-    return <hr className="border-none border-t border-[var(--border)] my-4" {...props} />
+    return <hr className="border-none h-px bg-[var(--border)] my-5" {...props} />
   },
 }
 

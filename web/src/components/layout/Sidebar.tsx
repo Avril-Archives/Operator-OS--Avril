@@ -102,7 +102,7 @@ export function Sidebar() {
       <div className="px-2 pb-3 pt-1 border-t border-border-subtle shrink-0">
         <button
           onClick={toggleSidebar}
-          className={`flex items-center gap-3 w-full rounded-lg py-2.5 text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-all duration-150 ${
+          className={`flex items-center gap-3 w-full rounded-lg py-2.5 text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-all duration-150 cursor-pointer ${
             sidebarOpen ? 'px-3' : 'px-0 justify-center'
           }`}
           aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
