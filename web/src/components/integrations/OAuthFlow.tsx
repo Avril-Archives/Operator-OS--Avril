@@ -1,7 +1,7 @@
 // ============================================================================
 // Operator OS — OAuth Flow Component
 // Scope consent dialog + popup authorization for OAuth integrations.
-// Shows available scopes, handles the popup lifecycle, and reports results.
+// Shows step progress indicator, available scopes, handles the popup lifecycle.
 // ============================================================================
 
 import { memo, useState, useEffect, useCallback, useMemo } from 'react'
@@ -21,6 +21,8 @@ import {
   Globe,
   Warning,
   ArrowsClockwise,
+  ListChecks,
+  Lock,
 } from '@phosphor-icons/react'
 import { Modal } from '../shared/Modal'
 import { Button } from '../shared/Button'
@@ -51,6 +53,83 @@ interface ScopeInfo {
   description: string
   icon: React.ReactNode
   category: 'read' | 'write' | 'delete' | 'admin'
+}
+
+// ---------------------------------------------------------------------------
+// Step progress indicator
+// ---------------------------------------------------------------------------
+
+const STEPS = [
+  { key: 'consent', label: 'Review', icon: ListChecks },
+  { key: 'authorizing', label: 'Authorize', icon: Lock },
+  { key: 'success', label: 'Done', icon: CheckCircle },
+] as const
+
+function StepIndicator({ currentStep }: { currentStep: FlowStep }) {
+  const stepIndex = currentStep === 'error'
+    ? 1 // Error shows at the "Authorize" step
+    : STEPS.findIndex((s) => s.key === currentStep)
+
+  return (
+    <div className="flex items-center justify-center gap-0 mb-2">
+      {STEPS.map((step, i) => {
+        const isComplete = i < stepIndex
+        const isCurrent = i === stepIndex
+        const isError = currentStep === 'error' && i === 1
+        const Icon = step.icon
+
+        return (
+          <div key={step.key} className="flex items-center">
+            {/* Step circle */}
+            <div className="flex flex-col items-center gap-1">
+              <div
+                className={`
+                  w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300
+                  ${isError
+                    ? 'bg-[var(--error-subtle)] text-[var(--error)]'
+                    : isComplete
+                      ? 'bg-[var(--success-subtle)] text-[var(--success)]'
+                      : isCurrent
+                        ? 'bg-[var(--accent-subtle)] text-[var(--accent-text)]'
+                        : 'bg-[var(--surface-2)] text-[var(--text-dim)]'
+                  }
+                `}
+              >
+                {isComplete ? (
+                  <CheckCircle size={16} weight="fill" />
+                ) : isError ? (
+                  <XCircle size={16} weight="fill" />
+                ) : (
+                  <Icon size={14} weight={isCurrent ? 'fill' : 'regular'} />
+                )}
+              </div>
+              <span
+                className={`text-[10px] font-medium ${
+                  isError
+                    ? 'text-[var(--error)]'
+                    : isComplete || isCurrent
+                      ? 'text-[var(--text-secondary)]'
+                      : 'text-[var(--text-dim)]'
+                }`}
+              >
+                {isError ? 'Failed' : step.label}
+              </span>
+            </div>
+
+            {/* Connector line */}
+            {i < STEPS.length - 1 && (
+              <div
+                className={`
+                  w-12 h-px mx-1 mb-4 transition-colors duration-300
+                  ${i < stepIndex ? 'bg-[var(--success)]' : 'bg-[var(--border-subtle)]'}
+                `}
+              />
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -266,6 +345,9 @@ export const OAuthFlow = memo(function OAuthFlow({
       maxWidth="md"
     >
       <div className="space-y-5">
+        {/* ─── Step Progress Indicator ─── */}
+        <StepIndicator currentStep={step} />
+
         {/* ─── Step: Consent ─── */}
         {step === 'consent' && (
           <>

@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/review-status-continue-qMA1B
+2026-03-16 by claude/review-status-continue-Gk752
 
 ---
 
@@ -81,7 +81,7 @@
 - [ ] Test safe-area-inset rendering on notch devices (iOS, Android)
 
 ### Layout & Navigation
-- [ ] Redesign `AppShell` — floating navbar with icon-only logo on mobile
+- [x] Redesign `AppShell` — floating navbar (sticky glass TopBar) with icon-only logo on mobile
 - [x] Polish `Sidebar` — refined collapse/expand animation, active states
 - [x] Polish `TopBar` — cleaner spacing, refined user dropdown
 - [x] Polish `BottomTabs` — glass morphism refinement, active indicator pill
@@ -127,10 +127,10 @@
 - [x] Polish `SecurityDashboard` — status indicators, scan results
 
 ### Integrations
-- [ ] Redesign `IntegrationCard` — status badge, connect/disconnect flow
-- [ ] Polish `IntegrationGrid` — responsive grid, category filtering
-- [ ] Polish `OAuthFlow` — clear progress steps, error handling
-- [ ] Polish `ApiKeyDialog` — masked input, copy, regenerate
+- [x] Redesign `IntegrationCard` — status badge, connect/disconnect flow (shared Dropdown, expanded icon mapping)
+- [x] Polish `IntegrationGrid` — responsive grid, shared Skeleton loading
+- [x] Polish `OAuthFlow` — step progress indicator, clear error handling
+- [x] Polish `ApiKeyDialog` — masked input, clipboard paste, security note, helper text
 
 ### Auth Pages
 - [x] Redesign `Login` — premium centered card, branding, icon-based actions
@@ -297,3 +297,16 @@ _None currently_
 - Verified typecheck, lint, and production build all pass cleanly
 **Notes**: Billing, admin, and chat components are now polished. Next: integrations polish, accessibility audit, AppShell floating navbar redesign
 **Branch**: `claude/review-status-continue-qMA1B`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 2 UI polish — integrations components, AppShell floating navbar
+**Completed**:
+- Redesigned `IntegrationCard` — replaced custom menu with shared `Dropdown` component (accessible, keyboard-navigable), expanded icon mapping (GitHub, Slack, Zapier/webhook, API/REST), removed manual `menuOpen` state, fixed flex-wrap to horizontal scroll
+- Polished `IntegrationGrid` — replaced custom skeleton with shared `Skeleton` component for consistent loading states
+- Polished `OAuthFlow` — added multi-step progress indicator (Review → Authorize → Done) with visual state for current/complete/error steps
+- Polished `ApiKeyDialog` — added clipboard paste button with "Pasted" feedback, helper text for key location, security note about encryption at rest, `ShieldCheck` icon
+- Redesigned `AppShell` — floating navbar: sticky glass-morphism TopBar with backdrop blur, icon-only "OS" logo on mobile, proper scroll container structure
+- Fixed `Integrations` page — replaced `flex-wrap` with `overflow-x-auto scrollbar-none` per design system rules
+- Verified typecheck, lint, and production build all pass cleanly
+**Notes**: All integration components and AppShell are now polished. Next: agent creation wizard, responsive breakpoints verification, accessibility audit
+**Branch**: `claude/review-status-continue-Gk752`
