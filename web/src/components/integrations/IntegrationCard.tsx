@@ -1,6 +1,7 @@
 // ============================================================================
 // Operator OS — Integration Card
 // Displays an integration with status, tools, and connect/disconnect actions.
+// Uses shared Dropdown for the action menu.
 // ============================================================================
 
 import { memo, useState } from 'react'
@@ -15,9 +16,14 @@ import {
   CaretUp,
   GoogleLogo,
   ShoppingBag,
+  GithubLogo,
+  SlackLogo,
+  Globe,
+  Lightning,
 } from '@phosphor-icons/react'
 import { Badge } from '../shared/Badge'
 import { Button } from '../shared/Button'
+import { Dropdown, type DropdownItem } from '../shared/Dropdown'
 import { StatusBadge } from './StatusBadge'
 import type { IntegrationSummary, IntegrationStatus, UserIntegration } from '../../types/api'
 
@@ -37,6 +43,10 @@ function IntegrationIcon({ name, size = 24 }: { name: string; size?: number }) {
   const lower = name.toLowerCase()
   if (lower.includes('google')) return <GoogleLogo size={size} weight="fill" />
   if (lower.includes('shopify')) return <ShoppingBag size={size} weight="fill" />
+  if (lower.includes('github')) return <GithubLogo size={size} weight="fill" />
+  if (lower.includes('slack')) return <SlackLogo size={size} weight="fill" />
+  if (lower.includes('zapier') || lower.includes('webhook')) return <Lightning size={size} weight="fill" />
+  if (lower.includes('api') || lower.includes('rest')) return <Globe size={size} weight="fill" />
   return <Plugs size={size} weight="fill" />
 }
 
@@ -60,7 +70,6 @@ export const IntegrationCard = memo(function IntegrationCard({
   connectingId,
   disconnectingId,
 }: IntegrationCardProps) {
-  const [menuOpen, setMenuOpen] = useState(false)
   const [toolsExpanded, setToolsExpanded] = useState(false)
 
   const isConnected = userIntegration?.status === 'active'
@@ -74,6 +83,26 @@ export const IntegrationCard = memo(function IntegrationCard({
   const hasIssue = isFailed || isRevoked || tokenExpired || needsRefresh
 
   const connectionStatus = userIntegration?.status ?? 'disconnected'
+
+  // Build dropdown menu items for connected integrations
+  const menuItems: DropdownItem[] = []
+  if (isConnected && hasIssue) {
+    menuItems.push({
+      id: 'reconnect',
+      label: 'Reconnect',
+      icon: <ArrowsClockwise size={15} />,
+      onSelect: () => onReconnect(integration.id),
+    })
+  }
+  if (isConnected) {
+    menuItems.push({
+      id: 'disconnect',
+      label: 'Disconnect',
+      icon: <Trash size={15} />,
+      danger: true,
+      onSelect: () => onDisconnect(integration.id),
+    })
+  }
 
   return (
     <div
@@ -102,7 +131,7 @@ export const IntegrationCard = memo(function IntegrationCard({
             <IntegrationIcon name={integration.name} size={22} />
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-[var(--text)] truncate">
                 {integration.name}
               </h3>
@@ -124,52 +153,23 @@ export const IntegrationCard = memo(function IntegrationCard({
           </div>
         </div>
 
-        {/* ─── Connected menu ─── */}
-        {isConnected && (
-          <div className="relative shrink-0">
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setMenuOpen(!menuOpen)
-              }}
-              className="p-1.5 rounded-lg text-[var(--text-dim)]
-                hover:text-[var(--text)] hover:bg-[var(--surface-2)]
-                opacity-0 group-hover:opacity-100 focus:opacity-100
-                transition-all cursor-pointer"
-              aria-label={`Actions for ${integration.name}`}
-            >
-              <DotsThreeVertical size={18} weight="bold" />
-            </button>
-
-            {menuOpen && (
-              <div
-                className="absolute right-0 top-full mt-1 z-30 w-44
-                  bg-[var(--surface)] border border-[var(--border)]
-                  rounded-[var(--radius-md)] shadow-xl
-                  animate-fade-slide-down py-1"
+        {/* ─── Connected menu (shared Dropdown) ─── */}
+        {isConnected && menuItems.length > 0 && (
+          <Dropdown
+            trigger={
+              <button
+                className="p-1.5 rounded-lg text-[var(--text-dim)]
+                  hover:text-[var(--text)] hover:bg-[var(--surface-2)]
+                  opacity-0 group-hover:opacity-100 focus:opacity-100
+                  transition-all cursor-pointer"
+                aria-label={`Actions for ${integration.name}`}
               >
-                {(hasIssue) && (
-                  <MenuButton
-                    icon={<ArrowsClockwise size={15} />}
-                    label="Reconnect"
-                    onClick={() => {
-                      setMenuOpen(false)
-                      onReconnect(integration.id)
-                    }}
-                  />
-                )}
-                <MenuButton
-                  icon={<Trash size={15} />}
-                  label="Disconnect"
-                  danger
-                  onClick={() => {
-                    setMenuOpen(false)
-                    onDisconnect(integration.id)
-                  }}
-                />
-              </div>
-            )}
-          </div>
+                <DotsThreeVertical size={18} weight="bold" />
+              </button>
+            }
+            items={menuItems}
+            align="end"
+          />
         )}
       </div>
 
@@ -222,12 +222,12 @@ export const IntegrationCard = memo(function IntegrationCard({
           </button>
 
           {toolsExpanded && (
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <div className="mt-2 flex gap-1.5 overflow-x-auto scrollbar-none">
               {integration.tools.map((tool) => (
                 <span
                   key={tool.name}
                   title={tool.description}
-                  className="px-2 py-0.5 text-[10px] font-mono
+                  className="shrink-0 px-2 py-0.5 text-[10px] font-mono
                     bg-[var(--surface-2)] text-[var(--text-dim)]
                     rounded-md border border-[var(--border-subtle)]
                     hover:text-[var(--text-secondary)] transition-colors"
@@ -275,36 +275,3 @@ export const IntegrationCard = memo(function IntegrationCard({
     </div>
   )
 })
-
-// ---------------------------------------------------------------------------
-// Menu button helper
-// ---------------------------------------------------------------------------
-
-function MenuButton({
-  icon,
-  label,
-  danger,
-  onClick,
-}: {
-  icon: React.ReactNode
-  label: string
-  danger?: boolean
-  onClick: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium
-        transition-colors cursor-pointer
-        ${danger
-          ? 'text-[var(--error)] hover:bg-[var(--error-subtle)]'
-          : 'text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
-        }
-      `}
-    >
-      {icon}
-      {label}
-    </button>
-  )
-}

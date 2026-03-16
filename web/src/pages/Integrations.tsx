@@ -175,7 +175,7 @@ export function IntegrationsPage() {
         )}
 
         {/* Search + view filter */}
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3 overflow-x-auto scrollbar-none">
           {/* Search */}
           <div className="relative flex-1 min-w-[200px] max-w-sm">
             <MagnifyingGlass

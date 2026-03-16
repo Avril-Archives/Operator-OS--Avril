@@ -1,6 +1,6 @@
 // ============================================================================
 // Operator OS — App Shell
-// Root layout: Sidebar (desktop) + TopBar + Content + BottomTabs (mobile).
+// Root layout: Sidebar (desktop) + floating TopBar + Content + BottomTabs.
 // Includes mobile slide-over sidebar with backdrop.
 // ============================================================================
 
@@ -41,8 +41,10 @@ export function AppShell() {
       <MobileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* ─── Main area ─── */}
-      <div className="flex-1 flex flex-col min-w-0 h-full">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-y-auto">
         <OfflineBanner />
+
+        {/* ─── Floating TopBar (sticky within scroll container) ─── */}
         <TopBar />
 
         {/* ─── Page content ─── */}

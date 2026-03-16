@@ -1,6 +1,7 @@
 // ============================================================================
-// Operator OS — Top Bar
-// Persistent header with page title, theme toggle, and user menu.
+// Operator OS — Top Bar (Floating Navbar)
+// Persistent floating header with icon-only logo on mobile, page title,
+// theme toggle, and user menu. Glass morphism for floating effect.
 // ============================================================================
 
 import { useState, useRef, useEffect } from 'react'
@@ -58,21 +59,29 @@ export function TopBar() {
   return (
     <header
       role="banner"
-      className="flex items-center justify-between h-14 px-4 md:px-6 border-b border-border-subtle bg-surface/50 backdrop-blur-sm shrink-0 z-40"
+      className="sticky top-0 flex items-center justify-between h-14 px-4 md:px-6 glass z-40 shrink-0"
       style={{ paddingTop: 'var(--safe-t)' }}
     >
-      {/* ─── Left: mobile menu + page title ─── */}
+      {/* ─── Left: logo (mobile) + hamburger + page title ─── */}
       <div className="flex items-center gap-3">
-        {/* Mobile hamburger — toggles sidebar (handled via mobile overlay in future) */}
-        <button
-          className="md:hidden flex items-center justify-center p-1.5 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors focus-ring"
-          aria-label="Open navigation menu"
-          onClick={() => useUIStore.getState().toggleSidebar()}
-        >
-          <List size={20} />
-        </button>
+        {/* Mobile: icon-only logo + hamburger */}
+        <div className="md:hidden flex items-center gap-2">
+          {/* Icon-only logo */}
+          <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center shrink-0">
+            <span className="text-white text-[10px] font-bold leading-none">OS</span>
+          </div>
 
-        <h1 className="text-[15px] font-semibold text-text">{title}</h1>
+          {/* Hamburger */}
+          <button
+            className="flex items-center justify-center p-1.5 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors focus-ring cursor-pointer"
+            aria-label="Open navigation menu"
+            onClick={() => useUIStore.getState().toggleSidebar()}
+          >
+            <List size={20} />
+          </button>
+        </div>
+
+        <h1 className="text-[15px] font-semibold text-[var(--text)]">{title}</h1>
       </div>
 
       {/* ─── Right: theme toggle + user menu ─── */}
@@ -83,7 +92,7 @@ export function TopBar() {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="flex items-center justify-center w-9 h-9 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors duration-150 focus-ring"
+          className="flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors duration-150 focus-ring cursor-pointer"
           aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
@@ -93,16 +102,16 @@ export function TopBar() {
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors duration-150 focus-ring"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors duration-150 focus-ring cursor-pointer"
             aria-label="User menu"
             aria-expanded={menuOpen}
             aria-haspopup="true"
           >
-            <div className="w-7 h-7 rounded-full bg-accent-subtle flex items-center justify-center">
-              <User size={14} weight="bold" className="text-accent-text" />
+            <div className="w-7 h-7 rounded-full bg-[var(--accent-subtle)] flex items-center justify-center">
+              <User size={14} weight="bold" className="text-[var(--accent-text)]" />
             </div>
             {user && (
-              <span className="hidden sm:block text-[13px] font-medium text-text max-w-[120px] truncate">
+              <span className="hidden sm:block text-[13px] font-medium text-[var(--text)] max-w-[120px] truncate">
                 {user.display_name || user.email}
               </span>
             )}
@@ -117,15 +126,15 @@ export function TopBar() {
             <div
               role="menu"
               aria-label="User actions"
-              className="absolute right-0 top-full mt-1.5 w-56 bg-surface border border-border rounded-xl shadow-[0_8px_32px_var(--glass-shadow)] overflow-hidden animate-fade-slide z-50"
+              className="absolute right-0 top-full mt-1.5 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-[0_8px_32px_var(--glass-shadow)] overflow-hidden animate-fade-slide z-50"
             >
               {/* User info */}
               {user && (
-                <div className="px-4 py-3 border-b border-border-subtle">
-                  <p className="text-sm font-medium text-text truncate">
+                <div className="px-4 py-3 border-b border-[var(--border-subtle)]">
+                  <p className="text-sm font-medium text-[var(--text)] truncate">
                     {user.display_name || user.email}
                   </p>
-                  <p className="text-xs text-text-dim truncate mt-0.5">
+                  <p className="text-xs text-[var(--text-dim)] truncate mt-0.5">
                     {user.email}
                   </p>
                 </div>
@@ -139,7 +148,7 @@ export function TopBar() {
                     setMenuOpen(false)
                     logout()
                   }}
-                  className="flex items-center gap-3 w-full px-4 py-2.5 text-[13px] font-medium text-text-dim hover:text-error hover:bg-error-subtle/50 transition-colors duration-150 focus-ring"
+                  className="flex items-center gap-3 w-full px-4 py-2.5 text-[13px] font-medium text-[var(--text-dim)] hover:text-[var(--error)] hover:bg-[var(--error-subtle)]/50 transition-colors duration-150 focus-ring cursor-pointer"
                 >
                   <SignOut size={16} aria-hidden="true" />
                   Sign out
