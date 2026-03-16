@@ -73,7 +73,7 @@ export function TopBar() {
 
           {/* Hamburger */}
           <button
-            className="flex items-center justify-center p-1.5 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors focus-ring cursor-pointer"
+            className="flex items-center justify-center w-11 h-11 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors focus-ring cursor-pointer"
             aria-label="Open navigation menu"
             onClick={() => useUIStore.getState().toggleSidebar()}
           >
@@ -92,7 +92,7 @@ export function TopBar() {
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors duration-150 focus-ring cursor-pointer"
+          className="flex items-center justify-center w-11 h-11 rounded-lg text-[var(--text-dim)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]/50 transition-colors duration-150 focus-ring cursor-pointer"
           aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}

@@ -59,7 +59,7 @@ const ACTION_CATEGORIES: ActionCategory[] = [
   {
     label: 'Integration',
     icon: <Plug size={13} />,
-    color: 'oklch(0.72 0.15 200)',
+    color: 'var(--info)',
     actions: ['integration_connect', 'integration_disconnect', 'oauth_authorize'],
   },
   {
@@ -71,7 +71,7 @@ const ACTION_CATEGORIES: ActionCategory[] = [
   {
     label: 'Data',
     icon: <Database size={13} />,
-    color: 'oklch(0.72 0.15 280)',
+    color: 'var(--accent)',
     actions: ['gdpr_export', 'gdpr_erase', 'session_create', 'session_delete'],
   },
 ]

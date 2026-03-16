@@ -60,7 +60,7 @@ export const StatsCards = memo(function StatsCards({ stats, previousStats, loadi
       previousValue: previousStats?.active_users,
       icon: <UserCheck size={20} weight="fill" />,
       color: 'var(--success)',
-      bgColor: 'oklch(0.85 0.08 145)',
+      bgColor: 'var(--success-subtle)',
     },
     {
       label: 'Pending',
@@ -68,7 +68,7 @@ export const StatsCards = memo(function StatsCards({ stats, previousStats, loadi
       previousValue: previousStats?.pending_users,
       icon: <Clock size={20} weight="fill" />,
       color: 'var(--warning)',
-      bgColor: 'oklch(0.90 0.08 85)',
+      bgColor: 'var(--warning-subtle)',
     },
     {
       label: 'Suspended',

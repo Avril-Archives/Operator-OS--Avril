@@ -60,7 +60,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
     <>
       {/* Backdrop */}
       <div
-        className={`md:hidden fixed inset-0 z-90 bg-[oklch(0_0_0/0.5)] backdrop-blur-sm transition-opacity duration-200 ${
+        className={`md:hidden fixed inset-0 z-90 bg-overlay-bg backdrop-blur-sm transition-opacity duration-200 ${
           open ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
@@ -88,7 +88,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors cursor-pointer"
+            className="flex items-center justify-center w-11 h-11 rounded-lg text-text-dim hover:text-text-secondary hover:bg-surface-2/50 transition-colors cursor-pointer"
             aria-label="Close menu"
           >
             <X size={18} />
