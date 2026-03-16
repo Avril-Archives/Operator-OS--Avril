@@ -4,7 +4,7 @@
 **Phase 1: Foundation & Public Release Readiness**
 
 ## Last Updated
-2026-03-16 by claude/review-status-continue-a8OQ9
+2026-03-16 by claude/review-status-continue-0zftC
 
 ---
 
@@ -44,7 +44,7 @@
 - [x] Review all REST endpoints in `pkg/admin/`, `pkg/agents/`, `pkg/billing/`, `pkg/users/`
 - [x] Ensure consistent error response format (JSON, status codes, messages)
 - [x] Add request validation middleware (body size limits, content-type checks)
-- [ ] OpenAPI spec (`pkg/openapi/spec.json`) — verify it matches actual endpoints
+- [x] OpenAPI spec (`pkg/openapi/spec.json`) — verify it matches actual endpoints
 - [x] Rate limiting per-user and per-IP with configurable thresholds
 
 ### Providers & Channels
@@ -55,11 +55,11 @@
 - [ ] Document provider-specific quirks and rate limits
 
 ### Data & Storage
-- [ ] SQLite schema migration safety (up/down with rollback)
-- [ ] PostgreSQL store parity — verify all SQLite stores have PG equivalents
-- [ ] Session eviction policy review and tuning
-- [ ] Backup/restore flow validation (`pkg/backup/`)
-- [ ] GDPR data export and deletion flow (`pkg/gdpr/`)
+- [x] SQLite schema migration safety (up/down with rollback)
+- [x] PostgreSQL store parity — verify all SQLite stores have PG equivalents
+- [x] Session eviction policy review and tuning
+- [x] Backup/restore flow validation (`pkg/backup/`)
+- [x] GDPR data export and deletion flow (`pkg/gdpr/`)
 
 ### Testing
 - [ ] Increase Go test coverage to ≥70% across critical packages
@@ -195,7 +195,7 @@
 - [x] No secrets in committed files (audit `.env.example`, `config.example.json`)
 - [x] LICENSE file present and correct (MIT)
 - [x] .gitignore covers all generated artifacts
-- [ ] Version number set in go.mod, package.json, and build LDFLAGS
+- [x] Version number set in go.mod, package.json, and build LDFLAGS
 - [ ] Tag release commit with semantic version (v1.0.0)
 
 ---
@@ -426,3 +426,23 @@ _None currently_
 - All frontend checks pass (typecheck, lint, production build)
 **Notes**: Error handling is now fully consistent across the codebase. Channel health checks are wired up. Provider docs and changelog are complete. Remaining Phase 1: email verification e2e test, OAuth integration test, OpenAPI spec verification, provider/channel manual testing, data/storage hardening, test coverage increase.
 **Branch**: `claude/review-status-continue-a8OQ9`
+
+### Session: 2026-03-16 (continued)
+**Focus**: Phase 1 — data/storage hardening, PostgreSQL parity, OpenAPI spec, migration rollback, version alignment
+**Completed**:
+- Added down-migration (rollback) support to `pkg/dbmigrate/` — `DownMigrator` with `Down()` and `DownTo()` methods, 17 `.down.sql` files, full test coverage
+- Updated `loadMigrations()` to skip `.down.sql` files from up-migration loading
+- Added PostgreSQL store for `pkg/agents/` — `PGUserAgentStore` implementing full `UserAgentStore` interface with PG-native types
+- Added PostgreSQL store for `pkg/audit/` — `PGAuditStore` implementing full `AuditStore` interface with `TIMESTAMPTZ` and numbered placeholders
+- Added PostgreSQL store for `pkg/ratelimit/` — `PGRateLimitStore` implementing full `RateLimitStore` interface
+- All SQLite stores now have PostgreSQL equivalents (agents, audit, ratelimit, session, state, auth, users)
+- Verified OpenAPI spec against actual endpoints — found 21 missing paths, added all with `operationId` fields
+- Added spec coverage for: user profile/settings, sessions/chat, beta program, security audit, auth/logout, WebSocket
+- Updated `web/package.json` version from `0.1.0` to `1.0.0`
+- Installed Go 1.25.7 from go.dev (toolchain auto-download DNS timeout workaround)
+- Restored `cmd/operator/internal/onboard/workspace/` for `go:embed` (required `go generate`)
+- Verified session eviction (TTL+LRU), backup/restore (VACUUM INTO), and GDPR flows are fully implemented
+- All Go test packages pass (67+ packages, 0 failures)
+- All frontend checks pass (typecheck, lint, production build)
+**Notes**: Data/storage hardening complete. OpenAPI spec now matches actual endpoints. PostgreSQL parity achieved. Docker builds cannot be tested (no Docker daemon in env). Remaining Phase 1: email verification e2e test, OAuth integration test, provider/channel manual testing, test coverage increase. Remaining Phase 3: API reference generation, logo/branding verification, Docker build test, GoReleaser dry-run, release tagging.
+**Branch**: `claude/review-status-continue-0zftC`

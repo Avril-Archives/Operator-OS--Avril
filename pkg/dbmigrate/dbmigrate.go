@@ -267,6 +267,10 @@ func loadMigrations(fsys fs.FS, dir string) ([]Migration, error) {
 		if !strings.HasSuffix(name, ".sql") {
 			continue
 		}
+		// Skip down-migration files (*.down.sql).
+		if strings.HasSuffix(name, ".down.sql") {
+			continue
+		}
 
 		version, err := parseVersion(name)
 		if err != nil {

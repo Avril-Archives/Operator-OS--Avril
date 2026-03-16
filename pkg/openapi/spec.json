@@ -24,29 +24,98 @@
     }
   ],
   "tags": [
-    {"name": "Auth", "description": "User registration, login, and token management"},
-    {"name": "Agents", "description": "Per-user agent configuration and management"},
-    {"name": "Billing", "description": "Plans, subscriptions, and usage"},
-    {"name": "Stripe", "description": "Stripe checkout, portal, and webhooks"},
-    {"name": "Usage", "description": "Token usage metering and dashboard"},
-    {"name": "Overage", "description": "Overage enforcement and status"},
-    {"name": "OAuth", "description": "OAuth 2.0 authorization flows"},
-    {"name": "Integrations", "description": "Service integration registry and management"},
-    {"name": "Integration Management", "description": "Connect, disconnect, and manage user integrations"},
-    {"name": "Admin", "description": "Platform administration (admin role required)"},
-    {"name": "Audit", "description": "Audit logging and event queries"},
-    {"name": "GDPR", "description": "GDPR data subject rights (export, erasure, retention)"},
-    {"name": "Rate Limiting", "description": "Per-user rate limit status"},
-    {"name": "Health", "description": "Health checks and monitoring"},
-    {"name": "Docs", "description": "API documentation"}
+    {
+      "name": "Auth",
+      "description": "User registration, login, and token management"
+    },
+    {
+      "name": "Agents",
+      "description": "Per-user agent configuration and management"
+    },
+    {
+      "name": "Billing",
+      "description": "Plans, subscriptions, and usage"
+    },
+    {
+      "name": "Stripe",
+      "description": "Stripe checkout, portal, and webhooks"
+    },
+    {
+      "name": "Usage",
+      "description": "Token usage metering and dashboard"
+    },
+    {
+      "name": "Overage",
+      "description": "Overage enforcement and status"
+    },
+    {
+      "name": "OAuth",
+      "description": "OAuth 2.0 authorization flows"
+    },
+    {
+      "name": "Integrations",
+      "description": "Service integration registry and management"
+    },
+    {
+      "name": "Integration Management",
+      "description": "Connect, disconnect, and manage user integrations"
+    },
+    {
+      "name": "Admin",
+      "description": "Platform administration (admin role required)"
+    },
+    {
+      "name": "Audit",
+      "description": "Audit logging and event queries"
+    },
+    {
+      "name": "GDPR",
+      "description": "GDPR data subject rights (export, erasure, retention)"
+    },
+    {
+      "name": "Rate Limiting",
+      "description": "Per-user rate limit status"
+    },
+    {
+      "name": "Health",
+      "description": "Health checks and monitoring"
+    },
+    {
+      "name": "Docs",
+      "description": "API documentation"
+    },
+    {
+      "name": "User",
+      "description": "User profile, settings, and API key management"
+    },
+    {
+      "name": "Sessions",
+      "description": "Chat session management and message history"
+    },
+    {
+      "name": "Security",
+      "description": "Security audit and vulnerability scanning"
+    },
+    {
+      "name": "Beta",
+      "description": "Beta program management (invites, feature flags, waitlist)"
+    },
+    {
+      "name": "WebSocket",
+      "description": "Real-time WebSocket communication"
+    }
   ],
   "security": [
-    {"bearerAuth": []}
+    {
+      "bearerAuth": []
+    }
   ],
   "paths": {
     "/api/v1/auth/register": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Register a new user",
         "operationId": "registerUser",
         "security": [],
@@ -54,7 +123,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/RegisterRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
             }
           }
         },
@@ -63,16 +134,22 @@
             "description": "User created",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/RegisterResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "409": {
             "description": "Email already registered",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/Error"}
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -81,7 +158,9 @@
     },
     "/api/v1/auth/login": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Authenticate and obtain tokens",
         "operationId": "loginUser",
         "security": [],
@@ -89,7 +168,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/LoginRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
             }
           }
         },
@@ -98,7 +179,9 @@
             "description": "Login successful",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/LoginResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
               }
             }
           },
@@ -106,7 +189,9 @@
             "description": "Invalid credentials",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/Error"}
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -115,7 +200,9 @@
     },
     "/api/v1/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Refresh access token",
         "operationId": "refreshToken",
         "security": [],
@@ -123,7 +210,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/RefreshRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
             }
           }
         },
@@ -132,17 +221,23 @@
             "description": "Tokens refreshed",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/LoginResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/auth/verify-email": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Verify email address",
         "operationId": "verifyEmail",
         "security": [],
@@ -152,25 +247,40 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["token"],
+                "required": [
+                  "token"
+                ],
                 "properties": {
-                  "token": {"type": "string", "description": "Email verification token"}
+                  "token": {
+                    "type": "string",
+                    "description": "Email verification token"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {"description": "Email verified"},
-          "404": {"description": "Token not found"},
-          "409": {"description": "Token already used or email already verified"},
-          "410": {"description": "Token expired"}
+          "200": {
+            "description": "Email verified"
+          },
+          "404": {
+            "description": "Token not found"
+          },
+          "409": {
+            "description": "Token already used or email already verified"
+          },
+          "410": {
+            "description": "Token expired"
+          }
         }
       }
     },
     "/api/v1/auth/resend-verification": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Resend email verification",
         "operationId": "resendVerification",
         "security": [],
@@ -180,24 +290,37 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email"],
+                "required": [
+                  "email"
+                ],
                 "properties": {
-                  "email": {"type": "string", "format": "email"}
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {"description": "Verification email sent (returns 200 even for nonexistent emails for anti-enumeration)"},
-          "409": {"description": "Email already verified"},
-          "429": {"description": "Cooldown period not elapsed"}
+          "200": {
+            "description": "Verification email sent (returns 200 even for nonexistent emails for anti-enumeration)"
+          },
+          "409": {
+            "description": "Email already verified"
+          },
+          "429": {
+            "description": "Cooldown period not elapsed"
+          }
         }
       }
     },
     "/api/v1/agents": {
       "get": {
-        "tags": ["Agents"],
+        "tags": [
+          "Agents"
+        ],
         "summary": "List user's agents",
         "operationId": "listAgents",
         "responses": {
@@ -210,26 +333,36 @@
                   "properties": {
                     "agents": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/AgentResponse"}
+                      "items": {
+                        "$ref": "#/components/schemas/AgentResponse"
+                      }
                     },
-                    "count": {"type": "integer"}
+                    "count": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       },
       "post": {
-        "tags": ["Agents"],
+        "tags": [
+          "Agents"
+        ],
         "summary": "Create a new agent",
         "operationId": "createAgent",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/CreateAgentRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/CreateAgentRequest"
+              }
             }
           }
         },
@@ -238,49 +371,83 @@
             "description": "Agent created",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/AgentResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "409": {"description": "Agent name already exists"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "Agent name already exists"
+          }
         }
       }
     },
     "/api/v1/agents/{id}": {
       "get": {
-        "tags": ["Agents"],
+        "tags": [
+          "Agents"
+        ],
         "summary": "Get agent by ID",
         "operationId": "getAgent",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Agent details",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/AgentResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "put": {
-        "tags": ["Agents"],
+        "tags": [
+          "Agents"
+        ],
         "summary": "Update an agent",
         "operationId": "updateAgent",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/UpdateAgentRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAgentRequest"
+              }
             }
           }
         },
@@ -289,47 +456,87 @@
             "description": "Agent updated",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/AgentResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "delete": {
-        "tags": ["Agents"],
+        "tags": [
+          "Agents"
+        ],
         "summary": "Delete an agent",
         "operationId": "deleteAgent",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "204": {"description": "Agent deleted"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "204": {
+            "description": "Agent deleted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/agents/{id}/default": {
       "post": {
-        "tags": ["Agents"],
+        "tags": [
+          "Agents"
+        ],
         "summary": "Set agent as default",
         "operationId": "setDefaultAgent",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": {"description": "Default agent set"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "Default agent set"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/billing/plans": {
       "get": {
-        "tags": ["Billing"],
+        "tags": [
+          "Billing"
+        ],
         "summary": "List available plans",
         "operationId": "listPlans",
         "security": [],
@@ -343,7 +550,9 @@
                   "properties": {
                     "plans": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/Plan"}
+                      "items": {
+                        "$ref": "#/components/schemas/Plan"
+                      }
                     }
                   }
                 }
@@ -355,36 +564,53 @@
     },
     "/api/v1/billing/plans/{id}": {
       "get": {
-        "tags": ["Billing"],
+        "tags": [
+          "Billing"
+        ],
         "summary": "Get plan by ID",
         "operationId": "getPlan",
         "security": [],
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Plan details",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/Plan"}
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
               }
             }
           },
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/billing/checkout": {
       "post": {
-        "tags": ["Stripe"],
+        "tags": [
+          "Stripe"
+        ],
         "summary": "Create Stripe checkout session",
         "operationId": "createCheckout",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/CheckoutRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              }
             }
           }
         },
@@ -396,20 +622,29 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "checkout_url": {"type": "string", "format": "uri"}
+                    "checkout_url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
                   }
                 }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/billing/portal": {
       "post": {
-        "tags": ["Stripe"],
+        "tags": [
+          "Stripe"
+        ],
         "summary": "Create Stripe billing portal session",
         "operationId": "createPortal",
         "requestBody": {
@@ -418,9 +653,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["return_url"],
+                "required": [
+                  "return_url"
+                ],
                 "properties": {
-                  "return_url": {"type": "string", "format": "uri"}
+                  "return_url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
                 }
               }
             }
@@ -434,19 +674,26 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "portal_url": {"type": "string", "format": "uri"}
+                    "portal_url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/billing/subscription": {
       "get": {
-        "tags": ["Stripe"],
+        "tags": [
+          "Stripe"
+        ],
         "summary": "Get current subscription",
         "operationId": "getSubscription",
         "responses": {
@@ -454,17 +701,23 @@
             "description": "Current subscription (or free plan default)",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/SubscriptionResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/billing/webhook": {
       "post": {
-        "tags": ["Stripe"],
+        "tags": [
+          "Stripe"
+        ],
         "summary": "Stripe webhook endpoint",
         "operationId": "stripeWebhook",
         "security": [],
@@ -474,7 +727,9 @@
             "name": "Stripe-Signature",
             "in": "header",
             "required": true,
-            "schema": {"type": "string"},
+            "schema": {
+              "type": "string"
+            },
             "description": "Stripe webhook signature for HMAC-SHA256 verification"
           }
         ],
@@ -490,21 +745,29 @@
           }
         },
         "responses": {
-          "200": {"description": "Event processed"},
-          "400": {"description": "Invalid signature or payload"}
+          "200": {
+            "description": "Event processed"
+          },
+          "400": {
+            "description": "Invalid signature or payload"
+          }
         }
       }
     },
     "/api/v1/billing/change-plan": {
       "post": {
-        "tags": ["Billing"],
+        "tags": [
+          "Billing"
+        ],
         "summary": "Change subscription plan",
         "operationId": "changePlan",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/PlanChangeRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/PlanChangeRequest"
+              }
             }
           }
         },
@@ -513,26 +776,38 @@
             "description": "Plan changed",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/PlanChangeResult"}
+                "schema": {
+                  "$ref": "#/components/schemas/PlanChangeResult"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "409": {"description": "Already on the requested plan"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "Already on the requested plan"
+          }
         }
       }
     },
     "/api/v1/billing/preview-change": {
       "post": {
-        "tags": ["Billing"],
+        "tags": [
+          "Billing"
+        ],
         "summary": "Preview plan change (no mutation)",
         "operationId": "previewPlanChange",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/PlanChangeRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/PlanChangeRequest"
+              }
             }
           }
         },
@@ -541,47 +816,102 @@
             "description": "Preview result",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/PlanChangeResult"}
+                "schema": {
+                  "$ref": "#/components/schemas/PlanChangeResult"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/billing/usage": {
       "get": {
-        "tags": ["Usage"],
+        "tags": [
+          "Usage"
+        ],
         "summary": "Get usage summary for current billing period",
         "operationId": "getUsageSummary",
         "parameters": [
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}, "description": "Start of period (RFC3339)"},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}, "description": "End of period (RFC3339)"}
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Start of period (RFC3339)"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "End of period (RFC3339)"
+          }
         ],
         "responses": {
           "200": {
             "description": "Usage summary",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/UsageSummary"}
+                "schema": {
+                  "$ref": "#/components/schemas/UsageSummary"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/billing/usage/daily": {
       "get": {
-        "tags": ["Usage"],
+        "tags": [
+          "Usage"
+        ],
         "summary": "Get daily usage breakdown",
         "operationId": "getDailyUsage",
         "parameters": [
-          {"name": "days", "in": "query", "schema": {"type": "integer", "default": 30, "maximum": 365}, "description": "Number of days to look back"},
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}}
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "maximum": 365
+            },
+            "description": "Number of days to look back"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -593,26 +923,48 @@
                   "properties": {
                     "daily": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/DailyUsage"}
+                      "items": {
+                        "$ref": "#/components/schemas/DailyUsage"
+                      }
                     }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/billing/usage/models": {
       "get": {
-        "tags": ["Usage"],
+        "tags": [
+          "Usage"
+        ],
         "summary": "Get per-model usage breakdown",
         "operationId": "getModelUsage",
         "parameters": [
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}}
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -624,29 +976,72 @@
                   "properties": {
                     "models": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/ModelUsage"}
+                      "items": {
+                        "$ref": "#/components/schemas/ModelUsage"
+                      }
                     }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/billing/usage/events": {
       "get": {
-        "tags": ["Usage"],
+        "tags": [
+          "Usage"
+        ],
         "summary": "List raw usage events",
         "operationId": "listUsageEvents",
         "parameters": [
-          {"name": "model", "in": "query", "schema": {"type": "string"}},
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 100, "maximum": 1000}},
-          {"name": "offset", "in": "query", "schema": {"type": "integer", "default": 0}}
+          {
+            "name": "model",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -658,21 +1053,29 @@
                   "properties": {
                     "events": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/UsageEvent"}
+                      "items": {
+                        "$ref": "#/components/schemas/UsageEvent"
+                      }
                     }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/billing/usage/limits": {
       "get": {
-        "tags": ["Usage"],
+        "tags": [
+          "Usage"
+        ],
         "summary": "Get current usage vs plan limits",
         "operationId": "getUsageLimits",
         "responses": {
@@ -680,18 +1083,26 @@
             "description": "Usage limits",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/UsageLimits"}
+                "schema": {
+                  "$ref": "#/components/schemas/UsageLimits"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/billing/overage": {
       "get": {
-        "tags": ["Overage"],
+        "tags": [
+          "Overage"
+        ],
         "summary": "Get overage status",
         "operationId": "getOverageStatus",
         "responses": {
@@ -699,23 +1110,29 @@
             "description": "Overage status",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/OverageStatus"}
+                "schema": {
+                  "$ref": "#/components/schemas/OverageStatus"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/oauth/providers": {
       "get": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "List available OAuth providers",
         "operationId": "listOAuthProviders",
         "security": [],
         "responses": {
           "200": {
-            "description": "Provider list (sanitized — no secrets)",
+            "description": "Provider list (sanitized \u2014 no secrets)",
             "content": {
               "application/json": {
                 "schema": {
@@ -723,7 +1140,9 @@
                   "properties": {
                     "providers": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/OAuthProvider"}
+                      "items": {
+                        "$ref": "#/components/schemas/OAuthProvider"
+                      }
                     }
                   }
                 }
@@ -735,7 +1154,9 @@
     },
     "/api/v1/oauth/authorize": {
       "post": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "Initiate OAuth authorization flow",
         "operationId": "oauthAuthorize",
         "requestBody": {
@@ -744,11 +1165,23 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["provider_id"],
+                "required": [
+                  "provider_id"
+                ],
                 "properties": {
-                  "provider_id": {"type": "string"},
-                  "scopes": {"type": "array", "items": {"type": "string"}},
-                  "redirect_after": {"type": "string", "format": "uri"}
+                  "provider_id": {
+                    "type": "string"
+                  },
+                  "scopes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "redirect_after": {
+                    "type": "string",
+                    "format": "uri"
+                  }
                 }
               }
             }
@@ -762,45 +1195,82 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "auth_url": {"type": "string", "format": "uri"},
-                    "state": {"type": "string"}
+                    "auth_url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "state": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/oauth/callback": {
       "get": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "OAuth provider callback",
         "operationId": "oauthCallback",
         "security": [],
         "parameters": [
-          {"name": "state", "in": "query", "required": true, "schema": {"type": "string"}},
-          {"name": "code", "in": "query", "required": true, "schema": {"type": "string"}},
-          {"name": "error", "in": "query", "schema": {"type": "string"}}
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "error",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "OAuth tokens received",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/OAuthTokenResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthTokenResponse"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
         }
       }
     },
     "/api/v1/oauth/refresh": {
       "post": {
-        "tags": ["OAuth"],
+        "tags": [
+          "OAuth"
+        ],
         "summary": "Refresh OAuth token",
         "operationId": "oauthRefresh",
         "requestBody": {
@@ -809,10 +1279,17 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["provider_id", "refresh_token"],
+                "required": [
+                  "provider_id",
+                  "refresh_token"
+                ],
                 "properties": {
-                  "provider_id": {"type": "string"},
-                  "refresh_token": {"type": "string"}
+                  "provider_id": {
+                    "type": "string"
+                  },
+                  "refresh_token": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -823,22 +1300,35 @@
             "description": "Refreshed tokens",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/OAuthTokenResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthTokenResponse"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/integrations": {
       "get": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "List active integrations",
         "operationId": "listIntegrations",
         "security": [],
         "parameters": [
-          {"name": "category", "in": "query", "schema": {"type": "string"}, "description": "Filter by category"}
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by category"
+          }
         ],
         "responses": {
           "200": {
@@ -850,7 +1340,9 @@
                   "properties": {
                     "integrations": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/IntegrationSummary"}
+                      "items": {
+                        "$ref": "#/components/schemas/IntegrationSummary"
+                      }
                     }
                   }
                 }
@@ -862,7 +1354,9 @@
     },
     "/api/v1/integrations/categories": {
       "get": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "List integration categories",
         "operationId": "listCategories",
         "security": [],
@@ -876,7 +1370,9 @@
                   "properties": {
                     "categories": {
                       "type": "array",
-                      "items": {"type": "string"}
+                      "items": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -888,33 +1384,61 @@
     },
     "/api/v1/integrations/{id}": {
       "get": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "Get integration by ID",
         "operationId": "getIntegration",
         "security": [],
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Integration details",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/IntegrationSummary"}
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationSummary"
+                }
               }
             }
           },
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/user/integrations": {
       "get": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "List user's connected integrations",
         "operationId": "listUserIntegrations",
         "parameters": [
-          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["pending", "active", "failed", "revoked", "disabled"]}}
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "active",
+                "failed",
+                "revoked",
+                "disabled"
+              ]
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -926,18 +1450,24 @@
                   "properties": {
                     "integrations": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/UserIntegration"}
+                      "items": {
+                        "$ref": "#/components/schemas/UserIntegration"
+                      }
                     }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       },
       "post": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "Connect a new integration",
         "operationId": "connectUserIntegration",
         "requestBody": {
@@ -946,69 +1476,125 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["integration_id"],
+                "required": [
+                  "integration_id"
+                ],
                 "properties": {
-                  "integration_id": {"type": "string"},
-                  "config": {"type": "object", "additionalProperties": {"type": "string"}},
-                  "scopes": {"type": "array", "items": {"type": "string"}}
+                  "integration_id": {
+                    "type": "string"
+                  },
+                  "config": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "scopes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": {"description": "Integration connected"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"description": "Integration not found"},
-          "409": {"description": "Already connected"}
+          "201": {
+            "description": "Integration connected"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Integration not found"
+          },
+          "409": {
+            "description": "Already connected"
+          }
         }
       }
     },
     "/api/v1/user/integrations/{id}": {
       "get": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "Get user integration by ID",
         "operationId": "getUserIntegration",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "User integration details",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/UserIntegration"}
+                "schema": {
+                  "$ref": "#/components/schemas/UserIntegration"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "delete": {
-        "tags": ["Integrations"],
+        "tags": [
+          "Integrations"
+        ],
         "summary": "Disconnect user integration",
         "operationId": "deleteUserIntegration",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "204": {"description": "Integration disconnected"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "204": {
+            "description": "Integration disconnected"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/connect": {
       "post": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Connect an integration (OAuth, API key, or no-auth)",
         "operationId": "manageConnect",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {"$ref": "#/components/schemas/ConnectRequest"}
+              "schema": {
+                "$ref": "#/components/schemas/ConnectRequest"
+              }
             }
           }
         },
@@ -1017,19 +1603,29 @@
             "description": "Connection initiated",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/ConnectResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectResponse"
+                }
               }
             }
           },
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "409": {"description": "Already connected"}
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "description": "Already connected"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/disconnect": {
       "post": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Disconnect an integration",
         "operationId": "manageDisconnect",
         "requestBody": {
@@ -1038,28 +1634,46 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["integration_id"],
+                "required": [
+                  "integration_id"
+                ],
                 "properties": {
-                  "integration_id": {"type": "string"}
+                  "integration_id": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {"description": "Integration disconnected"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "Integration disconnected"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/status": {
       "get": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "List all user integration statuses with token health",
         "operationId": "manageListStatus",
         "parameters": [
-          {"name": "status", "in": "query", "schema": {"type": "string"}}
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1071,78 +1685,140 @@
                   "properties": {
                     "integrations": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/IntegrationStatus"}
+                      "items": {
+                        "$ref": "#/components/schemas/IntegrationStatus"
+                      }
                     }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/{id}/status": {
       "get": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Get single integration status",
         "operationId": "manageGetStatus",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Integration status",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/IntegrationStatus"}
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationStatus"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/{id}/enable": {
       "post": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Re-enable a disabled integration",
         "operationId": "manageEnable",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": {"description": "Integration enabled"},
-          "400": {"description": "Invalid state transition"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "Integration enabled"
+          },
+          "400": {
+            "description": "Invalid state transition"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/{id}/disable": {
       "post": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Disable an integration (preserves tokens)",
         "operationId": "manageDisable",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": {"description": "Integration disabled"},
-          "400": {"description": "Invalid state transition"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "Integration disabled"
+          },
+          "400": {
+            "description": "Invalid state transition"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/{id}/reconnect": {
       "post": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Re-initiate OAuth for failed/revoked integrations",
         "operationId": "manageReconnect",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -1150,8 +1826,16 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "scopes": {"type": "array", "items": {"type": "string"}},
-                  "redirect_after": {"type": "string", "format": "uri"}
+                  "scopes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "redirect_after": {
+                    "type": "string",
+                    "format": "uri"
+                  }
                 }
               }
             }
@@ -1165,25 +1849,43 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "auth_url": {"type": "string", "format": "uri"}
+                    "auth_url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
                   }
                 }
               }
             }
           },
-          "400": {"description": "Not an OAuth integration or invalid state"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "400": {
+            "description": "Not an OAuth integration or invalid state"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/manage/integrations/{id}/config": {
       "put": {
-        "tags": ["Integration Management"],
+        "tags": [
+          "Integration Management"
+        ],
         "summary": "Update integration configuration",
         "operationId": "manageUpdateConfig",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -1191,32 +1893,79 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["config"],
+                "required": [
+                  "config"
+                ],
                 "properties": {
-                  "config": {"type": "object", "additionalProperties": {"type": "string"}}
+                  "config": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {"description": "Config updated"},
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "Config updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/admin/users": {
       "get": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "List users (admin only)",
         "operationId": "adminListUsers",
         "parameters": [
-          {"name": "status", "in": "query", "schema": {"type": "string"}},
-          {"name": "role", "in": "query", "schema": {"type": "string", "enum": ["user", "admin"]}},
-          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 50}},
-          {"name": "offset", "in": "query", "schema": {"type": "integer", "default": 0}}
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "user",
+                "admin"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1228,47 +1977,81 @@
                   "properties": {
                     "users": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/AdminUserResponse"}
+                      "items": {
+                        "$ref": "#/components/schemas/AdminUserResponse"
+                      }
                     },
-                    "count": {"type": "integer"}
+                    "count": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/api/v1/admin/users/{id}": {
       "get": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Get user details (admin only)",
         "operationId": "adminGetUser",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "User details",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/AdminUserResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserResponse"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "put": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Update user (admin only)",
         "operationId": "adminUpdateUser",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -1277,78 +2060,162 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "display_name": {"type": "string"},
-                  "role": {"type": "string", "enum": ["user", "admin"]},
-                  "status": {"type": "string"}
+                  "display_name": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  },
+                  "status": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {"description": "User updated"},
-          "400": {"$ref": "#/components/responses/BadRequest"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "User updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "delete": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Delete user (admin only)",
         "operationId": "adminDeleteUser",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "204": {"description": "User deleted"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"},
-          "404": {"$ref": "#/components/responses/NotFound"},
-          "409": {"description": "Cannot delete self"}
+          "204": {
+            "description": "User deleted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Cannot delete self"
+          }
         }
       }
     },
     "/api/v1/admin/users/{id}/suspend": {
       "post": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Suspend user (admin only)",
         "operationId": "adminSuspendUser",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": {"description": "User suspended"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"},
-          "404": {"$ref": "#/components/responses/NotFound"},
-          "409": {"description": "Cannot suspend self"}
+          "200": {
+            "description": "User suspended"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Cannot suspend self"
+          }
         }
       }
     },
     "/api/v1/admin/users/{id}/activate": {
       "post": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Activate user (admin only)",
         "operationId": "adminActivateUser",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": {"description": "User activated"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "200": {
+            "description": "User activated"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/api/v1/admin/users/{id}/role": {
       "post": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Set user role (admin only)",
         "operationId": "adminSetRole",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -1356,27 +2223,49 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["role"],
+                "required": [
+                  "role"
+                ],
                 "properties": {
-                  "role": {"type": "string", "enum": ["user", "admin"]}
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {"description": "Role updated"},
-          "400": {"description": "Invalid role"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"},
-          "404": {"$ref": "#/components/responses/NotFound"},
-          "409": {"description": "Cannot demote self"}
+          "200": {
+            "description": "Role updated"
+          },
+          "400": {
+            "description": "Invalid role"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Cannot demote self"
+          }
         }
       }
     },
     "/api/v1/admin/stats": {
       "get": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Platform statistics (admin only)",
         "operationId": "adminGetStats",
         "responses": {
@@ -1384,29 +2273,91 @@
             "description": "Platform stats",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/PlatformStats"}
+                "schema": {
+                  "$ref": "#/components/schemas/PlatformStats"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/api/v1/admin/audit": {
       "get": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "Query audit log (admin only)",
         "operationId": "adminQueryAudit",
         "parameters": [
-          {"name": "user_id", "in": "query", "schema": {"type": "string"}},
-          {"name": "action", "in": "query", "schema": {"type": "string"}, "description": "Exact match or category prefix (e.g. 'auth.')"},
-          {"name": "resource", "in": "query", "schema": {"type": "string"}},
-          {"name": "status", "in": "query", "schema": {"type": "string"}},
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 50, "maximum": 1000}},
-          {"name": "offset", "in": "query", "schema": {"type": "integer", "default": 0}}
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exact match or category prefix (e.g. 'auth.')"
+          },
+          {
+            "name": "resource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1418,31 +2369,81 @@
                   "properties": {
                     "events": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/AuditEvent"}
+                      "items": {
+                        "$ref": "#/components/schemas/AuditEvent"
+                      }
                     },
-                    "count": {"type": "integer"}
+                    "count": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "403": {"$ref": "#/components/responses/Forbidden"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/api/v1/audit/events": {
       "get": {
-        "tags": ["Audit"],
+        "tags": [
+          "Audit"
+        ],
         "summary": "List audit events",
         "operationId": "listAuditEvents",
         "parameters": [
-          {"name": "action", "in": "query", "schema": {"type": "string"}},
-          {"name": "resource", "in": "query", "schema": {"type": "string"}},
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 50}},
-          {"name": "offset", "in": "query", "schema": {"type": "integer", "default": 0}}
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1454,30 +2455,68 @@
                   "properties": {
                     "events": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/AuditEvent"}
+                      "items": {
+                        "$ref": "#/components/schemas/AuditEvent"
+                      }
                     },
-                    "count": {"type": "integer"},
-                    "limit": {"type": "integer"},
-                    "offset": {"type": "integer"}
+                    "count": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/audit/events/count": {
       "get": {
-        "tags": ["Audit"],
+        "tags": [
+          "Audit"
+        ],
         "summary": "Count audit events",
         "operationId": "countAuditEvents",
         "parameters": [
-          {"name": "action", "in": "query", "schema": {"type": "string"}},
-          {"name": "resource", "in": "query", "schema": {"type": "string"}},
-          {"name": "since", "in": "query", "schema": {"type": "string", "format": "date-time"}},
-          {"name": "until", "in": "query", "schema": {"type": "string", "format": "date-time"}}
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resource",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1487,19 +2526,25 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "count": {"type": "integer"}
+                    "count": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/api/v1/gdpr/export": {
       "post": {
-        "tags": ["GDPR"],
+        "tags": [
+          "GDPR"
+        ],
         "summary": "Request data export",
         "operationId": "gdprExport",
         "responses": {
@@ -1507,18 +2552,26 @@
             "description": "Export request created",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/DataSubjectRequest"}
+                "schema": {
+                  "$ref": "#/components/schemas/DataSubjectRequest"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/gdpr/erase": {
       "post": {
-        "tags": ["GDPR"],
+        "tags": [
+          "GDPR"
+        ],
         "summary": "Request data erasure",
         "operationId": "gdprErase",
         "description": "Irreversible. Requires confirm:true in request body.",
@@ -1528,9 +2581,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["confirm"],
+                "required": [
+                  "confirm"
+                ],
                 "properties": {
-                  "confirm": {"type": "boolean", "description": "Must be true to proceed"}
+                  "confirm": {
+                    "type": "boolean",
+                    "description": "Must be true to proceed"
+                  }
                 }
               }
             }
@@ -1541,19 +2599,29 @@
             "description": "Erasure request created",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/DataSubjectRequest"}
+                "schema": {
+                  "$ref": "#/components/schemas/DataSubjectRequest"
+                }
               }
             }
           },
-          "400": {"description": "confirm must be true"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "400": {
+            "description": "confirm must be true"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/gdpr/requests": {
       "get": {
-        "tags": ["GDPR"],
+        "tags": [
+          "GDPR"
+        ],
         "summary": "List user's data subject requests",
         "operationId": "gdprListRequests",
         "responses": {
@@ -1566,58 +2634,100 @@
                   "properties": {
                     "requests": {
                       "type": "array",
-                      "items": {"$ref": "#/components/schemas/DataSubjectRequest"}
+                      "items": {
+                        "$ref": "#/components/schemas/DataSubjectRequest"
+                      }
                     },
-                    "count": {"type": "integer"}
+                    "count": {
+                      "type": "integer"
+                    }
                   }
                 }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/gdpr/requests/{id}": {
       "get": {
-        "tags": ["GDPR"],
+        "tags": [
+          "GDPR"
+        ],
         "summary": "Get data subject request by ID",
         "operationId": "gdprGetRequest",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "DSR details",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/DataSubjectRequest"}
+                "schema": {
+                  "$ref": "#/components/schemas/DataSubjectRequest"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       },
       "delete": {
-        "tags": ["GDPR"],
+        "tags": [
+          "GDPR"
+        ],
         "summary": "Cancel a pending data subject request",
         "operationId": "gdprCancelRequest",
         "parameters": [
-          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": {"description": "Request canceled"},
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "404": {"$ref": "#/components/responses/NotFound"},
-          "409": {"description": "Request already processed"}
+          "200": {
+            "description": "Request canceled"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "description": "Request already processed"
+          }
         }
       }
     },
     "/api/v1/gdpr/retention": {
       "get": {
-        "tags": ["GDPR"],
+        "tags": [
+          "GDPR"
+        ],
         "summary": "Get current data retention policy",
         "operationId": "gdprGetRetention",
         "responses": {
@@ -1625,18 +2735,26 @@
             "description": "Retention policy",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/RetentionPolicy"}
+                "schema": {
+                  "$ref": "#/components/schemas/RetentionPolicy"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"},
-          "503": {"$ref": "#/components/responses/ServiceUnavailable"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/rate-limit/status": {
       "get": {
-        "tags": ["Rate Limiting"],
+        "tags": [
+          "Rate Limiting"
+        ],
         "summary": "Get rate limit status",
         "operationId": "getRateLimitStatus",
         "responses": {
@@ -1644,17 +2762,23 @@
             "description": "Rate limit status",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/RateLimitStatus"}
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitStatus"
+                }
               }
             }
           },
-          "401": {"$ref": "#/components/responses/Unauthorized"}
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/health/live": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Liveness probe",
         "operationId": "healthLive",
         "security": [],
@@ -1667,7 +2791,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {"type": "string", "example": "alive"}
+                    "status": {
+                      "type": "string",
+                      "example": "alive"
+                    }
                   }
                 }
               }
@@ -1678,7 +2805,9 @@
     },
     "/health/ready": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Readiness probe",
         "operationId": "healthReady",
         "security": [],
@@ -1691,21 +2820,32 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {"type": "string", "example": "ready"}
+                    "status": {
+                      "type": "string",
+                      "example": "ready"
+                    }
                   }
                 }
               }
             }
           },
           "503": {
-            "description": "Not ready — critical components unhealthy",
+            "description": "Not ready \u2014 critical components unhealthy",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {"type": "string", "example": "not_ready"},
-                    "failed": {"type": "array", "items": {"type": "string"}}
+                    "status": {
+                      "type": "string",
+                      "example": "not_ready"
+                    },
+                    "failed": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               }
@@ -1716,7 +2856,9 @@
     },
     "/health/detailed": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Detailed health report",
         "operationId": "healthDetailed",
         "security": [],
@@ -1725,7 +2867,9 @@
             "description": "Detailed health report",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/DetailedHealthResponse"}
+                "schema": {
+                  "$ref": "#/components/schemas/DetailedHealthResponse"
+                }
               }
             }
           }
@@ -1734,30 +2878,47 @@
     },
     "/health/component/{name}": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Single component health check",
         "operationId": "healthComponent",
         "security": [],
         "parameters": [
-          {"name": "name", "in": "path", "required": true, "schema": {"type": "string"}}
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Component healthy",
             "content": {
               "application/json": {
-                "schema": {"$ref": "#/components/schemas/ComponentHealth"}
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentHealth"
+                }
               }
             }
           },
-          "404": {"description": "Component not found"},
-          "503": {"description": "Component unhealthy"}
+          "404": {
+            "description": "Component not found"
+          },
+          "503": {
+            "description": "Component unhealthy"
+          }
         }
       }
     },
     "/metrics": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Prometheus metrics",
         "operationId": "getMetrics",
         "security": [],
@@ -1767,7 +2928,9 @@
             "description": "Metrics in Prometheus exposition format",
             "content": {
               "text/plain": {
-                "schema": {"type": "string"}
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -1776,7 +2939,9 @@
     },
     "/api/v1/docs/openapi.json": {
       "get": {
-        "tags": ["Docs"],
+        "tags": [
+          "Docs"
+        ],
         "summary": "OpenAPI specification",
         "operationId": "getOpenAPISpec",
         "security": [],
@@ -1785,11 +2950,971 @@
             "description": "OpenAPI 3.1 specification",
             "content": {
               "application/json": {
-                "schema": {"type": "object"}
+                "schema": {
+                  "type": "object"
+                }
               }
             }
           }
         }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout and revoke token",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully logged out"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "logoutUser"
+      }
+    },
+    "/api/v1/user/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get current user profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "getUserProfile"
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update user profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "display_name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "updateUserProfile"
+      }
+    },
+    "/api/v1/user/change-password": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Change user password",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "current_password",
+                  "new_password"
+                ],
+                "properties": {
+                  "current_password": {
+                    "type": "string"
+                  },
+                  "new_password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed"
+          },
+          "400": {
+            "description": "Invalid password"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "changePassword"
+      }
+    },
+    "/api/v1/user/notifications": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get notification settings",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification settings"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "getNotificationSettings"
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Update notification settings",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings updated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "updateNotificationSettings"
+      }
+    },
+    "/api/v1/user/api-keys": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "List user API keys",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of API keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "listApiKeys"
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Create a new API key",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "API key created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "createApiKey"
+      }
+    },
+    "/api/v1/user/api-keys/{id}": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete an API key",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API key deleted"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Key not found"
+          }
+        },
+        "operationId": "deleteApiKey"
+      }
+    },
+    "/api/v1/sessions": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "List chat sessions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "listSessions"
+      },
+      "post": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Create a new chat session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Session created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "createSession"
+      }
+    },
+    "/api/v1/sessions/{id}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get session details",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session details"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "operationId": "getSession"
+      },
+      "put": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Update session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session updated"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "operationId": "updateSession"
+      },
+      "delete": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Delete session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session deleted"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "operationId": "deleteSession"
+      }
+    },
+    "/api/v1/sessions/{id}/messages": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get session message history",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "operationId": "getSessionMessages"
+      }
+    },
+    "/api/v1/admin/security-audit": {
+      "get": {
+        "tags": [
+          "Security"
+        ],
+        "summary": "Run security audit scan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Security audit results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Admin access required"
+          }
+        },
+        "operationId": "getSecurityAudit"
+      },
+      "post": {
+        "tags": [
+          "Security"
+        ],
+        "summary": "Trigger security audit scan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit scan initiated"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Admin access required"
+          }
+        },
+        "operationId": "runSecurityAudit"
+      }
+    },
+    "/api/v1/beta/invites": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "List beta invites",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of invites"
+          }
+        },
+        "operationId": "listBetaInvites"
+      },
+      "post": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Create beta invite",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Invite created"
+          }
+        },
+        "operationId": "createBetaInvite"
+      }
+    },
+    "/api/v1/beta/invites/{id}": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Get beta invite",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite details"
+          }
+        },
+        "operationId": "getBetaInvite"
+      }
+    },
+    "/api/v1/beta/invites/{id}/revoke": {
+      "post": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Revoke beta invite",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite revoked"
+          }
+        },
+        "operationId": "revokeBetaInvite"
+      }
+    },
+    "/api/v1/beta/redeem": {
+      "post": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Redeem beta invite code",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invite redeemed"
+          },
+          "400": {
+            "description": "Invalid or expired code"
+          }
+        },
+        "operationId": "redeemBetaInvite"
+      }
+    },
+    "/api/v1/beta/flags": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "List feature flags",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of feature flags"
+          }
+        },
+        "operationId": "listFeatureFlags"
+      },
+      "post": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Create feature flag",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Flag created"
+          }
+        },
+        "operationId": "createFeatureFlag"
+      }
+    },
+    "/api/v1/beta/flags/{name}": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Get feature flag",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flag details"
+          }
+        },
+        "operationId": "getFeatureFlag"
+      },
+      "put": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Update feature flag",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flag updated"
+          }
+        },
+        "operationId": "updateFeatureFlag"
+      },
+      "delete": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Delete feature flag",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flag deleted"
+          }
+        },
+        "operationId": "deleteFeatureFlag"
+      }
+    },
+    "/api/v1/beta/flags/check": {
+      "post": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Check feature flag for user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flag check result"
+          }
+        },
+        "operationId": "checkFeatureFlag"
+      }
+    },
+    "/api/v1/beta/waitlist": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "List waitlist entries",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Waitlist entries"
+          }
+        },
+        "operationId": "listWaitlist"
+      },
+      "post": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Add to waitlist",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Added to waitlist"
+          }
+        },
+        "operationId": "addToWaitlist"
+      }
+    },
+    "/api/v1/beta/waitlist/{email}": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Get waitlist entry",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Waitlist entry"
+          }
+        },
+        "operationId": "getWaitlistEntry"
+      },
+      "delete": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Remove from waitlist",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed from waitlist"
+          }
+        },
+        "operationId": "removeFromWaitlist"
+      }
+    },
+    "/api/v1/beta/readiness": {
+      "get": {
+        "tags": [
+          "Beta"
+        ],
+        "summary": "Check system readiness",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Readiness status"
+          }
+        },
+        "operationId": "checkBetaReadiness"
+      }
+    },
+    "/api/v1/ws": {
+      "get": {
+        "tags": [
+          "WebSocket"
+        ],
+        "summary": "WebSocket connection for real-time chat",
+        "description": "Upgrades to WebSocket protocol for real-time bidirectional communication with agents.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "101": {
+            "description": "Switching Protocols \u2014 WebSocket upgrade successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "operationId": "websocketConnect"
       }
     }
   },
@@ -1807,7 +3932,9 @@
         "description": "Bad request",
         "content": {
           "application/json": {
-            "schema": {"$ref": "#/components/schemas/Error"}
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -1815,7 +3942,9 @@
         "description": "Authentication required",
         "content": {
           "application/json": {
-            "schema": {"$ref": "#/components/schemas/Error"}
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -1823,7 +3952,9 @@
         "description": "Insufficient permissions (admin role required)",
         "content": {
           "application/json": {
-            "schema": {"$ref": "#/components/schemas/Error"}
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -1831,7 +3962,9 @@
         "description": "Resource not found",
         "content": {
           "application/json": {
-            "schema": {"$ref": "#/components/schemas/Error"}
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -1839,7 +3972,9 @@
         "description": "Service not configured",
         "content": {
           "application/json": {
-            "schema": {"$ref": "#/components/schemas/Error"}
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       }
@@ -1848,271 +3983,688 @@
       "Error": {
         "type": "object",
         "properties": {
-          "error": {"type": "string"},
-          "code": {"type": "string"},
-          "message": {"type": "string"}
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
         },
-        "required": ["error"]
+        "required": [
+          "error"
+        ]
       },
       "RegisterRequest": {
         "type": "object",
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "properties": {
-          "email": {"type": "string", "format": "email"},
-          "password": {"type": "string", "minLength": 8},
-          "display_name": {"type": "string"}
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "display_name": {
+            "type": "string"
+          }
         }
       },
       "RegisterResponse": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "email": {"type": "string", "format": "email"},
-          "display_name": {"type": "string"},
-          "status": {"type": "string", "enum": ["pending_verification", "active", "suspended", "deleted"]},
-          "email_verified": {"type": "boolean"}
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending_verification",
+              "active",
+              "suspended",
+              "deleted"
+            ]
+          },
+          "email_verified": {
+            "type": "boolean"
+          }
         }
       },
       "LoginRequest": {
         "type": "object",
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "properties": {
-          "email": {"type": "string", "format": "email"},
-          "password": {"type": "string"}
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
         }
       },
       "LoginResponse": {
         "type": "object",
         "properties": {
-          "access_token": {"type": "string"},
-          "refresh_token": {"type": "string"},
-          "token_type": {"type": "string", "example": "Bearer"},
-          "expires_in": {"type": "integer", "description": "Access token expiry in seconds"},
-          "user": {"$ref": "#/components/schemas/RegisterResponse"}
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string",
+            "example": "Bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Access token expiry in seconds"
+          },
+          "user": {
+            "$ref": "#/components/schemas/RegisterResponse"
+          }
         }
       },
       "RefreshRequest": {
         "type": "object",
-        "required": ["refresh_token"],
+        "required": [
+          "refresh_token"
+        ],
         "properties": {
-          "refresh_token": {"type": "string"}
+          "refresh_token": {
+            "type": "string"
+          }
         }
       },
       "AgentResponse": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "name": {"type": "string"},
-          "description": {"type": "string"},
-          "system_prompt": {"type": "string"},
-          "model": {"type": "string"},
-          "model_fallbacks": {"type": "array", "items": {"type": "string"}},
-          "tools": {"type": "array", "items": {"type": "string"}},
-          "skills": {"type": "array", "items": {"type": "string"}},
-          "max_tokens": {"type": "integer"},
-          "temperature": {"type": "number", "format": "float"},
-          "max_iterations": {"type": "integer"},
-          "is_default": {"type": "boolean"},
-          "status": {"type": "string", "enum": ["active", "archived"]},
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "system_prompt": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "model_fallbacks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "max_tokens": {
+            "type": "integer"
+          },
+          "temperature": {
+            "type": "number",
+            "format": "float"
+          },
+          "max_iterations": {
+            "type": "integer"
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
           "allowed_integrations": {
             "type": "array",
-            "items": {"$ref": "#/components/schemas/AgentIntegrationScope"}
+            "items": {
+              "$ref": "#/components/schemas/AgentIntegrationScope"
+            }
           },
-          "created_at": {"type": "string", "format": "date-time"},
-          "updated_at": {"type": "string", "format": "date-time"}
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CreateAgentRequest": {
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "properties": {
-          "name": {"type": "string", "maxLength": 100},
-          "description": {"type": "string"},
-          "system_prompt": {"type": "string", "maxLength": 50000},
-          "model": {"type": "string"},
-          "model_fallbacks": {"type": "array", "items": {"type": "string"}},
-          "tools": {"type": "array", "items": {"type": "string"}},
-          "skills": {"type": "array", "items": {"type": "string"}},
-          "max_tokens": {"type": "integer"},
-          "temperature": {"type": "number", "format": "float"},
-          "max_iterations": {"type": "integer"},
-          "is_default": {"type": "boolean"},
+          "name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string"
+          },
+          "system_prompt": {
+            "type": "string",
+            "maxLength": 50000
+          },
+          "model": {
+            "type": "string"
+          },
+          "model_fallbacks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "max_tokens": {
+            "type": "integer"
+          },
+          "temperature": {
+            "type": "number",
+            "format": "float"
+          },
+          "max_iterations": {
+            "type": "integer"
+          },
+          "is_default": {
+            "type": "boolean"
+          },
           "allowed_integrations": {
             "type": "array",
-            "items": {"$ref": "#/components/schemas/AgentIntegrationScope"}
+            "items": {
+              "$ref": "#/components/schemas/AgentIntegrationScope"
+            }
           }
         }
       },
       "UpdateAgentRequest": {
         "type": "object",
         "properties": {
-          "name": {"type": "string"},
-          "description": {"type": "string"},
-          "system_prompt": {"type": "string"},
-          "model": {"type": "string"},
-          "model_fallbacks": {"type": "array", "items": {"type": "string"}},
-          "tools": {"type": "array", "items": {"type": "string"}},
-          "skills": {"type": "array", "items": {"type": "string"}},
-          "max_tokens": {"type": "integer"},
-          "temperature": {"type": "number", "format": "float"},
-          "max_iterations": {"type": "integer"},
-          "status": {"type": "string", "enum": ["active", "archived"]},
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "system_prompt": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "model_fallbacks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "max_tokens": {
+            "type": "integer"
+          },
+          "temperature": {
+            "type": "number",
+            "format": "float"
+          },
+          "max_iterations": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
           "allowed_integrations": {
             "type": "array",
-            "items": {"$ref": "#/components/schemas/AgentIntegrationScope"}
+            "items": {
+              "$ref": "#/components/schemas/AgentIntegrationScope"
+            }
           }
         }
       },
       "AgentIntegrationScope": {
         "type": "object",
-        "required": ["integration_id"],
+        "required": [
+          "integration_id"
+        ],
         "properties": {
-          "integration_id": {"type": "string"},
-          "allowed_tools": {"type": "array", "items": {"type": "string"}},
-          "allowed_scopes": {"type": "array", "items": {"type": "string"}}
+          "integration_id": {
+            "type": "string"
+          },
+          "allowed_tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "allowed_scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       },
       "Plan": {
         "type": "object",
         "properties": {
-          "id": {"type": "string", "enum": ["free", "starter", "pro", "enterprise"]},
-          "name": {"type": "string"},
-          "price_monthly_cents": {"type": "integer"},
-          "price_yearly_cents": {"type": "integer"},
-          "active": {"type": "boolean"},
-          "limits": {"$ref": "#/components/schemas/PlanLimits"}
+          "id": {
+            "type": "string",
+            "enum": [
+              "free",
+              "starter",
+              "pro",
+              "enterprise"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "price_monthly_cents": {
+            "type": "integer"
+          },
+          "price_yearly_cents": {
+            "type": "integer"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/PlanLimits"
+          }
         }
       },
       "PlanLimits": {
         "type": "object",
         "properties": {
-          "max_agents": {"type": "integer"},
-          "max_messages_per_month": {"type": "integer", "description": "0 = unlimited"},
-          "max_tokens_per_month": {"type": "integer", "description": "0 = unlimited"},
-          "max_integrations": {"type": "integer"},
-          "max_storage_mb": {"type": "integer"},
-          "max_team_members": {"type": "integer"},
-          "allowed_models": {"type": "array", "items": {"type": "string"}},
-          "custom_skills": {"type": "boolean"},
-          "api_access": {"type": "boolean"},
-          "rate_limit_rpm": {"type": "integer"},
-          "rate_limit_burst": {"type": "integer"},
-          "rate_limit_daily": {"type": "integer"}
+          "max_agents": {
+            "type": "integer"
+          },
+          "max_messages_per_month": {
+            "type": "integer",
+            "description": "0 = unlimited"
+          },
+          "max_tokens_per_month": {
+            "type": "integer",
+            "description": "0 = unlimited"
+          },
+          "max_integrations": {
+            "type": "integer"
+          },
+          "max_storage_mb": {
+            "type": "integer"
+          },
+          "max_team_members": {
+            "type": "integer"
+          },
+          "allowed_models": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "custom_skills": {
+            "type": "boolean"
+          },
+          "api_access": {
+            "type": "boolean"
+          },
+          "rate_limit_rpm": {
+            "type": "integer"
+          },
+          "rate_limit_burst": {
+            "type": "integer"
+          },
+          "rate_limit_daily": {
+            "type": "integer"
+          }
         }
       },
       "CheckoutRequest": {
         "type": "object",
-        "required": ["plan_id", "success_url", "cancel_url"],
+        "required": [
+          "plan_id",
+          "success_url",
+          "cancel_url"
+        ],
         "properties": {
-          "plan_id": {"type": "string"},
-          "interval": {"type": "string", "enum": ["monthly", "yearly"], "default": "monthly"},
-          "success_url": {"type": "string", "format": "uri"},
-          "cancel_url": {"type": "string", "format": "uri"},
-          "trial_days": {"type": "integer"}
+          "plan_id": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "yearly"
+            ],
+            "default": "monthly"
+          },
+          "success_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "cancel_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "trial_days": {
+            "type": "integer"
+          }
         }
       },
       "SubscriptionResponse": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "user_id": {"type": "string"},
-          "plan_id": {"type": "string"},
-          "status": {"type": "string", "enum": ["active", "trialing", "past_due", "canceled", "expired", "paused"]},
-          "interval": {"type": "string", "enum": ["monthly", "yearly"]},
-          "current_period_start": {"type": "string", "format": "date-time"},
-          "current_period_end": {"type": "string", "format": "date-time"},
-          "cancel_at_period_end": {"type": "boolean"},
-          "plan": {"$ref": "#/components/schemas/Plan"}
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "plan_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "trialing",
+              "past_due",
+              "canceled",
+              "expired",
+              "paused"
+            ]
+          },
+          "interval": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "yearly"
+            ]
+          },
+          "current_period_start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "current_period_end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cancel_at_period_end": {
+            "type": "boolean"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/Plan"
+          }
         }
       },
       "PlanChangeRequest": {
         "type": "object",
-        "required": ["plan_id"],
+        "required": [
+          "plan_id"
+        ],
         "properties": {
-          "plan_id": {"type": "string"},
-          "interval": {"type": "string", "enum": ["monthly", "yearly"]},
-          "mode": {"type": "string", "enum": ["immediate", "at_period_end"]}
+          "plan_id": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "yearly"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "at_period_end"
+            ]
+          }
         }
       },
       "PlanChangeResult": {
         "type": "object",
         "properties": {
-          "direction": {"type": "string", "enum": ["upgrade", "downgrade", "same"]},
-          "mode": {"type": "string", "enum": ["immediate", "at_period_end"]},
-          "previous_plan": {"type": "string"},
-          "new_plan": {"type": "string"},
-          "effective_at": {"type": "string", "format": "date-time"},
-          "subscription": {"$ref": "#/components/schemas/SubscriptionResponse"},
-          "proration_amount": {"type": "integer", "description": "Proration in cents (positive=charge, negative=credit)"}
+          "direction": {
+            "type": "string",
+            "enum": [
+              "upgrade",
+              "downgrade",
+              "same"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "immediate",
+              "at_period_end"
+            ]
+          },
+          "previous_plan": {
+            "type": "string"
+          },
+          "new_plan": {
+            "type": "string"
+          },
+          "effective_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "subscription": {
+            "$ref": "#/components/schemas/SubscriptionResponse"
+          },
+          "proration_amount": {
+            "type": "integer",
+            "description": "Proration in cents (positive=charge, negative=credit)"
+          }
         }
       },
       "UsageSummary": {
         "type": "object",
         "properties": {
-          "total_input_tokens": {"type": "integer"},
-          "total_output_tokens": {"type": "integer"},
-          "total_tokens": {"type": "integer"},
-          "total_requests": {"type": "integer"},
-          "total_cost": {"type": "number", "format": "float"}
+          "total_input_tokens": {
+            "type": "integer"
+          },
+          "total_output_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          },
+          "total_requests": {
+            "type": "integer"
+          },
+          "total_cost": {
+            "type": "number",
+            "format": "float"
+          }
         }
       },
       "DailyUsage": {
         "type": "object",
         "properties": {
-          "date": {"type": "string", "format": "date"},
-          "input_tokens": {"type": "integer"},
-          "output_tokens": {"type": "integer"},
-          "total_tokens": {"type": "integer"},
-          "requests": {"type": "integer"},
-          "cost": {"type": "number", "format": "float"}
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "input_tokens": {
+            "type": "integer"
+          },
+          "output_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          },
+          "requests": {
+            "type": "integer"
+          },
+          "cost": {
+            "type": "number",
+            "format": "float"
+          }
         }
       },
       "ModelUsage": {
         "type": "object",
         "properties": {
-          "model": {"type": "string"},
-          "input_tokens": {"type": "integer"},
-          "output_tokens": {"type": "integer"},
-          "total_tokens": {"type": "integer"},
-          "requests": {"type": "integer"},
-          "cost": {"type": "number", "format": "float"}
+          "model": {
+            "type": "string"
+          },
+          "input_tokens": {
+            "type": "integer"
+          },
+          "output_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          },
+          "requests": {
+            "type": "integer"
+          },
+          "cost": {
+            "type": "number",
+            "format": "float"
+          }
         }
       },
       "UsageEvent": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "user_id": {"type": "string"},
-          "model": {"type": "string"},
-          "provider": {"type": "string"},
-          "input_tokens": {"type": "integer"},
-          "output_tokens": {"type": "integer"},
-          "total_tokens": {"type": "integer"},
-          "session_key": {"type": "string"},
-          "agent_id": {"type": "string"},
-          "duration_ms": {"type": "integer"},
-          "estimated_cost": {"type": "number", "format": "float"},
-          "created_at": {"type": "string", "format": "date-time"}
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "input_tokens": {
+            "type": "integer"
+          },
+          "output_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          },
+          "session_key": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "duration_ms": {
+            "type": "integer"
+          },
+          "estimated_cost": {
+            "type": "number",
+            "format": "float"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "UsageLimits": {
         "type": "object",
         "properties": {
-          "plan_id": {"type": "string"},
+          "plan_id": {
+            "type": "string"
+          },
           "tokens": {
             "type": "object",
             "properties": {
-              "used": {"type": "integer"},
-              "limit": {"type": "integer"},
-              "unlimited": {"type": "boolean"}
+              "used": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "unlimited": {
+                "type": "boolean"
+              }
             }
           },
           "messages": {
             "type": "object",
             "properties": {
-              "used": {"type": "integer"},
-              "limit": {"type": "integer"},
-              "unlimited": {"type": "boolean"}
+              "used": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "unlimited": {
+                "type": "boolean"
+              }
             }
           }
         }
@@ -2120,20 +4672,52 @@
       "OverageStatus": {
         "type": "object",
         "properties": {
-          "overall_level": {"type": "string", "enum": ["none", "warning", "soft_cap", "hard_cap", "blocked"]},
-          "overall_action": {"type": "string", "enum": ["none", "warn", "downgrade_model", "throttle", "block"]},
+          "overall_level": {
+            "type": "string",
+            "enum": [
+              "none",
+              "warning",
+              "soft_cap",
+              "hard_cap",
+              "blocked"
+            ]
+          },
+          "overall_action": {
+            "type": "string",
+            "enum": [
+              "none",
+              "warn",
+              "downgrade_model",
+              "throttle",
+              "block"
+            ]
+          },
           "resources": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "resource": {"type": "string"},
-                "level": {"type": "string"},
-                "action": {"type": "string"},
-                "message": {"type": "string"},
-                "usage": {"type": "integer"},
-                "limit": {"type": "integer"},
-                "percent": {"type": "number"}
+                "resource": {
+                  "type": "string"
+                },
+                "level": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "usage": {
+                  "type": "integer"
+                },
+                "limit": {
+                  "type": "integer"
+                },
+                "percent": {
+                  "type": "number"
+                }
               }
             }
           }
@@ -2142,42 +4726,93 @@
       "OAuthProvider": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "name": {"type": "string"},
-          "auth_url": {"type": "string", "format": "uri"},
-          "scopes": {"type": "array", "items": {"type": "string"}},
-          "use_pkce": {"type": "boolean"}
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "auth_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "use_pkce": {
+            "type": "boolean"
+          }
         }
       },
       "OAuthTokenResponse": {
         "type": "object",
         "properties": {
-          "access_token": {"type": "string"},
-          "refresh_token": {"type": "string"},
-          "token_type": {"type": "string"},
-          "expires_in": {"type": "integer"},
-          "scope": {"type": "string"},
-          "id_token": {"type": "string"}
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "id_token": {
+            "type": "string"
+          }
         }
       },
       "IntegrationSummary": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "name": {"type": "string"},
-          "icon": {"type": "string"},
-          "category": {"type": "string"},
-          "description": {"type": "string"},
-          "auth_type": {"type": "string", "enum": ["oauth2", "api_key", "none"]},
-          "status": {"type": "string"},
-          "required_plan": {"type": "string"},
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "auth_type": {
+            "type": "string",
+            "enum": [
+              "oauth2",
+              "api_key",
+              "none"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "required_plan": {
+            "type": "string"
+          },
           "tools": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "name": {"type": "string"},
-                "description": {"type": "string"}
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -2186,66 +4821,166 @@
       "UserIntegration": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "user_id": {"type": "string"},
-          "integration_id": {"type": "string"},
-          "status": {"type": "string", "enum": ["pending", "active", "failed", "revoked", "disabled"]},
-          "config": {"type": "object", "additionalProperties": {"type": "string"}},
-          "scopes": {"type": "array", "items": {"type": "string"}},
-          "error_message": {"type": "string"},
-          "last_used_at": {"type": "string", "format": "date-time"},
-          "created_at": {"type": "string", "format": "date-time"},
-          "updated_at": {"type": "string", "format": "date-time"}
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "integration_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "failed",
+              "revoked",
+              "disabled"
+            ]
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error_message": {
+            "type": "string"
+          },
+          "last_used_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ConnectRequest": {
         "type": "object",
-        "required": ["integration_id"],
+        "required": [
+          "integration_id"
+        ],
         "properties": {
-          "integration_id": {"type": "string"},
-          "config": {"type": "object", "additionalProperties": {"type": "string"}},
-          "scopes": {"type": "array", "items": {"type": "string"}},
-          "redirect_after": {"type": "string", "format": "uri"},
-          "api_key": {"type": "string"}
+          "integration_id": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "redirect_after": {
+            "type": "string",
+            "format": "uri"
+          },
+          "api_key": {
+            "type": "string"
+          }
         }
       },
       "ConnectResponse": {
         "type": "object",
         "properties": {
-          "integration_id": {"type": "string"},
-          "status": {"type": "string"},
-          "auth_url": {"type": "string", "format": "uri"},
-          "message": {"type": "string"}
+          "integration_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "auth_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "message": {
+            "type": "string"
+          }
         }
       },
       "IntegrationStatus": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "integration_id": {"type": "string"},
-          "name": {"type": "string"},
-          "category": {"type": "string"},
-          "auth_type": {"type": "string"},
-          "status": {"type": "string"},
+          "id": {
+            "type": "string"
+          },
+          "integration_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "auth_type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
           "token_status": {
             "type": "object",
             "properties": {
-              "has_access_token": {"type": "boolean"},
-              "has_refresh_token": {"type": "boolean"},
-              "expires_at": {"type": "string", "format": "date-time"},
-              "is_expired": {"type": "boolean"},
-              "needs_refresh": {"type": "boolean"},
-              "token_status": {"type": "string"}
+              "has_access_token": {
+                "type": "boolean"
+              },
+              "has_refresh_token": {
+                "type": "boolean"
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "is_expired": {
+                "type": "boolean"
+              },
+              "needs_refresh": {
+                "type": "boolean"
+              },
+              "token_status": {
+                "type": "string"
+              }
             }
           },
           "refresh_status": {
             "type": "object",
             "properties": {
-              "retry_count": {"type": "integer"},
-              "max_retries": {"type": "integer"},
-              "last_error": {"type": "string"},
-              "next_retry": {"type": "string", "format": "date-time"},
-              "exhausted": {"type": "boolean"}
+              "retry_count": {
+                "type": "integer"
+              },
+              "max_retries": {
+                "type": "integer"
+              },
+              "last_error": {
+                "type": "string"
+              },
+              "next_retry": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "exhausted": {
+                "type": "boolean"
+              }
             }
           }
         }
@@ -2253,82 +4988,194 @@
       "AdminUserResponse": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "email": {"type": "string", "format": "email"},
-          "display_name": {"type": "string"},
-          "role": {"type": "string", "enum": ["user", "admin"]},
-          "status": {"type": "string"},
-          "email_verified": {"type": "boolean"},
-          "created_at": {"type": "string", "format": "date-time"},
-          "updated_at": {"type": "string", "format": "date-time"}
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "PlatformStats": {
         "type": "object",
         "properties": {
-          "total_users": {"type": "integer"},
-          "active_users": {"type": "integer"},
-          "pending_users": {"type": "integer"},
-          "suspended_users": {"type": "integer"}
+          "total_users": {
+            "type": "integer"
+          },
+          "active_users": {
+            "type": "integer"
+          },
+          "pending_users": {
+            "type": "integer"
+          },
+          "suspended_users": {
+            "type": "integer"
+          }
         }
       },
       "AuditEvent": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "user_id": {"type": "string"},
-          "actor_id": {"type": "string"},
-          "action": {"type": "string"},
-          "resource": {"type": "string"},
-          "resource_id": {"type": "string"},
-          "status": {"type": "string", "enum": ["success", "failure"]},
-          "detail": {"type": "object"},
-          "ip_address": {"type": "string"},
-          "user_agent": {"type": "string"},
-          "created_at": {"type": "string", "format": "date-time"}
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "actor_id": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "resource_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success",
+              "failure"
+            ]
+          },
+          "detail": {
+            "type": "object"
+          },
+          "ip_address": {
+            "type": "string"
+          },
+          "user_agent": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "DataSubjectRequest": {
         "type": "object",
         "properties": {
-          "id": {"type": "string"},
-          "user_id": {"type": "string"},
-          "type": {"type": "string", "enum": ["export", "erasure"]},
-          "status": {"type": "string", "enum": ["pending", "processing", "completed", "failed", "canceled"]},
-          "requested_by": {"type": "string"},
-          "result": {"type": "object"},
-          "error_message": {"type": "string"},
-          "created_at": {"type": "string", "format": "date-time"},
-          "completed_at": {"type": "string", "format": "date-time"}
+          "id": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "export",
+              "erasure"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed",
+              "canceled"
+            ]
+          },
+          "requested_by": {
+            "type": "string"
+          },
+          "result": {
+            "type": "object"
+          },
+          "error_message": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "RetentionPolicy": {
         "type": "object",
         "properties": {
-          "audit_logs_days": {"type": "integer"},
-          "usage_data_days": {"type": "integer"},
-          "session_data_days": {"type": "integer"},
-          "deleted_users_days": {"type": "integer"}
+          "audit_logs_days": {
+            "type": "integer"
+          },
+          "usage_data_days": {
+            "type": "integer"
+          },
+          "session_data_days": {
+            "type": "integer"
+          },
+          "deleted_users_days": {
+            "type": "integer"
+          }
         }
       },
       "RateLimitStatus": {
         "type": "object",
         "properties": {
-          "plan": {"type": "string"},
+          "plan": {
+            "type": "string"
+          },
           "per_minute": {
             "type": "object",
             "properties": {
-              "limit": {"type": "integer"},
-              "remaining": {"type": "integer"},
-              "burst": {"type": "integer"}
+              "limit": {
+                "type": "integer"
+              },
+              "remaining": {
+                "type": "integer"
+              },
+              "burst": {
+                "type": "integer"
+              }
             }
           },
           "daily": {
             "type": "object",
             "properties": {
-              "limit": {"type": "integer"},
-              "remaining": {"type": "integer"},
-              "resets_at": {"type": "string", "format": "date-time"}
+              "limit": {
+                "type": "integer"
+              },
+              "remaining": {
+                "type": "integer"
+              },
+              "resets_at": {
+                "type": "string",
+                "format": "date-time"
+              }
             }
           }
         }
@@ -2336,20 +5183,43 @@
       "DetailedHealthResponse": {
         "type": "object",
         "properties": {
-          "status": {"type": "string", "enum": ["healthy", "degraded", "unhealthy"]},
-          "uptime": {"type": "number", "description": "Uptime in seconds"},
-          "timestamp": {"type": "string", "format": "date-time"},
+          "status": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "unhealthy"
+            ]
+          },
+          "uptime": {
+            "type": "number",
+            "description": "Uptime in seconds"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
           "components": {
             "type": "object",
-            "additionalProperties": {"$ref": "#/components/schemas/ComponentHealth"}
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ComponentHealth"
+            }
           },
           "summary": {
             "type": "object",
             "properties": {
-              "total": {"type": "integer"},
-              "healthy": {"type": "integer"},
-              "degraded": {"type": "integer"},
-              "unhealthy": {"type": "integer"}
+              "total": {
+                "type": "integer"
+              },
+              "healthy": {
+                "type": "integer"
+              },
+              "degraded": {
+                "type": "integer"
+              },
+              "unhealthy": {
+                "type": "integer"
+              }
             }
           }
         }
@@ -2357,11 +5227,33 @@
       "ComponentHealth": {
         "type": "object",
         "properties": {
-          "status": {"type": "string", "enum": ["healthy", "degraded", "unhealthy"]},
-          "type": {"type": "string", "enum": ["database", "cache", "messaging", "external", "internal"]},
-          "critical": {"type": "boolean"},
-          "duration_ms": {"type": "number"},
-          "details": {"type": "object"}
+          "status": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "unhealthy"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "database",
+              "cache",
+              "messaging",
+              "external",
+              "internal"
+            ]
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "duration_ms": {
+            "type": "number"
+          },
+          "details": {
+            "type": "object"
+          }
         }
       }
     }
