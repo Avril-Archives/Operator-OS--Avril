@@ -438,7 +438,7 @@ type ProviderAuthResult = {
 
 ### 1. Required Environment/Dependencies
 
-- Go ≥ 1.21
+- Go ≥ 1.25
 - Operator codebase (`pkg/providers/` and `pkg/auth/`)
 - `crypto` and `net/http` standard library packages
 

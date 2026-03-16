@@ -2,6 +2,8 @@ module helm-test
 
 go 1.25.7
 
+toolchain go1.25.7
+
 require (
 	github.com/stretchr/testify v1.11.1
 	gopkg.in/yaml.v3 v3.0.1
