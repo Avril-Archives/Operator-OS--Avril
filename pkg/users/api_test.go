@@ -43,7 +43,7 @@ func TestRegister_Success(t *testing.T) {
 
 	w := doRegister(t, api, RegisterRequest{
 		Email:       "user@example.com",
-		Password:    "securepassword123",
+		Password:    "Secure@Pass1",
 		DisplayName: "Test User",
 	})
 
@@ -63,8 +63,8 @@ func TestRegister_Success(t *testing.T) {
 	assert.Equal(t, resp.ID, user.ID)
 
 	// Verify password was hashed (not stored plaintext).
-	assert.NotEqual(t, "securepassword123", user.PasswordHash)
-	assert.NoError(t, CheckPassword(user.PasswordHash, "securepassword123"))
+	assert.NotEqual(t, "Secure@Pass1", user.PasswordHash)
+	assert.NoError(t, CheckPassword(user.PasswordHash, "Secure@Pass1"))
 }
 
 func TestRegister_DuplicateEmail(t *testing.T) {
@@ -72,13 +72,13 @@ func TestRegister_DuplicateEmail(t *testing.T) {
 
 	w := doRegister(t, api, RegisterRequest{
 		Email:    "dupe@example.com",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	assert.Equal(t, http.StatusCreated, w.Code)
 
 	w = doRegister(t, api, RegisterRequest{
 		Email:    "dupe@example.com",
-		Password: "differentpassword",
+		Password: "Different@Pass1",
 	})
 	assert.Equal(t, http.StatusConflict, w.Code)
 
@@ -91,7 +91,7 @@ func TestRegister_MissingEmail(t *testing.T) {
 	api, _ := newTestAPI(t)
 
 	w := doRegister(t, api, RegisterRequest{
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -105,7 +105,7 @@ func TestRegister_InvalidEmail(t *testing.T) {
 
 	w := doRegister(t, api, RegisterRequest{
 		Email:    "not-an-email",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
@@ -151,7 +151,7 @@ func TestRegister_EmailCaseNormalization(t *testing.T) {
 
 	w := doRegister(t, api, RegisterRequest{
 		Email:    "User@EXAMPLE.COM",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	assert.Equal(t, http.StatusCreated, w.Code)
 
@@ -180,7 +180,7 @@ func TestRegister_WhitespaceEmail(t *testing.T) {
 
 	w := doRegister(t, api, RegisterRequest{
 		Email:    "  trimmed@example.com  ",
-		Password: "securepassword123",
+		Password: "Secure@Pass1",
 	})
 	assert.Equal(t, http.StatusCreated, w.Code)
 

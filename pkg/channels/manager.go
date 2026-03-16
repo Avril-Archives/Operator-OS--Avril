@@ -304,10 +304,11 @@ func (m *Manager) SetupHTTPServer(addr string, healthServer *health.Server) {
 		}
 	}
 
-	// Build middleware stack: panic recovery → request logging → body size limit → mux
+	// Build middleware stack: panic recovery → CORS → request logging → body size limit → mux
 	var handler http.Handler = m.mux
 	handler = middleware.BodySizeLimit(0)(handler) // 1 MB default
 	handler = logger.RequestLogging(handler)
+	handler = middleware.CORS(middleware.DefaultCORSConfig())(handler)
 	handler = middleware.RecoverPanic(handler)
 
 	m.httpServer = &http.Server{

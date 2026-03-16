@@ -12,5 +12,5 @@ var (
 	ErrInvalidEmail = errors.New("invalid email address")
 	// ErrWeakPassword is returned when the password does not meet minimum
 	// strength requirements.
-	ErrWeakPassword = errors.New("password must be at least 8 characters")
+	ErrWeakPassword = errors.New("password must be at least 8 characters and include uppercase, lowercase, digit, and special character")
 )

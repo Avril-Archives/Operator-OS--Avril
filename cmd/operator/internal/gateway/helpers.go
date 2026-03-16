@@ -43,6 +43,7 @@ import (
 	"github.com/operatoronline/Operator-OS/pkg/health"
 	"github.com/operatoronline/Operator-OS/pkg/heartbeat"
 	"github.com/operatoronline/Operator-OS/pkg/logger"
+	"github.com/operatoronline/Operator-OS/pkg/middleware"
 	"github.com/operatoronline/Operator-OS/pkg/media"
 	"github.com/operatoronline/Operator-OS/pkg/metrics"
 	"github.com/operatoronline/Operator-OS/pkg/providers"
@@ -210,7 +211,8 @@ func gatewayCmd(debug bool) error {
 	if jwtKey == "" {
 		jwtKey = "operator-os-default-jwt-signing-key-change-me"
 	}
-	tokenService, err := users.NewTokenService([]byte(jwtKey))
+	tokenBlacklist := users.NewTokenBlacklist()
+	tokenService, err := users.NewTokenService([]byte(jwtKey), users.WithBlacklist(tokenBlacklist))
 	if err != nil {
 		return fmt.Errorf("init token service: %w", err)
 	}
@@ -273,8 +275,9 @@ func gatewayCmd(debug bool) error {
 	billingPlanAPI := billing.NewAPI(catalogue, &stubSubStore{})
 	billingUsageAPI := billing.NewUsageAPI(&stubUsageStore{}, &stubSubStore{}, catalogue)
 
-	// ── Rate Limiter ──
+	// ── Rate Limiters ──
 	limiter := ratelimit.NewLimiter(nil) // nil → uses DefaultTierConfigs()
+	authRateLimiter := middleware.NewAuthRateLimiter(middleware.DefaultAuthRateLimitConfig())
 
 	// ── Security Audit ──
 	secAuditor := secaudit.NewAuditor()
@@ -282,8 +285,8 @@ func gatewayCmd(debug bool) error {
 	// Register routes on the shared mux
 	apiMux := channelManager.Mux()
 	if apiMux != nil {
-		// Auth
-		userAPI.RegisterRoutes(apiMux)
+		// Auth (with IP-based rate limiting on login/register)
+		userAPI.RegisterRoutes(apiMux, authRateLimiter.Middleware)
 		userAPI.RegisterProfileRoutes(apiMux, authMiddleware)
 		// Admin
 		adminAPI.RegisterRoutes(apiMux, authMiddleware, adminMiddleware)
@@ -363,6 +366,8 @@ func gatewayCmd(debug bool) error {
 	cronService.Stop()
 	mediaStore.Stop()
 	agentLoop.Stop()
+	authRateLimiter.Stop()
+	tokenBlacklist.Stop()
 	auditDB.Close()
 
 	logger.InfoC("gateway", "Gateway stopped")
