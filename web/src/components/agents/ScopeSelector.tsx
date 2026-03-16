@@ -392,7 +392,7 @@ const IntegrationRow = memo(function IntegrationRow({
                       : 'Select all'}
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
                   {integration.tools!.map((tool) => {
                     const selected = (scope?.allowed_tools ?? []).includes(
                       tool.name,

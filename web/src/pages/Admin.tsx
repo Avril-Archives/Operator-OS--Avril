@@ -137,7 +137,7 @@ export function AdminPage() {
       {/* ─── Header ─── */}
       <div className="shrink-0 px-4 md:px-6 pt-4 md:pt-6 pb-4 space-y-4">
         {/* Title */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-lg font-bold text-[var(--text)] flex items-center gap-2">
               <ShieldCheck size={22} weight="fill" className="text-[var(--accent-text)]" />
@@ -231,9 +231,9 @@ export function AdminPage() {
 
         {/* Search + filter bar (users tab only) */}
         {activeTab === 'users' && (
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 overflow-x-auto scrollbar-none">
             {/* Search */}
-            <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <div className="relative flex-1 min-w-0 max-w-sm">
               <MagnifyingGlass
                 size={15}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"

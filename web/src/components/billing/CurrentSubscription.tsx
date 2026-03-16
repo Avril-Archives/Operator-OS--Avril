@@ -64,7 +64,7 @@ export function CurrentSubscription({ subscription, onManageClick, loadingPortal
 
           <p className="text-lg font-semibold text-text mb-1">{plan.name}</p>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-dim">
+          <div className="flex items-center gap-x-4 text-xs text-text-dim overflow-x-auto scrollbar-none">
             <span className="flex items-center gap-1">
               <CalendarBlank size={13} />
               Billed {interval}

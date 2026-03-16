@@ -8,6 +8,7 @@ import { Plus } from '@phosphor-icons/react'
 import { useAgentStore } from '../stores/agentStore'
 import { AgentList } from '../components/agents/AgentList'
 import { AgentEditor } from '../components/agents/AgentEditor'
+import { AgentWizard } from '../components/agents/AgentWizard'
 import { ConfirmDialog } from '../components/shared/ConfirmDialog'
 import { Button } from '../components/shared/Button'
 import { Badge } from '../components/shared/Badge'
@@ -26,6 +27,7 @@ export function AgentsPage() {
   const setDefault = useAgentStore((s) => s.setDefault)
 
   // Local UI state
+  const [wizardOpen, setWizardOpen] = useState(false)
   const [editorOpen, setEditorOpen] = useState(false)
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Agent | null>(null)
@@ -41,14 +43,26 @@ export function AgentsPage() {
   // ─── Handlers ───
 
   const handleCreate = useCallback(() => {
-    setEditingAgent(null)
-    setEditorOpen(true)
+    setWizardOpen(true)
   }, [])
 
   const handleEdit = useCallback((agent: Agent) => {
     setEditingAgent(agent)
     setEditorOpen(true)
   }, [])
+
+  const handleWizardSave = useCallback(
+    async (data: CreateAgentRequest) => {
+      setSaving(true)
+      try {
+        await createAgent(data)
+        setWizardOpen(false)
+      } finally {
+        setSaving(false)
+      }
+    },
+    [createAgent],
+  )
 
   const handleSave = useCallback(
     async (data: CreateAgentRequest | UpdateAgentRequest) => {
@@ -167,7 +181,15 @@ export function AgentsPage() {
         />
       </div>
 
-      {/* ─── Editor modal ─── */}
+      {/* ─── Creation wizard ─── */}
+      <AgentWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onSave={handleWizardSave}
+        loading={saving}
+      />
+
+      {/* ─── Editor modal (edit only) ─── */}
       <AgentEditor
         open={editorOpen}
         onClose={() => {

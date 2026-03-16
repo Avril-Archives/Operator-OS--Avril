@@ -318,7 +318,7 @@ function FilterBar({ filters, onFilterChange, onReset, hasActiveFilters }: Filte
   return (
     <div className="space-y-3">
       {/* Toggle + category pills */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setExpanded(!expanded)}
           className={`
@@ -383,7 +383,7 @@ function FilterBar({ filters, onFilterChange, onReset, hasActiveFilters }: Filte
 
       {/* Expanded filter fields */}
       {expanded && (
-        <div className="flex items-end gap-3 flex-wrap animate-fadeSlideDown">
+        <div className="flex items-end gap-3 overflow-x-auto scrollbar-none animate-fadeSlideDown">
           {/* Action (text input for specific action) */}
           <div className="space-y-1">
             <label className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-semibold">

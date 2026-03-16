@@ -448,7 +448,7 @@ const FindingRow = memo(function FindingRow({
                 <span className="text-[10px] font-semibold text-[var(--text-dim)] uppercase tracking-wider">
                   References
                 </span>
-                <div className="flex flex-wrap gap-1.5 mt-1">
+                <div className="flex gap-1.5 mt-1 overflow-x-auto scrollbar-none">
                   {finding.references.map((ref, i) => (
                     <a
                       key={i}
@@ -544,7 +544,7 @@ function FilterBar({
   filteredCount: number
 }) {
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div className="flex items-center gap-3 overflow-x-auto scrollbar-none">
       {/* Status pills */}
       <div className="flex items-center gap-1 bg-[var(--surface-2)] rounded-full p-0.5">
         {(['all', 'failed', 'passed'] as const).map((status) => (
@@ -675,7 +675,7 @@ export function SecurityDashboard() {
           <SeveritySummary summary={report.summary} />
 
           {/* Run meta */}
-          <div className="flex items-center gap-4 flex-wrap text-[10px] text-[var(--text-dim)]">
+          <div className="flex items-center gap-4 text-[10px] text-[var(--text-dim)] overflow-x-auto scrollbar-none">
             <span className="flex items-center gap-1">
               <Timer size={11} />
               {durationMs.toFixed(0)}ms · {report.checks_run} checks
